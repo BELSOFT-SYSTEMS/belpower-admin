@@ -74,15 +74,13 @@ export default function AdminLayout({ children }: AdminDashboardProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex h-screen overflow-hidden">
+      <AdminTopBar />
+      <div className="flex h-screen overflow-hidden" style={{ paddingTop: '4rem' }}>
         {/* Sidebar */}
         <Sidebar />
 
         {/* Main content */}
         <div className="flex-1 overflow-auto focus:outline-none">
-          {/* Top bar */}
-          <AdminTopBar />
-
           {/* Page content */}
           <main className="flex-1 p-6">{children}</main>
         </div>

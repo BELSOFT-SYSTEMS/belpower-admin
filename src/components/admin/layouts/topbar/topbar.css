@@ -29,6 +29,8 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 .topbar .notify_icon {
   font-size: 20px;
