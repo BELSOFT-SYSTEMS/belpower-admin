@@ -76,7 +76,10 @@
   display: block;
 }
 .topbar .desktop_topbar {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 @media (min-width: 1024px) {
   .topbar .desktop_topbar {
