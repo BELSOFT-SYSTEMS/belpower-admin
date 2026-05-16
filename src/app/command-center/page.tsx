@@ -1,20 +1,20 @@
 'use client';
 
-import { FaHome, FaUsers, FaClipboardList, FaClock, FaUserSlash, FaTrashAlt } from 'react-icons/fa';
-import { TbCancel } from 'react-icons/tb';
+import { FaHome, FaUsers, FaClipboardList, FaClock } from 'react-icons/fa';
 import '@/styles/adminHome.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
 
-type TransactionStatus = 'Completed' | 'Pending' | 'Failed';
 type Transaction = {
   id: string;
   name: string;
-  service: string;
   amount: number;
-  status: TransactionStatus;
-  date: string;
-  avatar: string;
+  timeAgo: string;
+};
+
+type NewUser = {
+  name: string;
+  timeAgo: string;
 };
 
 function DashboardHome() {
@@ -49,64 +49,67 @@ function DashboardHome() {
     {
       id: '#TRX-789456',
       name: 'John Travis',
-      service: 'Electricity',
       amount: 5000,
-      status: 'Completed',
-      date: 'Jan 15, 2025',
-      avatar: '/Profile.png',
+      timeAgo: '5 mins ago',
     },
     {
       id: '#TRX-789457',
       name: 'Debbie Michael',
-      service: 'Data',
       amount: 10000,
-      status: 'Pending',
-      date: 'Jan 15, 2025',
-      avatar: '/Profile.png',
+      timeAgo: '12 mins ago',
     },
     {
       id: '#TRX-789458',
       name: 'Israel Femi',
-      service: 'Airtime',
       amount: 2000,
-      status: 'Completed',
-      date: 'Jan 14, 2025',
-      avatar: '/Profile.png',
+      timeAgo: '25 mins ago',
+    },
+    {
+      id: '#TRX-789459',
+      name: 'Sarah Johnson',
+      amount: 7500,
+      timeAgo: '1 hour ago',
+    },
+    {
+      id: '#TRX-789460',
+      name: 'Mike Williams',
+      amount: 3000,
+      timeAgo: '2 hours ago',
     },
   ];
 
-  const statusColor = {
-    Completed: 'success_color',
-    Pending: 'pending_color',
-    Failed: 'failed_color',
+  const newUsers: NewUser[] = [
+    {
+      name: 'John Travis',
+      timeAgo: '5 mins ago',
+    },
+    {
+      name: 'Debbie Michael',
+      timeAgo: '15 mins ago',
+    },
+    {
+      name: 'Israel Femi',
+      timeAgo: '30 mins ago',
+    },
+    {
+      name: 'Sarah Johnson',
+      timeAgo: '1 hour ago',
+    },
+    {
+      name: 'Mike Williams',
+      timeAgo: '2 hours ago',
+    },
+  ];
+
+  // Helper function to get user initials
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
-
-  const newUsers = [
-    {
-      name: 'John Travis',
-      status: 'Active',
-      lastActive: '2 mins ago',
-      avatar: '/Profile.png',
-    },
-    {
-      name: 'John Travis',
-      status: 'Active',
-      lastActive: '2 mins ago',
-      avatar: '/Profile.png',
-    },
-    {
-      name: 'John Travis',
-      status: 'Active',
-      lastActive: '2 mins ago',
-      avatar: '/Profile.png',
-    },
-    {
-      name: 'John Travis',
-      status: 'Active',
-      lastActive: '2 mins ago',
-      avatar: '/Profile.png',
-    },
-  ];
 
   return (
     <div className="admin_homePage">
@@ -129,111 +132,72 @@ function DashboardHome() {
         )}
       </section>
 
-      {/* Recent Transactions */}
-      <section>
-        <div className="section_header">
-          <h2>Recent Transactions</h2>
-          <button className="download">Download</button>
-        </div>
-        <div className="table_container">
-          <table>
-            <thead>
-              <tr>
-                <th className="py-3">Transaction ID</th>
-                <th>Customer</th>
-                <th>Service</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
+      {/* Two Column Layout */}
+      <div className="content_grid">
+        {/* Left Column */}
+        <div className="left_column">
+          {/* Recent Transactions Card */}
+          <div className="card">
+            <h2>Recent Transactions</h2>
+            <div className="card_list">
               {recentTransactions.length > 0 ? (
                 recentTransactions.map((tx, idx) => (
-                  <tr key={idx}>
-                    <td className="py-3">{tx.id}</td>
-                    <td className="py-3 avatar_container">
-                      <img src={tx.avatar} alt="avatar" />
-                      {tx.name}
-                    </td>
-                    <td>{tx.service}</td>
-                    <td>{formatPrice(tx.amount)}</td>
-                    <td>
-                      <span className={`transaction_status ${statusColor[tx.status]}`}>
-                        {tx.status}
-                      </span>
-                    </td>
-                    <td>{tx.date}</td>
-                  </tr>
+                  <div key={idx} className="card_item">
+                    <div className="card_avatar">
+                      {getInitials(tx.name)}
+                    </div>
+                    <div className="card_content">
+                      <p className="card_name">{tx.name}</p>
+                      <p className="card_amount">{formatPrice(tx.amount)}</p>
+                    </div>
+                    <p className="card_time">{tx.timeAgo}</p>
+                  </div>
                 ))
               ) : (
-                <tr>
-                  <td colSpan={6} className="empty_fallback">
-                    No recent transactions found.
-                  </td>
-                </tr>
+                <p className="empty_fallback">No recent transactions</p>
               )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </div>
+          </div>
 
-      {/* New Users */}
-      <section>
-        <h2>New Users</h2>
-        <div className="table_container">
-          <table>
-            <thead>
-              <tr>
-                <th className="py-3">User</th>
-                <th>Status</th>
-                <th>Last Active</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          {/* New Users Card */}
+          <div className="card">
+            <h2>New Users</h2>
+            <div className="card_list">
               {newUsers.length > 0 ? (
                 newUsers.map((user, idx) => (
-                  <tr key={idx}>
-                    <td className="py-3">
-                      <div className="avatar_container">
-                        <img src={user.avatar} alt="avatar" />
-                        <span>{user.name}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="user_status">{user.status}</span>
-                    </td>
-                    <td>{user.lastActive}</td>
-                    <td>
-                      <div className="user_actions">
-                        <button title="Suspend" className="suspend">
-                          <FaUserSlash />
-                          Suspend
-                        </button>
-                        <button title="Deactivate" className="deactivate">
-                          <TbCancel />
-                          Deactivate
-                        </button>
-                        <button title="Delete" className="delete">
-                          <FaTrashAlt />
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <div key={idx} className="card_item">
+                    <div className="card_avatar">
+                      {getInitials(user.name)}
+                    </div>
+                    <div className="card_content">
+                      <p className="card_name">{user.name}</p>
+                    </div>
+                    <p className="card_time">{user.timeAgo}</p>
+                  </div>
                 ))
               ) : (
-                <tr>
-                  <td colSpan={6} className="empty_fallback">
-                    No recent transactions found.
-                  </td>
-                </tr>
+                <p className="empty_fallback">No new users</p>
               )}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
-      </section>
+
+        {/* Right Column - Analytics */}
+        <div className="right_column">
+          <div className="chart_card">
+            <h2>Revenue Overview</h2>
+            <div className="chart_placeholder">
+              <p>Chart placeholder - Revenue data</p>
+            </div>
+          </div>
+          <div className="chart_card">
+            <h2>User Growth</h2>
+            <div className="chart_placeholder">
+              <p>Chart placeholder - User growth data</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
