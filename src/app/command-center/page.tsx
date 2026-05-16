@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { FaHome, FaUsers, FaClipboardList, FaClock, FaUserSlash, FaTrashAlt } from 'react-icons/fa';
 import { TbCancel } from 'react-icons/tb';
 import '@/styles/adminHome.css';
@@ -154,7 +153,7 @@ function DashboardHome() {
                   <tr key={idx}>
                     <td className="py-3">{tx.id}</td>
                     <td className="py-3 avatar_container">
-                      <Image src={tx.avatar} alt="avatar" width={24} height={24} />
+                      <img src={tx.avatar} alt="avatar" />
                       {tx.name}
                     </td>
                     <td>{tx.service}</td>
@@ -198,7 +197,7 @@ function DashboardHome() {
                   <tr key={idx}>
                     <td className="py-3">
                       <div className="avatar_container">
-                        <Image src={user.avatar} alt="avatar" width={24} height={24} />
+                        <img src={user.avatar} alt="avatar" />
                         <span>{user.name}</span>
                       </div>
                     </td>
