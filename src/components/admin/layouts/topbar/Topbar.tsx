@@ -167,10 +167,33 @@ export default function AdminTopBar() {
 
             {/* Profile Button with Dropdown */}
             <div className="relative">
-              <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
+              <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="topbar_profile" 
+                title="Open profile menu"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: '2px solid #0064FF',
+                  cursor: 'pointer',
+                  padding: 0,
+                  background: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
                 <img
                   src={"/Profile.png"}
                   alt="Profile"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block'
+                  }}
                 />
               </button>
 
@@ -207,10 +230,33 @@ export default function AdminTopBar() {
         <div className="mobile_topbar">
           {/* Profile Button with Dropdown */}
           <div className="relative">
-            <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
+            <button 
+              onClick={() => setIsOpen(!isOpen)} 
+              className="topbar_profile" 
+              title="Open profile menu"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid #0064FF',
+                cursor: 'pointer',
+                padding: 0,
+                background: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
               <img
                 src={"/Profile.png"}
                 alt="Profile"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block'
+                }}
               />
             </button>
 
