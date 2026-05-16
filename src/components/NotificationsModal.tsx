@@ -243,7 +243,7 @@ const NotificationsModalContent = ({
                   onClick={() => setFilter(tab)}
                   className={`flex-1 rounded-md py-2 text-xs font-medium transition-colors ${
                     filter === tab
-                      ? 'bg-white text-primary shadow-sm'
+                      ? 'bg-white text-black font-semibold shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -323,7 +323,7 @@ const NotificationsModalContent = ({
                     e.stopPropagation();
                     handleMarkAllAsRead();
                   }}
-                  className="flex items-center text-sm font-medium text-primary hover:text-primary-dark disabled:opacity-50"
+                  className="flex items-center text-sm font-medium text-black hover:text-gray-700 disabled:opacity-50"
                   disabled={!notifications.some((n) => !n.read)}
                 >
                   <BsCheckAll className="mr-1.5 h-4 w-4" />
