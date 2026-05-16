@@ -13,7 +13,7 @@ import { IoMdSettings } from "react-icons/io";
 // Internal imports
 import { useAppTranslation } from "@/hooks/useAppTranslation";
 import NotificationModal from "@/components/NotificationsModal";
-import "@/components/layout/topbar/topbar.css";
+import "@/components/admin/layouts/topbar/topbar.css";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 
 /**
@@ -226,7 +226,7 @@ export default function AdminTopBar() {
               >
                 {/* Account Link */}
                 <Link
-                  href={"/admin/settings"}
+                  href={"/command-center/settings"}
                   onClick={() => setIsOpen(false)}
                 >
                   <IoMdSettings />

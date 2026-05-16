@@ -4,23 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Sidebar } from '@/components/admin/Sidebar';
-
-// Dynamic imports with no SSR to avoid hydration issues
-// const AdminSidebar = dynamic(
-//   () => import('@/components/admin/layouts/sidebar/SideBar').then(mod => mod.default || mod),
-//   {
-//     ssr: false,
-//     loading: () => <div>Loading sidebar...</div>
-//   }
-// );
-
-// const AdminTopBar = dynamic(
-//   () => import('@/components/admin/layouts/topbar/Topbar').then(mod => mod.default || mod),
-//   {
-//     ssr: false,
-//     loading: () => <div>Loading topbar...</div>
-//   }
-// );
+import AdminTopBar from '@/components/admin/layouts/topbar/Topbar';
 
 type AdminDashboardProps = {
   children: ReactNode;
@@ -97,17 +81,7 @@ export default function AdminLayout({ children }: AdminDashboardProps) {
         {/* Main content */}
         <div className="flex-1 overflow-auto focus:outline-none">
           {/* Top bar */}
-          <header className="bg-white shadow-sm">
-            <div className="px-4 py-4 sm:px-6 lg:px-8">
-              <h1 className="text-lg font-semibold text-gray-900">
-                {pathname === '/admin' && 'Dashboard'}
-                {pathname === '/admin/users' && 'Users'}
-                {pathname === '/admin/transactions' && 'Transactions'}
-                {pathname === '/admin/check-meter' && 'Check Meter'}
-                {pathname === '/admin/settings' && 'Settings'}
-              </h1>
-            </div>
-          </header>
+          <AdminTopBar />
 
           {/* Page content */}
           <main className="flex-1 p-6">{children}</main>
