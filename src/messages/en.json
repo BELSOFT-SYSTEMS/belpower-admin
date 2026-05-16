@@ -1,0 +1,1352 @@
+{
+  "common": {
+    "back": "Back",
+    "buyNow": "Buy Now",
+    "continue": "Continue",
+    "redirectingIn": "Redirecting in {seconds} seconds...",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "backToDashboard": "Back to Dashboard",
+    "filter": "Filter",
+    "viewDetails": "View Details",
+    "cancel": "Cancel",
+    "frequency": {
+      "label": "Frequency",
+      "weekly": "Weekly",
+      "biweekly": "Bi-weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "nextPurchase": "Next Purchase",
+    "paymentMethod": "Payment Method",
+    "amount": "Amount",
+    "error": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try again.",
+      "retry": "Retry"
+    },
+    "404": {
+      "title": "404 - Page Not Found",
+      "message": "Oops! The page you're looking for doesn't exist or has been moved."
+    },
+    "next": "Next",
+    "close": "Close",
+    "confirm": "Confirm",
+    "save": "Save",
+    "seeAll": "See all",
+    "noActivity": "No activity",
+    "login": "Login",
+    "loginAgain": "Login Again",
+    "logout": "Logout",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "settings": "Settings",
+    "language": "Language",
+    "success": "Success",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "successful": "Successful",
+    "failed": "Failed",
+    "updating": "Updating...",
+    "networkError": "Network error. Please check your connection.",
+    "ok": "OK",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "processing": "Processing...",
+    "pleaseWait": "Please wait...",
+    "errorOccurred": "An error occurred",
+    "somethingWentWrong": "Something went wrong",
+    "retry": "Retry",
+    "requiredField": "This field is required",
+    "selectLanguage": "Select language"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "home": "Home",
+    "wallet": "Wallet",
+    "bills": "Bills",
+    "airtime": "Airtime",
+    "data": "Data",
+    "cable": "Cable TV",
+    "electricity": "Electricity",
+    "history": "History",
+    "account": "Account",
+    "notifications": "Notifications",
+    "instant": "Instant"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Must be at least 10 characters",
+    "maxLength": "Must not exceed 100 characters",
+    "minLengthWithValue": "Must be at least {min} characters",
+    "maxLengthWithValue": "Must not exceed {max} characters",
+    "pattern": "Invalid format",
+    "passwordMismatch": "Passwords do not match",
+    "invalid": "Invalid value",
+    "fillRequiredFields": "Please fill in all required fields",
+    "selectPackageAndPhone": "Please select a package and enter phone number",
+    "fillAllRequiredFields": "Please fill in all required fields",
+    "password": {
+      "minLength": "Password must be at least 8 characters",
+      "uppercase": "Password must contain at least one uppercase letter",
+      "lowercase": "Password must contain at least one lowercase letter",
+      "number": "Password must contain at least one number",
+      "special": "Password must contain at least one special character"
+    },
+    "pin": {
+      "length": "PIN must be 6 digits",
+      "numeric": "PIN must contain only numbers",
+      "match": "PINs do not match"
+    },
+    "phone": {
+      "nigerian": "Please enter a valid Nigerian phone number (e.g., {format1})"
+    }
+  },
+  "onboarding": {
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "address": "Address",
+      "email": "Email",
+      "phone": "Phone Number",
+      "meterNumber": "Meter Number",
+      "disco": "Disco",
+      "meterType": "Meter Type",
+      "referralCode": "Referral Code (Optional)"
+    },
+    "placeholders": {
+      "firstName": "Enter your first name",
+      "lastName": "Enter your last name",
+      "address": "Enter your residential address",
+      "email": "Enter your email address",
+      "phone": "7000000000",
+      "meterNumber": "Enter your meter number",
+      "selectDisco": "Select Disco",
+      "selectMeterType": "Select Meter Type",
+      "referralCode": "Enter referral code (optional)"
+    },
+    "options": {
+      "postpaid": "Postpaid",
+      "prepaid": "Prepaid"
+    },
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "addressRequired": "Address is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number",
+      "meterNumberRequired": "Meter number is required",
+      "meterNumberInvalid": "Please enter a valid meter number",
+      "otpLength": "OTP must be 6 digits",
+      "otpNumeric": "OTP must be numeric",
+      "agreeToTerms": "You must agree to the terms and privacy policy to continue",
+      "discoRequired": "Please select a disco",
+      "meterTypeRequired": "Please select a meter type"
+    },
+    "steps": {
+      "meter": {
+        "title": "Enter Your Meter Number",
+        "description": "Please enter your meter number to continue"
+      },
+      "otp": {
+        "title": "Confirm OTP",
+        "description": "Enter the 6-digit code sent to your phone.",
+        "enterCode": "Enter Code",
+        "didntReceive": "Didn't receive a code?",
+        "resendAction": "Resend",
+        "resendSuccess": "Verification code resent successfully!",
+        "buttonText": "Verify"
+      },
+      "registrationSuccess": {
+        "title": "Registration Successful!",
+        "message": "Your account has been created successfully. You will be redirecting to the dashboard in {seconds} seconds...",
+        "buttonText": "Go to Dashboard"
+      },
+      "name": {
+        "title": "What is your name?",
+        "description": "Let's get to know you better",
+        "placeholder": "John Doe"
+      },
+      "address": {
+        "title": "Where do you live?",
+        "description": "(Residential Address)",
+        "placeholder": "No 8 osha, Lagos, Nigeria."
+      },
+      "email": {
+        "title": "What is your Email Address?",
+        "placeholder": "johndoe@gmail.com"
+      },
+      "phone": {
+        "title": "What is your Phone Number?",
+        "description": "Please enter your Nigerian phone number",
+        "placeholder": "Phone number",
+        "buttonText": "Next",
+        "formatHint": "Format: +234XXXXXXXXXX"
+      },
+      "password": {
+        "title": "Create Password",
+        "description": "Create a secure password for your account",
+        "placeholder": "Enter your password",
+        "confirmPlaceholder": "Confirm your password",
+        "requirements": "Password must be at least 8 characters with uppercase, lowercase, number, and special character"
+      },
+      "confirmPassword": "Confirm Password",
+      "createPin": {
+        "title": "Create Transaction PIN",
+        "description": "Create a 4-digit PIN to secure your transactions",
+        "label": "Transaction PIN",
+        "buttonText": "Continue",
+        "error": {
+          "length": "PIN must be 4 digits",
+          "required": "Please enter a PIN"
+        }
+      },
+      "confirmPin": {
+        "title": "Confirm PIN",
+        "description": "Please confirm your 4-digit PIN",
+        "label": "Confirm PIN",
+        "buttonText": "Continue",
+        "error": {
+          "length": "PIN must be 4 digits",
+          "match": "PINs do not match",
+          "required": "Please confirm your PIN"
+        }
+      },
+      "terms": {
+        "title": "Terms & Privacy",
+        "description": "Please confirm that you agree to our Terms of Use and Privacy Policy before continuing.",
+        "agree": "I agree to the",
+        "termsOfUse": "Terms of Use",
+        "and": "and",
+        "privacyPolicy": "Privacy Policy",
+        "continue": "Continue",
+        "mustAgree": "You must agree to the terms to continue"
+      }
+    },
+    "welcome": "Welcome to BelPower",
+    "start": "Get Started",
+    "chooseLanguage": "Choose your language",
+    "createAccount": "Create Account",
+    "alreadyHaveAccount": "Already have an account?",
+    "verifyPhone": "Verify Phone Number",
+    "enterOTP": "Enter the OTP sent to your phone",
+    "resendOTP": "Resend OTP",
+    "verifyEmail": "Verify Email Address",
+    "tagline": "...Effortless bill payments at your fingertips with Belpower.",
+    "otp": {
+      "resendSuccess": "OTP sent successfully"
+    },
+    "registrationSuccess": "Email verified successfully"
+  },
+  "auth": {
+    "redirectingToLogin": "Redirecting to login in {seconds} seconds...",
+    "otpVerified": "OTP Verified Successfully!",
+    "redirecting": "Redirecting to dashboard...",
+    "pinChangedSuccess": "PIN changed successfully",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "forgotPasswordLink": "Forgot Password?",
+    "clickHere": "Click Here",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "emailOrPhone": "Email or Phone Number",
+    "emailOrPhonePlaceholder": "Enter your email or phone number",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPasswordTitle": "Reset Your Password",
+    "forgotPasswordDescription": "Enter your email address and we'll send you a link to reset your password.",
+    "sendOTP": "Send OTP",
+    "sendResetLink": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "resetPassword": "Reset Password",
+    "resetPasswordButton": "Set New Password",
+    "setNewPassword": "Set New Password",
+    "enterNewPasswordDescription": "Please enter your new password below",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordUpdateSuccess": "Password Updated",
+    "passwordUpdateSuccessMessage": "Your password has been successfully updated.",
+    "passwordUpdateFailed": "Failed to update password. Please try again.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "passwordRequirements": "Password Requirements:",
+    "passwordMinLength": "At least 8 characters",
+    "passwordUppercase": "One uppercase letter",
+    "passwordLowercase": "One lowercase letter",
+    "passwordNumber": "One number",
+    "passwordSpecialChar": "One special character",
+    "passwordResetSuccess": "Your password has been reset successfully.",
+    "passwordResetError": "Failed to reset password. Please try again.",
+    "updatePassword": "Update Password",
+    "passwordResetSuccessTitle": "Password Updated",
+    "passwordResetSuccessMessage": "Your password has been reset successfully. You will be redirected to login shortly...",
+    "enterNewPassword": "Please enter your new password",
+    "otpSent": "Verification code sent to your email",
+    "otpError": "Failed to send verification code. Please try again.",
+    "otpLength": "Please enter all 6 digits of the OTP",
+    "invalidOtp": "Invalid verification code. Please try again.",
+    "verifyOTP": "Verify OTP",
+    "verifying": "Verifying...",
+    "verify": "Verify",
+    "updating": "Updating...",
+    "loginError": "Invalid email or password. Please try again.",
+    "loginSuccess": "Login successful. Redirecting...",
+    "confirmOTP": "Confirm OTP",
+    "enterOTPEmail": "If your email is registered, you will receive a password reset OTP",
+    "emailPlaceholder": "Enter your email address",
+    "otpDigit": "OTP digit",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "invalidCredentials": "Invalid email or password",
+    "forgotPassword": {
+      "success": "Password reset email sent successfully",
+      "error": "Failed to send password reset email"
+    },
+    "validation": {
+      "emailOrPhone": {
+        "required": "Email or Phone Number is required",
+        "invalid": "Please enter a valid email address or phone number"
+      },
+      "password": {
+        "required": "Password is required"
+      }
+    }
+  },
+  "profileDropdown": {
+    "account": "Account",
+    "logout": "Logout"
+  },
+  "notification": {
+    "title": "Notifications",
+    "all": "All",
+    "read": "Read",
+    "unread": "Unread",
+    "offers": "Offers",
+    "markAllAsRead": "Mark all as read",
+    "clearAll": "Clear all",
+    "noNotifications": "No notifications to display",
+    "unreadIndicator": "New",
+    "timeAgo": {
+      "justNow": "Just now",
+      "secondsAgo": "{count} sec ago",
+      "minuteAgo": "1 min ago",
+      "minutesAgo": "{count} mins ago",
+      "hourAgo": "1 hr ago",
+      "hoursAgo": "{count} hrs ago",
+      "dayAgo": "1 day ago",
+      "daysAgo": "{count} days ago"
+    },
+    "types": {
+      "airtime": "Airtime",
+      "data": "Data",
+      "offers": "Offers",
+      "electricity": "Electricity",
+      "cable": "Cable TV",
+      "other": "Other"
+    },
+    "noDetails": "No additional details available",
+    "viewDetails": "View details",
+    "closeDetails": "Close details",
+    "markAsRead": "Mark as read",
+    "unreadCount": {
+      "singular": "1 unread notification",
+      "plural": "{count} unread notifications"
+    }
+  },
+
+  "emailVerification": {
+    "message": "Please verify your email address",
+    "shortMessage": "Click to verify your email!",
+    "verifyButton": "Click to verify now!",
+    "sending": "Sending...",
+    "close": "Close",
+    "success": "Verification email sent! Please check your inbox.",
+    "error": "Failed to send verification email. Please try again.",
+    "title": "Verify Your Email",
+    "description": "We've sent a verification link to your email address. Please check your inbox and click the link to verify your email.",
+    "resendButton": "Resend Verification Email",
+    "checkSpam": "If you don't see the email, please check your spam folder.",
+    "verified": "Your email has been verified successfully!"
+  },
+
+  "accountSettings": {
+    "title": "Account Settings",
+    "guest": "Guest",
+    "user": "User",
+    "currentPassword": "Current Password",
+    "currentPasswordPlaceholder": "Enter your current password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPasswordPlaceholder": "Confirm your new password",
+    "editProfile": "Edit Profile",
+    "profile": "Profile",
+    "security": "Security",
+    "language": "Language Settings",
+    "notifications": "Notifications",
+    "scheduledPurchases": {
+      "title": "Scheduled Purchases",
+      "description": "View and manage your scheduled bill payments",
+      "noPurchases": {
+        "title": "No Scheduled Purchases",
+        "description": "You don't have any scheduled purchases yet. Your scheduled bill payments will appear here."
+      },
+      "confirmCancel": "Are you sure you want to cancel this scheduled purchase? This action cannot be undone.",
+      "cancelSuccess": "Scheduled purchase has been cancelled successfully.",
+      "cancelError": "Failed to cancel scheduled purchase. Please try again.",
+      "filter": {
+        "all": "All",
+        "airtime": "Airtime",
+        "data": "Data",
+        "electricity": "Electricity",
+        "cable": "Cable TV"
+      },
+      "frequency": {
+        "weekly": "Weekly",
+        "biweekly": "Bi-weekly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "yearly": "Yearly"
+      }
+    },
+    "notificationsSection": {
+      "title": "Notifications",
+      "pushNotifications": "Push Notifications",
+      "pushNotificationsDesc": "Receive push notifications on your device for important updates and activities",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Receive email notifications for account activities and updates"
+    },
+    "addCard": "Add Card",
+    "addNewCard": "Add New Card",
+    "noCardsTitle": "No Cards Added Yet",
+    "noCardsMessage": "You haven't added any payment cards yet. Click the button below to add a new card.",
+    "helpSupport": "Help & Support",
+    "belAI": "Bela",
+    "liveChat": "Live Chat",
+    "chatWithBelAI": "Chat with Bela",
+    "chatbot": {
+      "welcome": "Bela is here to help you",
+      "invite": "Chat with Bela",
+      "support": "Need support? Just ask"
+    },
+    "support": {
+      "emailIcon": "Email icon",
+      "emailUs": "Email Us",
+      "supportEmail": "support@belsoftsystems.com",
+      "whatsappIcon": "WhatsApp icon",
+      "whatsapp": "WhatsApp",
+      "whatsappMessage": "Send us a message on WhatsApp",
+      "connectSocial": "Connect with us on Social Media",
+      "about": "About Us",
+      "logout": "Log Out",
+      "editProfile": "Edit Profile",
+      "personalInfo": "Personal Information",
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "address": "Address",
+      "changePin": "Change Transaction PIN",
+      "oldPin": "Old PIN",
+      "newPin": "New PIN",
+      "confirmPin": "Confirm PIN",
+      "enterOldPin": "Enter old PIN",
+      "enterNewPin": "Enter new PIN",
+      "confirmNewPin": "Confirm new PIN",
+      "preferences": "Preferences",
+      "legal": "Legal",
+      "termsOfUse": "Terms of Use",
+      "privacyPolicy": "Privacy Policy",
+      "biometricSettings": "Biometric Settings",
+      "enableBiometric": "Enable Biometric",
+      "loginWithFaceID": "Login with Face ID",
+      "userSettings": "User Settings",
+      "changePassword": "Change Password",
+      "oldPassword": "Old Password",
+      "enterOldPassword": "Enter old password",
+      "newPassword": "New Password",
+      "enterNewPassword": "Enter new password",
+      "confirmPassword": "Confirm Password",
+      "confirmNewPassword": "Confirm new password",
+      "myCards": "My Cards",
+      "wallet": "My Wallet"
+    },
+    "connectSocial": "Connect with us on Social Media",
+    "about": "About Us",
+    "logout": "Log Out",
+    "personalInfo": "Personal Information",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "address": "Address",
+    "changePin": "Change Transaction PIN",
+    "manageBeneficiaries": "Manage Beneficiaries",
+    "manageBeneficiariesPage": {
+      "title": "Manage Beneficiaries",
+      "myMeterNumber": "My Meter Number",
+      "addNew": "Add New Beneficiary",
+      "form": {
+        "titleLabel": "Title",
+        "titlePlaceholder": "Enter title",
+        "meterNumberLabel": "Meter Number",
+        "meterNumberPlaceholder": "Enter 11-digit meter number",
+        "addressLabel": "Address"
+      },
+      "toasts": {
+        "added": "Beneficiary added successfully",
+        "deleted": "Beneficiary deleted successfully",
+        "fillFields": "Please fill in all fields.",
+        "meterLengthError": "Meter number must be 11 digits."
+      },
+      "deleteConfirm": {
+        "title": "Are you sure?",
+        "description": "This action cannot be undone. This beneficiary will be permanently removed from your account.",
+        "message": "This action cannot be undone.",
+        "confirmButton": "Delete",
+        "cancelButton": "Cancel"
+      }
+    },
+    "oldPin": "Old PIN",
+    "newPin": "New PIN",
+    "confirmPin": "Confirm PIN",
+    "enterOldPin": "Enter old PIN",
+    "enterNewPin": "Enter new PIN",
+    "confirmNewPin": "Confirm new PIN",
+    "preferences": "Preferences",
+    "legal": "Legal",
+    "termsOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy",
+    "biometricSettings": "Biometric Settings",
+    "enableBiometric": "Enable Biometric",
+    "loginWithFaceID": "Login with Face ID",
+    "userSettings": "User Settings",
+    "changePassword": "Change Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "myCards": "My Cards",
+    "wallet": "My Wallet",
+    "cardName": "Card Name",
+    "enterCardName": "Enter card name",
+    "cardNumber": "Card Number",
+    "enterCardNumber": "Enter card number",
+    "cvv": "CVV",
+    "enterCvv": "Enter CVV",
+    "expiryDate": "Expiry Date",
+    "enterExpiryDate": "MM/YY",
+    "cardPin": "Card PIN",
+    "enterCardPin": "Enter card PIN",
+    "saveCard": "Save Card"
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "yourBalance": "Your Balance",
+    "fundWallet": "Fund Wallet",
+    "addMoney": "Add Money",
+    "quickActions": {
+      "bankTransfer": "Bank Transfer",
+      "bankTransferDescription": "Transfer From Your Bank Account",
+      "topUpWithBank": "Top Up With Bank Transfer",
+      "topUpWithBankDescription": "Top up your wallet via bank transfer",
+      "topUpWithCard": "Top Up With Card",
+      "topUpWithCardDescription": "Top Up Using Your Debit Card",
+      "bankUSSD": "Bank USSD",
+      "bankUSSDDescription": "Top Up Using Bank USSD",
+      "payWithPaystack": "Pay With PayStack"
+    },
+    "auth": {
+      "required": "Please log in to fund your wallet"
+    },
+    "bankTransfer": {
+      "title": "Pay via Transfer",
+      "enterAmount": "How much do you want to top up?",
+      "amountPlaceholder": "Enter amount",
+      "continue": "Continue",
+      "accountName": "Account Name",
+      "accountNumber": "Account Number",
+      "bankName": "Bank Name",
+      "copied": "Copied!",
+      "payNow": "I have made payment",
+      "processing": "Processing your payment...",
+      "success": "Payment Successful!",
+      "successDesc": "Your wallet has been credited successfully. You can now use your funds.",
+      "amountCredited": "{amount} has been credited to your wallet",
+      "pendingTitle": "Transfer Pending",
+      "pendingDesc": "We are verifying your transfer. Your wallet will be credited automatically once confirmed.",
+      "failedTitle": "Transfer Failed",
+      "failedDesc": "We couldn’t confirm your transfer. Please ensure you sent the correct amount or contact support.",
+      "breakdown": "Payment Breakdown",
+      "amountLabel": "Top-up Amount",
+      "chargeLabel": "Service Charge",
+      "totalLabel": "Total to Send",
+      "instructions": "Transfer funds to the account below",
+      "warning": "Please ensure you transfer the exact total amount. Your wallet will be credited automatically once the transfer is confirmed.",
+      "done": "I have made the transfer"
+    },
+    "card": {
+      "title": "Pay via Card",
+      "subtitle": "Your details are safe",
+      "cardNumber": "Card Number",
+      "cardNumberPlaceholder": "**** - **** - **** - ****",
+      "expiry": "Expiry",
+      "expiryPlaceholder": "MM/YY",
+      "cvv": "CVV",
+      "cvvPlaceholder": "***",
+      "saveCard": "Save card details",
+      "securedBy": "Secured by Paystack",
+      "processing": "Processing...",
+      "payNow": "Pay"
+    },
+    "ussd": {
+      "title": "Pay via USSD",
+      "selectBank": "Select a Bank",
+      "chooseBank": "Choose Bank",
+      "dial": "Dial",
+      "copied": "Copied!",
+      "payNow": "Pay Now"
+    },
+    "success": "Successful"
+  },
+  "bankTransfer": {
+    "title": "Pay via Transfer",
+    "accountName": "Account Name",
+    "accountNumber": "Account Number",
+    "bankName": "Bank Name",
+    "copied": "Copied!",
+    "payNow": "Pay Now"
+  },
+  "card": {
+    "title": "Pay via Card",
+    "subtitle": "Your details are safe",
+    "form": {
+      "cardName": "Card Name",
+      "enterCardName": "Enter card name",
+      "cardNumber": "Card Number",
+      "enterCardNumber": "Enter card number",
+      "cvv": "CVV",
+      "enterCvv": "Enter CVV",
+      "expiryDate": "Expiry Date",
+      "enterExpiryDate": "MM/YY",
+      "cardPin": "Card PIN",
+      "enterCardPin": "Enter card PIN",
+      "cancel": "Cancel",
+      "saveCard": "Save Card"
+    },
+    "cardNumberPlaceholder": "**** - **** - **** - ****",
+    "expiry": "Expiry",
+    "expiryPlaceholder": "MM/YY",
+    "cvvPlaceholder": "***",
+    "saveCardLabel": "Save card details",
+    "securedBy": "Secured by Paystack",
+    "processing": "Processing...",
+    "payNow": "Pay Now",
+    "success": "Successful"
+  },
+  "transactions": {
+    "success": {
+      "airtime": "Airtime purchase successful!",
+      "data": "Data bundle purchase successful!",
+      "electricity": "Electricity bill payment successful!",
+      "cable": "Cable TV subscription successful!",
+      "deposit": "Deposit successful!"
+    },
+    "amountCredited": "{amount} has been credited to your wallet",
+    "redirecting": "You will be redirected in {seconds} seconds..."
+  },
+  "services": {
+    "airtime": "Airtime"
+  },
+  "ussd": {
+    "title": "Pay via USSD",
+    "selectBank": "Select a Bank",
+    "chooseBank": "Choose Bank",
+    "dial": "Dial",
+    "copied": "Copied!",
+    "payNow": "Pay Now"
+  },
+  "bills": {
+    "airtime": {
+      "title": "Buy Airtime",
+      "selectNetwork": "Select Network",
+      "phoneNumber": "Phone Number",
+      "selectContact": "Select from contacts",
+      "amount": "Amount",
+      "continue": "Continue",
+      "tryOtherServices": "Try other services",
+      "scheduleBill": "Schedule a Bill",
+      "scheduleOptions": "Schedule Options",
+      "frequency": "Frequency",
+      "nextPurchase": "Next purchase: {date}",
+      "frequencyOptions": {
+        "weekly": "Every Week",
+        "biweekly": "Every 2 Weeks",
+        "monthly": "Every Month"
+      },
+      "confirmPayment": "Confirm Payment",
+      "network": "Network",
+      "transactionFee": "Transaction Fee",
+      "walletBalance": "Wallet Balance",
+      "confirm": "Confirm",
+      "enterPin": "Enter your PIN",
+      "pin": "PIN",
+      "pay": "Pay {amount}",
+      "success": "Airtime purchase successful!"
+    },
+    "schedule": {
+      "title": "Schedule Airtime",
+      "frequency": "Frequency",
+      "nextPurchase": "Next purchase: {date}",
+      "options": {
+        "weekly": "Every Week",
+        "biweekly": "Every 2 Weeks",
+        "monthly": "Every Month"
+      }
+    },
+    "buttons": {
+      "payNow": "Pay Now",
+      "back": "Back",
+      "processing": "Processing..."
+    },
+    "quickPurchase": {
+      "title": "Quick Purchase",
+      "selectProvider": "Network Provider",
+      "phoneNumber": "Phone Number",
+      "enterPhoneNumber": "Enter phone number",
+      "amount": "Amount",
+      "dataPlan": "Data Plan",
+      "selectDataPlan": "Select a data plan",
+      "meterType": "Meter Type",
+      "prepaid": "Prepaid",
+      "postpaid": "Postpaid",
+      "meterNumber": "Meter Number",
+      "enterMeterNumber": "Enter meter number",
+      "address": "Address",
+      "addressAutoFilled": "Address will be auto-filled",
+      "customerNumber": "Customer Number",
+      "enterCustomerNumber": "Enter customer number",
+      "cableProvider": "Cable Provider",
+      "smartCardNumber": "Customer Number",
+      "buyNow": "Buy Now",
+      "processing": "Processing...",
+      "bundle": "Bundle",
+      "orderSummary": "Order Summary",
+      "reviewOrder": "Please review your order before proceeding to payment.",
+      "item": "Item",
+      "total": "Total",
+      "confirmAndPay": "Confirm & Pay",
+      "selectNetwork": "Select Network",
+      "email": "Email Address",
+      "selectPackage": "Select Package",
+      "selectDisco": "Select Disco",
+      "selectCableProvider": "Select Cable Provider",
+      "enterAmount": "Enter Amount",
+      "enterEmail": "Enter your email",
+      "enterSmartCardNumber": "Enter customer number",
+      "autoFilled": "Auto-filled when package is selected",
+      "success": {
+        "title": "Payment Successful!",
+        "message": "Your transaction has been completed successfully.",
+        "reference": "Reference"
+      },
+      "Airtime": "Airtime",
+      "Data": "Data",
+      "Electricity": "Electricity",
+      "Cable": "Cable TV",
+      "MTN": "MTN",
+      "GLO": "GLO",
+      "Airtel": "Airtel",
+      "9MOBILE": "9Mobile",
+      "DSTV": "DSTV",
+      "GOTV": "GOTV",
+      "summary": {
+        "orderSummary": "Order Summary",
+        "type": "Type",
+        "details": "Details",
+        "amount": "Amount",
+        "total": "Total",
+        "continue": "Continue",
+        "back": "Back",
+        "confirmPurchase": "Confirm Purchase"
+      },
+      "redirecting": "Redirecting in {seconds} seconds..."
+    },
+    "airtimePurchase": {
+      "title": "Buy Airtime",
+      "selectNetwork": "Select Network",
+      "phoneNumber": "Phone Number",
+      "amount": "Amount",
+      "continue": "Continue",
+      "confirmPayment": "Confirm Payment",
+      "enterPin": "Enter PIN",
+      "success": "Airtime purchase successful!",
+      "network": "Network",
+      "transactionFee": "Transaction Fee",
+      "walletBalance": "Wallet Balance",
+      "confirm": "Confirm",
+      "pay": "Pay",
+      "pin": "PIN",
+      "selectContact": "Select from contacts",
+      "tryOtherServices": "Try Other Services",
+      "errors": {
+        "phoneNumber": "Please enter a valid 11-digit phone number",
+        "amount": "Amount must be at least ₦100",
+        "contactPicker": "Contact picker not supported on this device",
+        "network": "Please select a network"
+      }
+    },
+    "cable": {
+      "title": "Cable TV Subscription",
+      "smartCardNumber": "Smart Card Number",
+      "selectProvider": "Select Provider",
+      "amount": "Amount",
+      "selectPackage": "Select Package",
+      "noBundleSelected": "No package selected",
+      "tryOtherServices": "Try Other Services",
+      "confirmPayment": "Confirm Payment",
+      "package": "Package",
+      "decoderId": "Decoder ID",
+      "price": "Price",
+      "transactionFee": "Transaction Fee",
+      "walletBalance": "Wallet Balance",
+      "confirm": "Confirm",
+      "enterPin": "Enter PIN",
+      "pay": "Pay",
+      "pin": "PIN",
+      "success": "Cable subscription successful!",
+      "errors": {
+        "cable": "Decoder number is required",
+        "amount": "Please select a package"
+      }
+    },
+    "electricity": {
+      "title": "Buy Electricity",
+      "meterType": "Meter Type",
+      "prepaid": "Prepaid",
+      "postpaid": "Postpaid",
+      "meterNumber": "Meter Number",
+      "amount": "Amount",
+      "selectAmount": "Select Amount",
+      "distributionCompany": "Distribution Company",
+      "units": "Units",
+      "selectDisco": "Select DisCo",
+      "tryOtherServices": "Try Other Services",
+      "confirmPayment": "Confirm Payment",
+      "confirmDetails": "Confirm Details",
+      "service": "Service",
+      "amountBreakdown": "Amount Breakdown",
+      "serviceCharge": "Service Charge",
+      "totalAmount": "Total Amount",
+      "referenceDetails": "Reference Details",
+      "reference": "Reference",
+      "orderId": "Order ID",
+      "payer": "Payer",
+      "address": "Address",
+      "type": "Type",
+      "transactionFee": "Transaction Fee",
+      "walletBalance": "Wallet Balance",
+      "confirm": "Confirm",
+      "enterPin": "Enter PIN",
+      "pay": "Pay",
+      "pin": "PIN",
+      "success": "Electricity purchase successful!",
+      "paymentSuccessful": "Payment Successful!",
+      "processingTransaction": "We're processing your transaction. Please wait while we generate your token.",
+      "redirectingMessage": "You'll be redirected shortly....",
+      "scheduledPaymentNote": "Scheduled payments can only be made using your wallet balance.",
+      "paymentOptions": {
+        "title": "Select Payment Method",
+        "amount": "Amount",
+        "serviceCharge": "Service Charge",
+        "total": "Total",
+        "walletBalance": "Wallet Balance",
+        "payFromWallet": "Pay from your wallet balance",
+        "payWithPaystack": "Pay with PayStack",
+        "payWithCard": "Pay with your Debit/Credit Card"
+      },
+      "errors": {
+        "meterNumber": "Meter number is required",
+        "disco": "Please select a distribution company",
+        "amount": "Amount must be at least ₦1000"
+      }
+    },
+    "data": {
+      "title": "Buy Data Bundle",
+      "selectNetwork": "Select Network",
+      "phoneNumber": "Phone Number",
+      "selectBundle": "Select Bundle",
+      "noBundleSelected": "No bundle selected",
+      "tryOtherServices": "Try Other Services",
+      "confirmPayment": "Confirm Payment",
+      "network": "Network",
+      "dataSize": "Data Size",
+      "amount": "Amount",
+      "transactionFee": "Transaction Fee",
+      "walletBalance": "Wallet Balance",
+      "confirm": "Confirm",
+      "enterPin": "Enter PIN",
+      "pay": "Pay",
+      "pin": "PIN",
+      "success": "Data bundle purchase successful!",
+      "errors": {
+        "phoneNumber": "Please enter a valid 11-digit phone number",
+        "selectBundle": "Please select a data bundle"
+      }
+    }
+  },
+  "history": {
+    "title": "Transaction History",
+    "requestStatement": "Request Statement",
+    "endOfTransactions": "You've reached the end of the list",
+    "scheduled": "Scheduled",
+    "statementRequest": {
+      "title": "Request Statement",
+      "description": "Select date range for your transaction statement",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "cancel": "Cancel",
+      "submit": "Request Statement",
+      "success": {
+        "title": "Statement Requested",
+        "message": "Your transaction statement has been sent to your email address."
+      },
+      "errors": {
+        "dateRange": "End date must be after start date",
+        "requiredDates": "Please select both start and end dates",
+        "submission": "Failed to request statement. Please try again."
+      }
+    },
+    "filterByDate": "Filter by date",
+    "filterByType": "Filter by type",
+    "filterByStatus": "Filter by status",
+    "allTime": "All time",
+    "today": "Today",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "allTransactions": "All transactions",
+    "allStatus": "All status",
+    "success": "Success",
+    "pending": "Pending",
+    "failed": "Failed",
+    "applyFilters": "Apply Filters",
+    "date": "Date",
+    "type": "Type",
+    "amount": "Amount",
+    "status": "Status",
+    "reference": "Reference",
+    "noTransactions": "No transactions",
+    "transactions": {
+      "airtime": "Airtime",
+      "data": "Data",
+      "electricity": "Electricity",
+      "cable": "Cable",
+      "deposit": "Deposit",
+      "phoneNumber": "Phone Number",
+      "amount": "Amount",
+      "network": "Select Network",
+      "mtn": "MTN",
+      "glo": "GLO",
+      "airtel": "Airtel",
+      "etisalat": "9Mobile",
+      "quickAmounts": "Quick Amounts",
+      "otherServices": "Other Services",
+      "continue": "Continue",
+      "errors": {
+        "phoneNumber": "Please enter a valid phone number",
+        "amount": "Amount must be at least ₦100",
+        "network": "Please select a network provider"
+      }
+    },
+    "data": {
+      "title": "Buy Data Bundle",
+      "subtitle": "Purchase Data Bundle For Any Network",
+      "phoneNumber": "Phone Number",
+      "amount": "Amount",
+      "network": "Select Network",
+      "mtn": "MTN Data",
+      "glo": "GLO Data",
+      "airtel": "Airtel Data",
+      "etisalat": "9Mobile Data",
+      "dataPlans": "Available Data Plans",
+      "validity": "Validity",
+      "days": "Days",
+      "otherServices": "Other Services",
+      "continue": "Continue",
+      "errors": {
+        "phoneNumber": "Please enter a valid phone number",
+        "plan": "Please select a data plan",
+        "network": "Please select a network provider"
+      }
+    },
+    "electricity": {
+      "title": "Pay Electricity Bill",
+      "subtitle": "Pay Your Electricity Bills Instantly",
+      "meterNumber": "Meter Number",
+      "amount": "Amount",
+      "provider": "Select Provider",
+      "aedc": "AEDC - Abuja Electricity",
+      "ekedc": "EKEDC - Eko Electricity",
+      "ikedc": "IKEDC - Ikeja Electricity",
+      "phedc": "PHEDC - Port Harcourt Electricity",
+      "quickAmounts": "Quick Amounts",
+      "otherServices": "Other Services",
+      "continue": "Continue",
+      "paymentOptions": {
+        "title": "Select Payment Method",
+        "amount": "Amount",
+        "serviceCharge": "Service Charge",
+        "total": "Total",
+        "walletBalance": "Wallet Balance",
+        "payFromWallet": "Pay from your wallet balance",
+        "paystack": "Pay with PayStack",
+        "payWithCard": "Pay with your Debit/Credit Card"
+      },
+      "errors": {
+        "meterNumber": "Please enter a valid meter number",
+        "amount": "Amount must be at least ₦1000",
+        "provider": "Please select an electricity provider"
+      }
+    },
+    "cable": {
+      "title": "Pay TV Subscription",
+      "subtitle": "Pay Your TV Subscription Bills Instantly",
+      "smartCardNumber": "Smart Card Number",
+      "amount": "Amount",
+      "provider": "Select Provider",
+      "dstv": "DSTV",
+      "gotv": "GOTV",
+      "startimes": "StarTimes",
+      "packages": "Available Packages",
+      "quickAmounts": "Quick Amounts",
+      "otherServices": "Other Services",
+      "continue": "Continue",
+      "errors": {
+        "smartCardNumber": "Please enter a valid smart card number",
+        "amount": "Amount must be at least ₦1000",
+        "provider": "Please select a TV provider",
+        "package": "Please select a package"
+      }
+    }
+  },
+  "meter": {
+    "powerUsage": "Power Usage",
+    "energyBalance": "Energy Balance",
+    "voltage": "Voltage",
+    "frequency": "Frequency",
+    "digitalMeter": "Digital Meter Display:",
+    "enoughCredit": "Enough",
+    "lowCredit": "Low",
+    "walletBalance": "Wallet Balance",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  },
+  "legal": {
+    "copyright": "BelPower. All rights reserved.",
+    "lastUpdated": "Last updated: {date}",
+    "contactUs": "If you have any questions about this Privacy Policy, please contact us at support@belpower.com.",
+    "terms": {
+      "metadata": {
+        "title": "Terms of Use - BelPower",
+        "description": "Read the Terms of Use for BelPower, a digital utility platform powered by Belsoft Systems Ltd."
+      },
+      "termsOfUseContent": {
+        "sections": {
+          "agreementTitle": "Agreement Title",
+          "agreementText": "These Terms of Use (\"Terms\") govern your access and use of BelPower, a digital utility platform powered by BuyPower and owned by Belsoft Systems Ltd. By accessing or using the BelPower application, you agree to be bound by these Terms of Use. If you do not agree to these terms, please do not use the application.",
+          "introduction": {
+            "title": "1. Introduction",
+            "companyIntro": {
+              "title": "1. Company Introduction",
+              "text": "BelPower is a platform that allows users to conveniently purchase prepaid electricity tokens through WhatsApp or web. We aim to simplify utility access, provide a seamless experience, and empower households and businesses across Nigeria."
+            },
+            "legalAgreement": {
+              "title": "2. Legal Agreement",
+              "text": "These Terms constitute a legally binding agreement between you (the \"User\") and Belsoft Systems Ltd (\"BelPower\", \"we\", \"us\", or \"our\"). Your continued use of the platform indicates your acceptance of these Terms and our Privacy Policy."
+            }
+          },
+          "changesToTerms": {
+            "title": "3. Changes to Terms",
+            "termsChanges": {
+              "title": "Terms Changes",
+              "text1": "BelPower reserves the right to modify these Terms at any time. When changes occur, we will:",
+              "listItems": ["Post the updated Terms on our website or platform"],
+              "text2": "We reserve the right to modify these Terms of Use at any time. We will provide notice of any changes by updating the \"Last Updated\" date at the top of these Terms of Use. Your continued use of the application after any such changes constitutes your acceptance of the new Terms of Use."
+            }
+          },
+          "eligibility": {
+            "title": "4. Eligibility",
+            "ageRestriction": {
+              "title": "Age Restriction",
+              "text1": "To use BelPower, you must:",
+              "listItems": [
+                "Be at least 18 years old",
+                "Possess the legal capacity to enter into binding contracts",
+                "Use the service only for lawful purposes"
+              ],
+              "text2": "You must be at least 18 years old to use this application. By using the application, you represent and warrant that you are at least 18 years of age."
+            }
+          },
+          "accountSecurity": {
+            "title": "5. Account Security",
+            "accountResponsibility": {
+              "title": "Account Responsibility",
+              "text1": "You are responsible for:",
+              "listItems": [
+                "Maintaining the confidentiality of your WhatsApp account",
+                "Personalizing your experience and preferences",
+                "All activities that occur under your phone number or session"
+              ],
+              "text2": "If you suspect unauthorized access, notify us immediately via support@belpower.ng.",
+              "text3": "BelPower is not liable for losses resulting from unauthorized access due to your negligence."
+            }
+          },
+          "intellectualProperty": {
+            "title": "6. Intellectual Property Rights",
+            "intellectualProperty": {
+              "title": "Intellectual Property",
+              "text1": "All content, features, and functionality of the application, including but not limited to text, graphics, logos, and software, are the property of BelPower and are protected by copyright, trademark, and other intellectual property laws.",
+              "text2": "You may not:",
+              "listItems": [
+                "Copy, reproduce, or distribute any part of the platform without permission",
+                "Reverse-engineer or attempt to extract source code",
+                "Use our branding without written consent"
+              ],
+              "text3": "Violation of this clause may result in legal action."
+            }
+          },
+          "termination": {
+            "title": "7. Termination",
+            "terminationRights": {
+              "title": "Termination Rights",
+              "text1": "You agree to use the application only for lawful purposes and in accordance with these Terms of Use. You agree not to use the application:",
+              "listItems": [
+                "In any way that violates any applicable law or regulation",
+                "To engage in any fraudulent or illegal activity",
+                "To impersonate or attempt to impersonate BelPower or a BelPower employee, another user, or any other person or entity",
+                "To engage in any conduct that restricts or inhibits anyone's use or enjoyment of the application"
+              ],
+              "text2": "You may also stop using BelPower at any time. Upon termination, your data will be retained in accordance with our Privacy Policy."
+            }
+          },
+          "limitationOfLiability": {
+            "title": "8. Limitation of Liability",
+            "limitationOfLiability": {
+              "title": "Limitation of Liability",
+              "text1": "To the fullest extent permitted by law:",
+              "listItems": [
+                "In no event shall BelPower be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the application.",
+                "Your sole remedy for dissatisfaction is to discontinue using the service."
+              ]
+            }
+          }
+        }
+      }
+    },
+    "privacy": {
+      "metadata": {
+        "title": "Privacy Policy - BelPower",
+        "description": "Read the Privacy Policy for BelPower to understand how we collect, use, and protect your personal information."
+      },
+      "privacyPolicyContent": {
+        "sections": {
+          "overview": {
+            "title": "1. Overview",
+            "text": "BelPower (\"we,\" \"us,\" or \"our\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services. Please read this policy carefully. If you do not agree with the terms of this Privacy Policy, please do not access the application."
+          },
+          "informationCollection": {
+            "title": "2. Information Collection",
+            "personalInformation": {
+              "title": "Personal Information We Process",
+              "text": "We collect the following personal data when you interact with our services:",
+              "listItems": [
+                "Full Name",
+                "Phone Number (WhatsApp)",
+                "Email Address (optional)",
+                "Meter Number and Disco Information",
+                "Location Data (for transaction relevance and analytics)",
+                "Transaction Details (amounts, frequency, tokens)",
+                "Referral Information (if you refer or are referred)"
+              ]
+            },
+            "additionalInformation": {
+              "text": "We may also collect:",
+              "listItems": [
+                "Device information (browser type, OS, IP address)",
+                "Usage behavior for analytics and troubleshooting"
+              ]
+            },
+            "sensitiveInformation": {
+              "title": "Sensitive Information",
+              "text": "We do not collect or store sensitive data such as:",
+              "listItems": [
+                "Government-issued IDs",
+                "Biometric data",
+                "Payment card details (card information is handled by secured third-party processors)"
+              ]
+            }
+          },
+          "useOfInformation": {
+            "title": "3. Use of Information",
+            "processingDetails": {
+              "title": "How We Process Your Data",
+              "text": "We use the information we collect for:",
+              "listItems": [
+                "Processing your electricity purchases via BuyPower",
+                "Sending transaction confirmations and token information",
+                "Personalizing your experience and preferences",
+                "Providing reminders or alerts for low energy or recharges",
+                "Customer support and dispute resolution",
+                "Analytics to improve the platform",
+                "Preventing fraud and ensuring platform security",
+                "Complying with legal obligations"
+              ]
+            }
+          },
+          "informationSharing": {
+            "title": "4. Information Sharing",
+            "dataSharing": {
+              "title": "Data Sharing",
+              "text1": "We do not sell your personal data.",
+              "text2": "We may share your information only with:",
+              "listItems": [
+                "BuyPower, our service partner, to process electricity vending",
+                "Payment processors (e.g., Paystack, Flutterwave) to securely complete payments",
+                "Law enforcement or regulatory authorities where legally required",
+                "Third-party service providers (only under strict confidentiality agreements) for customer support, analytics, or communication"
+              ]
+            }
+          },
+          "dataProtection": {
+            "title": "5. Data Protection",
+            "protectionMeasures": {
+              "title": "How We Protect Your Information",
+              "text": "BelPower implements industry-standard security measures including:",
+              "listItems": [
+                "End-to-end encryption of WhatsApp messages",
+                "HTTPS across all web traffic",
+                "Secure tokenized payment processing via certified providers",
+                "Role-based access control for staff",
+                "Regular penetration testing and system audits",
+                "Strict data access protocols for employees and partners"
+              ]
+            }
+          },
+          "dataRetention": {
+            "title": "6. Data Retention",
+            "retentionPolicy": {
+              "title": "How Long We Store Your Data",
+              "text": "We retain your personal data only for as long as necessary:",
+              "listItems": [
+                "Transaction data: 5 years (for regulatory purposes)",
+                "Inactive user data: Deleted or anonymized after 12 months",
+                "Referral logs: Retained for up to 6 months for reward processing"
+              ],
+              "note": "You can request deletion at any time (see Section 7)."
+            }
+          },
+          "yourRights": {
+            "title": "7. Your Rights",
+            "userRights": {
+              "text": "You have the following rights under Nigerian data protection laws and the GDPR (if applicable):",
+              "listItems": [
+                "Right to Access – View the data we hold about you",
+                "Right to Rectification – Correct incorrect or outdated information",
+                "Right to Erasure – Request deletion of your data",
+                "Right to Restrict Processing – Limit how your data is used",
+                "Right to Data Portability – Obtain your data in a readable format",
+                "Right to Object – Opt out of certain types of processing",
+                "Right to Withdraw Consent – At any time"
+              ],
+              "contact": "To exercise these rights, please contact us at privacy@belpower.ng."
+            }
+          },
+          "cookies": {
+            "title": "8. Cookies",
+            "cookiePolicy": {
+              "title": "Our Cookie Policy",
+              "text1": "BelPower uses cookies and tracking technologies for:",
+              "listItems": [
+                "Saving your session",
+                "Understanding user behavior (e.g., usage analytics)",
+                "Improving performance and speed",
+                "Remembering user preferences"
+              ],
+              "text2": "We do not use cookies to store sensitive personal information. You can control cookie settings from your browser or opt out of tracking tools (e.g., Google Analytics)."
+            }
+          },
+          "contactUs": {
+            "title": "9. Contact Us",
+            "contactDetails": {
+              "text": "For privacy concerns or to exercise your rights, reach out to our Data Protection Officer (DPO):",
+              "contactInfo": {
+                "name": "Kelvine Arinze Chiazor – Belsoft Systems Ltd.",
+                "email": "privacy@belsoftsystems.com",
+                "phone": ["+234 812 959 8167", "+234 907 116 0843"],
+                "address": "Office Address:"
+              }
+            }
+          },
+          "updates": {
+            "title": "10. Updates to Privacy Policy",
+            "updatePolicy": {
+              "title": "Policy Change Notifications",
+              "text": "We may update this Privacy Policy periodically. When we do, we'll:",
+              "listItems": [
+                "Post the updated version on our website",
+                "Notify users via WhatsApp or email (if opted in)",
+                "Clearly display the effective date"
+              ],
+              "note": "We encourage you to review this policy regularly to stay informed."
+            }
+          }
+        }
+      }
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "consumption": "Energy Consumption",
+    "billing": "Billing",
+    "reports": "Reports",
+    "greeting": "Hello, {name}",
+    "whatBill": "Which bill are you paying today?",
+    "yourBalance": "Your Balance",
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "services": {
+      "airtime": "Airtime",
+      "data": "Data",
+      "cableTV": "Cable TV",
+      "electricity": "Electricity"
+    },
+    "wallet": {
+      "title": "Wallet",
+      "balance": "Balance",
+      "addMoney": "Add Money",
+      "withdraw": "Withdraw",
+      "transfer": "Transfer"
+    },
+    "history": {
+      "title": "Transaction History",
+      "date": "Date",
+      "type": "Type",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "transactions": {
+      "airtime": "Airtime",
+      "data": "Data",
+      "electricity": "Electricity",
+      "cable": "Cable TV",
+      "walletFunding": "Wallet Funding",
+      "transfer": "Transfer",
+      "billPayment": "Bill Payment"
+    },
+    "statuses": {
+      "successful": "Successful",
+      "failed": "Failed",
+      "pending": "Pending",
+      "processing": "Processing"
+    }
+  }
+}

@@ -1,0 +1,1309 @@
+{
+  "common": {
+    "back": "Retour",
+    "buyNow": "Acheter maintenant",
+    "continue": "Continuer",
+    "redirectingIn": "Redirection dans {seconds} secondes...",
+    "delete": "Supprimer",
+    "loading": "Chargement...",
+    "backToDashboard": "Retour au tableau de bord",
+    "filter": "Filtrer",
+    "viewDetails": "Voir les détails",
+    "cancel": "Annuler",
+    "frequency": {
+      "label": "Fréquence",
+      "weekly": "Hebdomadaire",
+      "biweekly": "Bimensuel",
+      "monthly": "Mensuel",
+      "quarterly": "Trimestriel",
+      "yearly": "Annuel"
+    },
+    "nextPurchase": "Prochain achat",
+    "paymentMethod": "Moyen de paiement",
+    "amount": "Montant",
+    "error": {
+      "title": "Quelque chose s'est mal passé",
+      "message": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+      "retry": "Réessayer"
+    },
+    "404": {
+      "title": "404 - Page non trouvée",
+      "message": "Oups ! La page que vous recherchez n'existe pas ou a été déplacée."
+    },
+    "next": "Suivant",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "seeAll": "Voir tout",
+    "noActivity": "Aucune activité",
+    "login": "Connexion",
+    "loginAgain": "Se connecter à nouveau",
+    "logout": "Déconnexion",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "settings": "Paramètres",
+    "language": "Langue",
+    "success": "Succès",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "successful": "Réussi",
+    "failed": "Échoué",
+    "updating": "Mise à jour...",
+    "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
+    "ok": "OK",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "processing": "Traitement en cours...",
+    "pleaseWait": "Veuillez patienter...",
+    "errorOccurred": "Une erreur s'est produite",
+    "somethingWentWrong": "Quelque chose s'est mal passé",
+    "retry": "Réessayer",
+    "selectLanguage": "Sélectionner la langue"
+  },
+
+  "notification": {
+    "title": "Notifications",
+    "all": "Tout",
+    "read": "Lus",
+    "unread": "Non lus",
+    "offers": "Offres",
+    "markAllAsRead": "Tout marquer comme lu",
+    "clearAll": "Tout effacer",
+    "noNotifications": "Aucune notification à afficher",
+    "unreadIndicator": "Nouveau",
+    "timeAgo": {
+      "justNow": "À l'instant",
+      "secondsAgo": "il y a {count} sec",
+      "minuteAgo": "il y a 1 minute",
+      "minutesAgo": "il y a {count} min",
+      "hourAgo": "il y a 1 heure",
+      "hoursAgo": "il y a {count} h",
+      "dayAgo": "il y a 1 jour",
+      "daysAgo": "il y a {count} jours"
+    },
+    "types": {
+      "airtime": "Crédit",
+      "data": "Internet",
+      "offers": "Offres",
+      "electricity": "Électricité",
+      "cable": "Câble Télé",
+      "other": "Autre"
+    },
+    "noDetails": "Aucun détail supplémentaire disponible",
+    "viewDetails": "Voir les détails",
+    "closeDetails": "Fermer les détails",
+    "markAsRead": "Marquer comme lu",
+    "unreadCount": {
+      "singular": "1 notification non lue",
+      "plural": "{count} notifications non lues"
+    }
+  },
+
+  "emailVerification": {
+    "message": "Veuillez vérifier votre adresse e-mail",
+    "shortMessage": "Cliquez pour vérifier votre e-mail!",
+    "verifyButton": "Cliquez pour vérifier maintenant!",
+    "sending": "Envoi en cours...",
+    "close": "Fermer",
+    "success": "E-mail de vérification envoyé! Veuillez vérifier votre boîte de réception.",
+    "error": "Échec de l'envoi de l'e-mail de vérification. Veuillez réessayer.",
+    "title": "Vérifiez votre e-mail",
+    "description": "Nous avons envoyé un lien de vérification à votre adresse e-mail. Veuillez vérifier votre boîte de réception et cliquer sur le lien pour vérifier votre e-mail.",
+    "resendButton": "Renvoyer l'e-mail de vérification",
+    "checkSpam": "Si vous ne voyez pas l'e-mail, veuillez vérifier votre dossier de courrier indésirable.",
+    "verified": "Votre adresse e-mail a été vérifiée avec succès!"
+  },
+
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": "Veuillez entrer une adresse e-mail valide",
+    "minLength": "Doit contenir au moins 10 caractères",
+    "maxLength": "Ne doit pas dépasser 100 caractères",
+    "minLengthWithValue": "Doit contenir au moins {min} caractères",
+    "maxLengthWithValue": "Ne doit pas dépasser {max} caractères",
+    "pattern": "Format invalide",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "invalid": "Valeur invalide",
+    "password": {
+      "minLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "uppercase": "Le mot de passe doit contenir au moins une majuscule",
+      "lowercase": "Le mot de passe doit contenir au moins une minuscule",
+      "number": "Le mot de passe doit contenir au moins un chiffre",
+      "special": "Le mot de passe doit contenir au moins un caractère spécial"
+    },
+    "pin": {
+      "length": "Le code PIN doit comporter 6 chiffres",
+      "numeric": "Le code PIN ne doit contenir que des chiffres",
+      "match": "Les codes PIN ne correspondent pas"
+    },
+    "phone": {
+      "nigerian": "Veuillez entrer un numéro de téléphone nigérian valide (ex: {format1})"
+    }
+  },
+  "onboarding": {
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "address": "Adresse",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "meterNumber": "Numéro de compteur",
+      "disco": "Disco",
+      "meterType": "Type de compteur",
+      "referralCode": "Code de parrainage (Optionnel)",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "transactionPin": "Code PIN de transaction",
+      "confirmTransactionPin": "Confirmer le code PIN",
+      "termsAgreement": "Acceptation des conditions"
+    },
+    "placeholders": {
+      "firstName": "Entrez votre prénom",
+      "lastName": "Entrez votre nom de famille",
+      "address": "Entrez votre adresse résidentielle",
+      "email": "Entrez votre adresse e-mail",
+      "phone": "7000000000",
+      "meterNumber": "Entrez votre numéro de compteur",
+      "selectDisco": "Sélectionnez un Disco",
+      "selectMeterType": "Sélectionnez le type de compteur",
+      "referralCode": "Entrez le code de parrainage (optionnel)",
+      "password": "Créez un mot de passe sécurisé",
+      "confirmPassword": "Confirmez votre mot de passe",
+      "transactionPin": "Code PIN à 4 chiffres",
+      "confirmTransactionPin": "Confirmez votre code PIN"
+    },
+    "options": {
+      "postpaid": "Postpayé",
+      "prepaid": "Prépayé"
+    },
+    "errors": {
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom de famille est requis",
+      "addressRequired": "L'adresse est requise",
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Veuillez entrer une adresse e-mail valide",
+      "phoneRequired": "Le numéro de téléphone est requis",
+      "phoneInvalid": "Veuillez entrer un numéro de téléphone valide",
+      "meterNumberRequired": "Le numéro de compteur est requis",
+      "meterNumberInvalid": "Veuillez entrer un numéro de compteur valide",
+      "discoRequired": "Veuillez sélectionner un disco",
+      "meterTypeRequired": "Veuillez sélectionner un type de compteur",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordInvalid": "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
+      "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+      "transactionPinRequired": "Le code PIN est requis",
+      "transactionPinInvalid": "Le code PIN doit contenir exactement 4 chiffres",
+      "transactionPinsDontMatch": "Les codes PIN ne correspondent pas",
+      "otpRequired": "Le code OTP est requis",
+      "otpInvalid": "Le code OTP doit contenir 6 chiffres",
+      "termsRequired": "Vous devez accepter les conditions d'utilisation",
+      "otpLength": "L'OTP doit comporter 6 chiffres",
+      "otpNumeric": "L'OTP doit être numérique",
+      "agreeToTerms": "Vous devez accepter les conditions générales et la politique de confidentialité pour continuer"
+    },
+    "steps": {
+      "meter": {
+        "title": "Entrez votre numéro de compteur",
+        "description": "Veuillez entrer votre numéro de compteur pour continuer"
+      },
+      "otp": {
+        "title": "Vérification OTP",
+        "description": "Entrez le code à 6 chiffres que nous venons d'envoyer à votre numéro de téléphone.",
+        "enterCode": "Entrer le code OTP",
+        "didntReceive": "Vous n'avez pas reçu de code ?",
+        "resendAction": "Renvoyer le code",
+        "resendSuccess": "Code de vérification renvoyé avec succès !",
+        "buttonText": "Vérifier",
+        "error": {
+          "invalidOtp": "Code OTP invalide. Veuillez réessayer.",
+          "resendSuccess": "Code OTP renvoyé avec succès"
+        }
+      },
+      "registrationSuccess": {
+        "title": "Inscription réussie !",
+        "message": "Votre compte a été créé avec succès. Vous serez redirigé vers le tableau de bord dans {seconds} secondes...",
+        "buttonText": "Aller au tableau de bord"
+      },
+      "name": {
+        "title": "Quel est votre nom ?",
+        "description": "Faisons connaissance",
+        "placeholder": "Jean Dupont",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille"
+      },
+      "address": {
+        "title": "Où habitez-vous ?",
+        "description": "(Adresse résidentielle)",
+        "placeholder": "8 rue de la Paix, 75002 Paris, France"
+      },
+      "email": {
+        "title": "Quelle est votre adresse e-mail ?",
+        "description": "Nous l'utiliserons pour vous contacter",
+        "placeholder": "jean.dupont@exemple.com"
+      },
+      "phone": {
+        "title": "Quel est votre numéro de téléphone ?",
+        "description": "Veuillez entrer votre numéro de téléphone nigérian",
+        "placeholder": "+33 6 12 34 56 78",
+        "buttonText": "Suivant",
+        "formatHint": "Format: +234XXXXXXXXXX"
+      },
+      "password": {
+        "title": "Créer un mot de passe",
+        "description": "Créez un mot de passe sécurisé pour votre compte",
+        "placeholder": "Entrez votre mot de passe",
+        "confirmPlaceholder": "Confirmez votre mot de passe",
+        "requirements": "Le mot de passe doit contenir au moins 8 caractères avec des majuscules, des minuscules, des chiffres et des caractères spéciaux",
+        "passwordMismatch": "Les mots de passe ne correspondent pas"
+      },
+      "terms": {
+        "title": "Conditions générales et confidentialité",
+        "description": "Veuillez confirmer que vous acceptez nos conditions d'utilisation et notre politique de confidentialité avant de continuer.",
+        "acceptTerms": "J'accepte les conditions d'utilisation et la politique de confidentialité",
+        "required": "Vous devez accepter les conditions d'utilisation",
+        "agree": "J'accepte les",
+        "termsOfUse": "Conditions d'utilisation",
+        "and": "et la",
+        "privacyPolicy": "Politique de confidentialité",
+        "privacyPolicyContent": {
+          "learnMore": "En savoir plus"
+        }
+      },
+      "transactionPin": {
+        "title": "Créer un code PIN de transaction",
+        "description": "Créez un code PIN à 4 chiffres pour sécuriser vos transactions",
+        "label": "Code PIN de transaction",
+        "confirmPin": "Confirmer le code PIN",
+        "pinMismatch": "Les codes PIN ne correspondent pas",
+        "pinLength": "Le code PIN doit comporter 4 chiffres",
+        "buttonText": "Continuer",
+        "error": {
+          "length": "Le code PIN doit comporter 4 chiffres",
+          "required": "Veuillez saisir un code PIN",
+          "match": "Les codes PIN ne correspondent pas"
+        }
+      },
+      "confirmPin": {
+        "title": "Confirmez votre code PIN",
+        "description": "Veuillez confirmer votre code PIN à 4 chiffres",
+        "label": "Confirmer le code PIN",
+        "buttonText": "Terminer l'inscription",
+        "error": {
+          "length": "Le code PIN doit comporter 4 chiffres",
+          "match": "Les codes PIN ne correspondent pas",
+          "required": "Veuillez confirmer votre code PIN"
+        }
+      },
+      "mustAgree": "Vous devez accepter les conditions pour continuer"
+    },
+    "welcome": "Bienvenue sur BelPower",
+    "start": "Commencer",
+    "chooseLanguage": "Choisissez votre langue",
+    "createAccount": "Créer un compte",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "verifyPhone": "Vérifier le numéro de téléphone",
+    "enterOTP": "Entrez le code OTP envoyé sur votre téléphone",
+    "resendOTP": "Renvoyer le code OTP",
+    "verifyEmail": "Vérifier l'adresse e-mail",
+    "tagline": "...Paiements de factures sans effort avec Belpower.",
+    "otp": {
+      "resendSuccess": "OTP envoyé avec succès"
+    },
+    "registrationSuccess": "E-mail vérifié avec succès"
+  },
+  "auth": {
+    "redirectingToLogin": "Redirection vers la connexion dans {seconds} secondes...",
+    "otpVerified": "OTP vérifié avec succès!",
+    "redirecting": "Redirection vers le tableau de bord...",
+    "pinChangedSuccess": "Code PIN modifié avec succès",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "emailOrPhone": "Email ou numéro de téléphone",
+    "emailOrPhonePlaceholder": "Entrez votre email ou numéro de téléphone",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "forgotPasswordLink": "Mot de passe oublié?",
+    "noAccount": "Vous n'avez pas de compte?",
+    "clickHere": "Cliquez ici",
+    "sendOTP": "Envoyer le code OTP",
+    "backToLogin": "Retour à la connexion",
+    "invalidCredentials": "Email ou mot de passe incorrect",
+    "enterOTPEmail": "Si votre email est enregistré, vous recevrez un OTP de réinitialisation de mot de passe",
+    "forgotPasswordTitle": "Réinitialiser votre mot de passe",
+    "forgotPasswordDescription": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "resetPasswordButton": "Définir le nouveau mot de passe",
+    "setNewPassword": "Définir un nouveau mot de passe",
+    "enterNewPasswordDescription": "Veuillez entrer votre nouveau mot de passe ci-dessous",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordUpdateSuccess": "Mot de passe mis à jour",
+    "passwordUpdateSuccessMessage": "Votre mot de passe a été mis à jour avec succès.",
+    "passwordUpdateFailed": "Échec de la mise à jour du mot de passe. Veuillez réessayer.",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "passwordRequirements": "Exigences de mot de passe:",
+    "passwordMinLength": "Au moins 8 caractères",
+    "passwordUppercase": "Une lettre majuscule",
+    "passwordLowercase": "Une lettre minuscule",
+    "passwordNumber": "Un chiffre",
+    "passwordSpecialChar": "Un caractère spécial",
+    "passwordResetSuccess": "Votre mot de passe a été réinitialisé avec succès.",
+    "passwordResetError": "Échec de la réinitialisation du mot de passe. Veuillez réessayer.",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "passwordResetSuccessTitle": "Mot de passe mis à jour",
+    "passwordResetSuccessMessage": "Votre mot de passe a été réinitialisé avec succès. Vous serez redirigé vers la page de connexion sous peu...",
+    "enterNewPassword": "Veuillez entrer votre nouveau mot de passe",
+    "otpSent": "Code de vérification envoyé à votre email",
+    "otpError": "Échec de l'envoi du code de vérification. Veuillez réessayer.",
+    "otpLength": "Veuillez entrer les 4 chiffres du code OTP",
+    "invalidOtp": "Code de vérification invalide. Veuillez réessayer.",
+    "verifyOTP": "Vérifier OTP",
+    "verifying": "Vérification en cours...",
+    "loginFailed": "Échec de la connexion",
+    "error": "Erreur",
+    "forgotPasswordError": "Erreur lors de la demande de réinitialisation",
+    "verify": "Vérifier",
+    "updating": "Mise à jour...",
+    "loginError": "Email ou mot de passe incorrect. Veuillez réessayer.",
+    "loginSuccess": "Connexion réussie. Redirection en cours...",
+    "confirmOTP": "Confirmer OTP",
+    "emailPlaceholder": "Entrez votre adresse e-mail",
+    "otpDigit": "Chiffre OTP",
+    "forgotPassword": {
+      "success": "E-mail de réinitialisation du mot de passe envoyé avec succès",
+      "error": "Échec de l'envoi de l'e-mail de réinitialisation du mot de passe"
+    },
+    "validation": {
+      "emailOrPhone": {
+        "required": "L'email ou le numéro de téléphone est requis",
+        "invalid": "Veuillez entrer une adresse email ou un numéro de téléphone valide"
+      },
+      "password": {
+        "required": "Le mot de passe est requis"
+      }
+    }
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "home": "Accueil",
+    "wallet": "Portefeuille",
+    "bills": "Paiements",
+    "airtime": "Crédit",
+    "data": "Internet",
+    "cable": "Câble Télé",
+    "electricity": "Électricité",
+    "history": "Historique",
+    "account": "Compte",
+    "instant": "Instantané"
+  },
+  "profileDropdown": {
+    "account": "Compte",
+    "logout": "Déconnexion"
+  },
+
+  "accountSettings": {
+    "title": "Paramètres du compte",
+    "guest": "Invité",
+    "user": "Utilisateur",
+    "currentPassword": "Mot de passe actuel",
+    "currentPasswordPlaceholder": "Entrez votre mot de passe actuel",
+    "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
+    "editProfile": "Modifier le profil",
+    "profile": "Profil",
+    "security": "Sécurité",
+    "language": "Paramètres de langue",
+    "notificationsMenu": "Notifications",
+    "scheduledPurchases": {
+      "title": "Achats programmés",
+      "description": "Affichez et gérez vos paiements de factures programmés",
+      "noPurchases": {
+        "title": "Aucun achat programmé",
+        "description": "Vous n'avez pas encore d'achats programmés. Vos paiements de factures programmés apparaîtront ici."
+      },
+      "confirmCancel": "Êtes-vous sûr de vouloir annuler cet achat programmé ? Cette action est irréversible.",
+      "cancelSuccess": "L'achat programmé a été annulé avec succès.",
+      "cancelError": "Échec de l'annulation de l'achat programmé. Veuillez réessayer.",
+      "filter": {
+        "all": "Tous",
+        "airtime": "Crédit",
+        "data": "Internet",
+        "electricity": "Électricité",
+        "cable": "Câble Télé"
+      },
+      "frequency": {
+        "weekly": "Hebdomadaire",
+        "biweekly": "Bimensuel",
+        "monthly": "Mensuel",
+        "quarterly": "Trimestriel",
+        "yearly": "Annuel"
+      }
+    },
+    "notificationsSettings": {
+      "title": "Notifications",
+      "pushNotifications": "Notifications push",
+      "pushNotificationsDesc": "Recevez des notifications push sur votre appareil pour les mises à jour et activités importantes",
+      "emailNotifications": "Notifications par e-mail",
+      "emailNotificationsDesc": "Recevez des notifications par e-mail pour les activités et mises à jour du compte"
+    },
+    "addCard": "Ajouter une carte",
+    "addNewCard": "Ajouter une nouvelle carte",
+    "cardName": "Nom sur la carte",
+    "enterCardName": "Entrez le nom sur la carte",
+    "cardNumber": "Numéro de carte",
+    "enterCardNumber": "Entrez le numéro de carte",
+    "cvv": "CVV",
+    "enterCvv": "Entrez le CVV",
+    "expiryDate": "Date d'expiration",
+    "enterExpiryDate": "MM/AA",
+    "cardPin": "Code PIN de la carte",
+    "enterCardPin": "Entrez le code PIN",
+    "saveCard": "Enregistrer la carte",
+    "noCardsTitle": "Aucune carte ajoutée",
+    "noCardsMessage": "Vous n'avez pas encore ajouté de carte de paiement. Cliquez sur le bouton ci-dessous pour en ajouter une nouvelle.",
+    "notificationSettings": {
+      "title": "Paramètres de notification",
+      "marketingEmails": "E-mails marketing",
+      "marketingEmailsDesc": "Recevez des nouvelles sur nos produits et services",
+      "securityAlerts": "Alertes de sécurité",
+      "securityAlertsDesc": "Soyez notifié des activités liées à la sécurité",
+      "smsNotifications": "Notifications SMS",
+      "smsNotificationsDesc": "Recevez des SMS pour les mises à jour importantes",
+      "transactionAlerts": "Alertes de transaction",
+      "transactionAlertsDesc": "Soyez notifié de vos transactions"
+    },
+    "helpSupport": "Aide et support",
+    "belAI": "Bel AI",
+    "liveChat": "Chat en direct",
+    "chatWithBelAI": "Chat BelAI",
+    "chatbot": {
+      "welcome": "BelAI est là pour vous aider",
+      "invite": "Chattez avec BelAI",
+      "support": "Besoin d'aide? Demandez-moi"
+    },
+    "support": {
+      "emailIcon": "Icône e-mail",
+      "emailUs": "Contactez-nous par e-mail",
+      "supportEmail": "support@belpower.com",
+      "whatsappIcon": "Icône WhatsApp",
+      "whatsapp": "WhatsApp",
+      "whatsappMessage": "Envoyez-nous un message sur WhatsApp"
+    },
+    "connectSocial": "Connectez-vous avec nous sur les réseaux sociaux",
+    "about": "À propos de nous",
+    "logout": "Déconnexion",
+    "personalInfo": "Informations personnelles",
+    "name": "Nom complet",
+    "email": "E-mail",
+    "phone": "Numéro de téléphone",
+    "password": "Mot de passe",
+    "address": "Adresse",
+    "saveChanges": "Enregistrer les modifications",
+    "biometricSettings": "Paramètres biométriques",
+    "loginWithFingerprint": "Se connecter avec l'empreinte digitale",
+    "loginWithFaceID": "Se connecter avec Face ID",
+    "userSettings": "Paramètres utilisateur",
+    "changePassword": "Changer le mot de passe",
+    "oldPassword": "Ancien mot de passe",
+    "enterOldPassword": "Entrez l'ancien mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "enterNewPassword": "Entrez un nouveau mot de passe",
+    "confirmPassword": "Confirmez le mot de passe",
+    "confirmNewPassword": "Confirmez le nouveau mot de passe",
+    "myCards": "Mes Cartes",
+    "wallet": "Mon Portefeuille",
+    "changePin": "Changer le code PIN",
+    "oldPin": "Ancien code PIN",
+    "newPin": "Nouveau code PIN",
+    "confirmPin": "Confirmer le code PIN",
+    "enterOldPin": "Entrez l'ancien code PIN",
+    "enterNewPin": "Entrez le nouveau code PIN",
+    "confirmNewPin": "Confirmer le nouveau code PIN",
+    "manageBeneficiaries": "Gérer les bénéficiaires",
+    "manageBeneficiariesPage": {
+      "title": "Gérer les bénéficiaires",
+      "myMeterNumber": "Mon numéro de compteur",
+      "addNew": "Ajouter un nouveau bénéficiaire",
+      "form": {
+        "titleLabel": "Titre",
+        "titlePlaceholder": "Entrez le titre",
+        "meterNumberLabel": "Numéro de compteur",
+        "meterNumberPlaceholder": "Entrez le numéro de compteur à 11 chiffres",
+        "addressLabel": "Adresse"
+      },
+      "toasts": {
+        "added": "Bénéficiaire ajouté avec succès",
+        "deleted": "Bénéficiaire supprimé avec succès",
+        "fillFields": "Veuillez remplir tous les champs.",
+        "meterLengthError": "Le numéro de compteur doit comporter 11 chiffres."
+      },
+      "deleteConfirm": {
+        "title": "Êtes-vous sûr ?",
+        "description": "Cette action ne peut pas être annulée. Ce bénéficiaire sera définitivement supprimé de votre compte.",
+        "message": "Cette action ne peut pas être annulée.",
+        "confirmButton": "Supprimer",
+        "cancelButton": "Annuler"
+      }
+    },
+    "preferences": "Préférences",
+    "legal": "Mentions légales",
+    "termsOfUse": "Conditions d'utilisation",
+    "termsOfUseContent": {
+      "title": "Conditions d'utilisation de BelPower",
+      "lastUpdated": "Dernière mise à jour : 13 juin 2025",
+      "sections": {
+        "agreementTitle": "Titre de l'accord",
+        "agreementText": "Ces conditions d'utilisation (les \"Conditions\") régissent votre accès et votre utilisation de BelPower, une plateforme de services publics numériques propulsée par BuyPower et détenue par Belsoft Systems Ltd. En accédant ou en utilisant l'application BelPower, vous acceptez d'être lié par ces conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser l'application.",
+        "introduction": {
+          "title": "1. Introduction",
+          "companyIntro": {
+            "title": "Présentation de l'entreprise",
+            "text": "BelPower est une plateforme qui permet aux utilisateurs d'acheter facilement des jetons d'électricité prépayés via WhatsApp ou le web. Notre objectif est de simplifier l'accès aux services publics, d'offrir une expérience fluide et d'autonomiser les foyers et les entreprises à travers le Nigeria."
+          },
+          "legalAgreement": {
+            "title": "2. Accord juridique",
+            "text": "Ces Conditions constituent un accord juridiquement contraignant entre vous (l'\"Utilisateur\") et Belsoft Systems Ltd (\"BelPower\", \"nous\", \"notre\"). Votre utilisation continue de la plateforme indique votre acceptation de ces Conditions et de notre Politique de confidentialité."
+          }
+        },
+        "changesToTerms": {
+          "title": "3. Modifications des conditions",
+          "termsChanges": {
+            "title": "Modifications des conditions",
+            "text1": "BelPower se réserve le droit de modifier ces Conditions à tout moment. Lorsque des modifications surviennent, nous :",
+            "listItems": [
+              "Publierons les Conditions mises à jour sur notre site web ou notre plateforme"
+            ],
+            "text2": "Nous nous réservons le droit de modifier ces conditions d'utilisation à tout moment. Nous vous informerons de toute modification en mettant à jour la date de la \"Dernière mise à jour\" en haut de ces conditions d'utilisation. Votre utilisation continue de l'application après de telles modifications constitue votre acceptation des nouvelles conditions d'utilisation."
+          }
+        },
+        "eligibility": {
+          "title": "4. Éligibilité",
+          "ageRestriction": {
+            "title": "Restriction d'âge",
+            "text1": "Pour utiliser BelPower, vous devez :",
+            "listItems": [
+              "Avoir au moins 18 ans",
+              "Avoir la capacité juridique de conclure des contrats contraignants",
+              "Utiliser le service uniquement à des fins légales"
+            ],
+            "text2": "Vous devez avoir au moins 18 ans pour utiliser cette application. En utilisant l'application, vous déclarez et garantissez que vous avez au moins 18 ans."
+          }
+        },
+        "accountSecurity": {
+          "title": "5. Sécurité du compte",
+          "accountResponsibility": {
+            "title": "Responsabilité du compte",
+            "text1": "Vous êtes responsable de :",
+            "listItems": [
+              "Maintenir la confidentialité de votre compte WhatsApp",
+              "Personnaliser votre expérience et vos préférences",
+              "Toutes les activités qui se produisent sous votre numéro de téléphone ou votre session"
+            ],
+            "text2": "Si vous soupçonnez un accès non autorisé, veuillez nous en informer immédiatement via support@belpower.ng.",
+            "text3": "BelPower n'est pas responsable des pertes résultant d'un accès non autorisé dû à votre négligence."
+          }
+        },
+        "intellectualProperty": {
+          "title": "6. Droits de propriété intellectuelle",
+          "intellectualProperty": {
+            "title": "Propriété intellectuelle",
+            "text1": "Tout le contenu, les fonctionnalités et les fonctionnalités de l'application, y compris mais sans s'y limiter, le texte, les graphiques, les logos et les logiciels, sont la propriété de BelPower et sont protégés par les lois sur le droit d'auteur, les marques commerciales et autres lois sur la propriété intellectuelle.",
+            "text2": "Vous ne pouvez pas :",
+            "listItems": [
+              "Copier, reproduire ou distribuer une partie de la plateforme sans autorisation",
+              "Rétroconcevoir ou tenter d'extraire le code source",
+              "Utiliser notre marque sans autorisation écrite"
+            ],
+            "text3": "La violation de cette clause peut entraîner des poursuites judiciaires."
+          }
+        },
+        "termination": {
+          "title": "7. Résiliation",
+          "terminationRights": {
+            "title": "Droits de résiliation",
+            "text1": "Vous acceptez d'utiliser l'application uniquement à des fins légales et conformément à ces conditions d'utilisation. Vous acceptez de ne pas utiliser l'application :",
+            "listItems": [
+              "D'une manière qui enfreint toute loi ou réglementation applicable",
+              "Pour vous livrer à des activités frauduleuses ou illégales",
+              "Pour vous faire passer pour BelPower, un employé de BelPower, un autre utilisateur ou toute autre personne ou entité",
+              "Pour adopter un comportement qui restreint ou empêche l'utilisation ou la jouissance de l'application par quiconque"
+            ],
+            "text2": "Vous pouvez également cesser d'utiliser BelPower à tout moment. En cas de résiliation, vos données seront conservées conformément à notre Politique de confidentialité."
+          }
+        },
+        "limitationOfLiability": {
+          "title": "8. Limitation de responsabilité",
+          "limitationOfLiability": {
+            "title": "Limitation de responsabilité",
+            "text1": "Dans toute la mesure permise par la loi :",
+            "listItems": [
+              "En aucun cas, BelPower ne pourra être tenu responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, y compris, mais sans s'y limiter, la perte de profits, de données, d'utilisation, de fonds de commerce ou d'autres pertes immatérielles, résultant de votre accès ou de votre utilisation ou de votre incapacité à accéder ou à utiliser l'application.",
+              "Votre seul recours en cas d'insatisfaction est de cesser d'utiliser le service."
+            ]
+          }
+        }
+      }
+    },
+    "lastUpdated": "Dernière mise à jour {date}",
+    "summaryKeyPoints": "RÉSUMÉ DES POINTS CLÉS",
+    "privacySummary": "Ce résumé fournit les points clés de notre politique de confidentialité, mais vous pouvez trouver plus de détails sur ces sujets en cliquant sur le lien suivant chaque point clé ou en utilisant notre table des matières ci-dessous pour trouver la section que vous recherchez.",
+    "personalInfoProcess": "Quelles informations personnelles traitons-nous? Lorsque vous visitez, utilisez ou naviguez sur nos Services, nous pouvons traiter des informations personnelles en fonction de votre interaction avec nous et les Services, des choix que vous faites et des produits et fonctionnalités que vous utilisez.",
+    "learnMorePersonalInfo": "En savoir plus sur les informations personnelles que vous nous communiquez.",
+    "sensitiveInfo": "Traitons-nous des informations personnelles sensibles? Certaines informations peuvent être considérées comme 'spéciales' ou 'sensibles' dans certaines juridictions, par exemple vos origines raciales ou ethniques, votre orientation sexuelle et vos croyances religieuses. Nous ne traitons pas d'informations personnelles sensibles.",
+    "howWeProcess": "Comment traitons-nous vos informations? Nous traitons vos informations pour fournir, améliorer et administrer nos Services, communiquer avec vous, pour la sécurité et la prévention des fraudes, et pour nous conformer à la loi. Nous pouvons également traiter vos informations à d'autres fins avec votre consentement. Nous ne traitons vos informations que lorsque nous avons une raison légale valable de le faire. En savoir plus sur la façon dont nous traitons vos informations.",
+    "dataSharing": "Dans quelles situations et avec quelles parties partageons-nous des informations personnelles? Nous pouvons partager des informations dans des situations spécifiques et avec des tiers spécifiques. En savoir plus sur quand et avec qui nous partageons vos informations personnelles. Quels sont vos droits? Selon votre localisation géographique, la loi applicable sur la protection des données peut vous conférer certains droits concernant vos informations personnelles. En savoir plus sur vos droits à la vie privée. Comment exercer vos droits? La façon la plus simple d'exercer vos droits est de soumettre une demande d'accès aux données ou de nous contacter. Nous examinerons et donnerons suite à toute demande conformément aux lois applicables sur la protection des données."
+  },
+
+  "transactions": {
+    "success": {
+      "airtime": "Achat de crédit réussi !",
+      "data": "Achat de forfait internet réussi !",
+      "electricity": "Paiement de facture d'électricité réussi !",
+      "cable": "Abonnement TV réussi !",
+      "deposit": "Dépôt réussi !"
+    },
+    "amountCredited": "{amount} a été crédité sur votre portefeuille",
+    "redirecting": "Vous serez redirigé dans {seconds} secondes..."
+  },
+  "bills": {
+    "airtime": {
+      "title": "Acheter du crédit",
+      "subtitle": "Acheter du crédit pour tout réseau",
+      "phoneNumber": "Numéro de téléphone",
+      "amount": "Montant",
+      "network": "Sélectionner le réseau",
+      "mtn": "MTN",
+      "glo": "GLO",
+      "airtel": "Airtel",
+      "etisalat": "9Mobile",
+      "quickAmounts": "Montants Rapides",
+      "otherServices": "Autres Services",
+      "selectNetwork": "Sélectionner un réseau",
+      "selectContact": "Sélectionner un contact",
+      "continue": "Continuer",
+      "tryOtherServices": "Essayer d'autres services",
+      "scheduleBill": "Planifier un achat",
+      "scheduleOptions": "Options de planification",
+      "frequency": "Fréquence",
+      "nextPurchase": "Prochain achat : {date}",
+      "frequencyOptions": {
+        "weekly": "Chaque semaine",
+        "biweekly": "Toutes les 2 semaines",
+        "monthly": "Tous les mois"
+      },
+      "confirmPayment": "Confirmer le paiement",
+      "transactionFee": "Frais de transaction",
+      "walletBalance": "Solde du portefeuille",
+      "confirm": "Confirmer",
+      "enterPin": "Entrez votre code PIN",
+      "pin": "Code PIN",
+      "pay": "Payer {amount}",
+      "success": "Achat de crédit réussi !",
+      "errors": {
+        "phoneNumber": "Veuillez entrer un numéro de téléphone valide",
+        "amount": "Le montant doit être d'au moins ₦100",
+        "network": "Veuillez sélectionner un opérateur réseau"
+      }
+    },
+    "buttons": {
+      "payNow": "Payer maintenant",
+      "back": "Retour",
+      "processing": "Traitement en cours..."
+    },
+    "quickPurchase": {
+      "title": "Achat Rapide",
+      "selectProvider": "Opérateur Réseau",
+      "phoneNumber": "Numéro de téléphone",
+      "enterPhoneNumber": "Entrez le numéro de téléphone",
+      "amount": "Montant",
+      "dataPlan": "Forfait Internet",
+      "selectDataPlan": "Sélectionnez un forfait internet",
+      "meterType": "Type de compteur",
+      "prepaid": "Prépayé",
+      "postpaid": "Postpayé",
+      "meterNumber": "Numéro de compteur",
+      "enterMeterNumber": "Entrez le numéro de compteur",
+      "address": "Adresse",
+      "addressAutoFilled": "L'adresse sera remplie automatiquement",
+      "customerNumber": "Numéro client",
+      "enterCustomerNumber": "Entrez le numéro client",
+      "cableProvider": "Fournisseur de télévision par câble",
+      "smartCardNumber": "Numéro client",
+      "bundle": "Forfait",
+      "orderSummary": "Récapitulatif de la commande",
+      "reviewOrder": "Veuillez vérifier votre commande avant de procéder au paiement.",
+      "item": "Article",
+      "total": "Total",
+      "confirmAndPay": "Confirmer et Payer",
+      "airtime": "Crédit",
+      "data": "Internet",
+      "electricity": "Électricité",
+      "cable": "Câble Télé",
+      "selectNetwork": "Sélectionner le réseau",
+      "email": "Adresse e-mail",
+      "selectPackage": "Sélectionner un forfait",
+      "selectDisco": "Sélectionnez un Disco",
+      "selectCableProvider": "Sélectionner Le Fournisseur",
+      "enterAmount": "Entrez le montant",
+      "enterEmail": "Entrez votre adresse e-mail",
+      "enterSmartCardNumber": "Entrez le numéro client",
+      "autoFilled": "Rempli automatiquement lors de la sélection d'un forfait",
+      "buyNow": "Achete",
+      "processing": "Traitement en cours...",
+      "success": {
+        "title": "Paiement réussi !",
+        "message": "Votre transaction a été effectuée avec succès.",
+        "reference": "Référence"
+      },
+      "Airtime": "Crédit",
+      "Data": "Internet",
+      "Electricity": "Électricité",
+      "Cable": "Câble Télé",
+      "MTN": "MTN",
+      "GLO": "GLO",
+      "Airtel": "Airtel",
+      "9MOBILE": "9Mobile",
+      "DSTV": "DSTV",
+      "GOTV": "GOTV",
+      "summary": {
+        "orderSummary": "Récapitulatif de la commande",
+        "type": "Type",
+        "details": "Détails",
+        "amount": "Montant",
+        "total": "Total",
+        "continue": "Continuer",
+        "back": "Retour",
+        "confirmPurchase": "Confirmer l'achat"
+      },
+      "redirecting": "Redirection dans {seconds} secondes..."
+    },
+    "data": {
+      "title": "Acheter Un Forfait Internet",
+      "subtitle": "Acheter Un Forfait Internet Pour Tout Réseau",
+      "phoneNumber": "Numéro De Téléphone",
+      "amount": "Montant",
+      "network": "Sélectionner Le Réseau",
+      "mtn": "MTN Data",
+      "glo": "GLO Data",
+      "airtel": "Airtel Data",
+      "etisalat": "9Mobile Data",
+      "dataPlans": "Forfaits Internet Disponibles",
+      "validity": "Validité",
+      "days": "Jours",
+      "otherServices": "Autres Services",
+      "continue": "Continuer",
+      "errors": {
+        "phoneNumber": "Veuillez entrer un numéro de téléphone valide",
+        "plan": "Veuillez sélectionner un forfait internet",
+        "network": "Veuillez sélectionner un opérateur réseau"
+      }
+    },
+    "cable": {
+      "title": "Payer L'abonnement TV",
+      "subtitle": "Payer Vos Factures D'abonnement TV Instantanément",
+      "smartCardNumber": "Numéro De Carte À Puce",
+      "amount": "Montant",
+      "provider": "Sélectionner Le Fournisseur",
+      "dstv": "DSTV",
+      "gotv": "GOTV",
+      "startimes": "StarTimes",
+      "packages": "Forfaits Disponibles",
+      "quickAmounts": "Montants Rapides",
+      "otherServices": "Autres Services",
+      "continue": "Continuer",
+      "errors": {
+        "smartCardNumber": "Veuillez entrer un numéro de carte à puce valide",
+        "amount": "Le montant doit être d'au moins ₦1000",
+        "provider": "Veuillez sélectionner un fournisseur TV",
+        "package": "Veuillez sélectionner un forfait"
+      }
+    },
+    "electricity": {
+      "title": "Payer La Facture D'électricité",
+      "subtitle": "Payer Vos Factures D'électricité Instantanément",
+      "meterNumber": "Numéro De Compteur",
+      "amount": "Montant",
+      "provider": "Sélectionner Le Fournisseur",
+      "aedc": "AEDC - Électricité D'Abuja",
+      "ekedc": "EKEDC - Électricité D'Eko",
+      "ikedc": "IKEDC - Électricité D'Ikeja",
+      "phedc": "PHEDC - Électricité De Port Harcourt",
+      "quickAmounts": "Montants Rapides",
+      "otherServices": "Autres Services",
+      "continue": "Continuer",
+      "errors": {
+        "meterNumber": "Veuillez entrer un numéro de compteur valide",
+        "amount": "Le montant doit être d'au moins ₦1000",
+        "provider": "Veuillez sélectionner un fournisseur d'électricité"
+      }
+    }
+  },
+
+  "wallet": {
+    "title": "Mon Portefeuille",
+    "yourBalance": "Votre Solde",
+    "fundWallet": "Financer le Portefeuille",
+    "addMoney": "Ajouter de l'Argent",
+    "quickActions": {
+      "bankTransfer": "Virement Bancaire",
+      "bankTransferDescription": "Virement depuis votre compte bancaire",
+      "topUpWithBank": "Recharger par Virement Bancaire",
+      "topUpWithBankDescription": "Rechargez votre portefeuille par virement bancaire",
+      "topUpWithCard": "Recharger par Carte",
+      "topUpWithCardDescription": "Recharger avec votre carte de débit",
+      "bankUSSD": "USSD Bancaire",
+      "bankUSSDDescription": "Recharger via USSD Bancaire",
+      "payWithPaystack": "Paiement par PayStack"
+    },
+    "auth": {
+      "required": "Veuillez vous connecter pour financer votre portefeuille"
+    },
+    "bankTransfer": {
+      "title": "Paiement par Virement",
+      "enterAmount": "Combien souhaitez-vous recharger ?",
+      "amountPlaceholder": "Entrez le montant",
+      "continue": "Continuer",
+      "accountName": "Nom du Compte",
+      "accountNumber": "Numéro de Compte",
+      "bankName": "Nom de la Banque",
+      "copied": "Copié !",
+      "payNow": "J'ai effectué le paiement",
+      "processing": "Traitement de votre paiement...",
+      "success": "Paiement Réussi !",
+      "successDesc": "Votre portefeuille a été crédité avec succès. Vous pouvez maintenant utiliser vos fonds.",
+      "amountCredited": "{amount} a été crédité sur votre portefeuille",
+      "pendingTitle": "Virement en attente",
+      "pendingDesc": "Nous vérifions votre virement. Votre portefeuille sera crédité automatiquement une fois confirmé.",
+      "failedTitle": "Échec du virement",
+      "failedDesc": "Nous n'avons pas pu confirmer votre virement. Veuillez vous assurer d'avoir envoyé le montant correct ou contactez le support.",
+      "breakdown": "Détail du paiement",
+      "amountLabel": "Montant de la recharge",
+      "chargeLabel": "Frais de service",
+      "totalLabel": "Total à envoyer",
+      "instructions": "Transférez les fonds sur le compte ci-dessous",
+      "warning": "Veuillez vous assurer de transférer le montant total exact. Votre portefeuille sera crédité automatiquement une fois le virement confirmé.",
+      "done": "J'ai effectué le virement"
+    },
+    "card": {
+      "title": "Paiement par Carte",
+      "subtitle": "Vos informations sont sécurisées",
+      "form": {
+        "cardName": "Nom sur la carte",
+        "enterCardName": "Entrez le nom sur la carte",
+        "cardNumber": "Numéro de carte",
+        "enterCardNumber": "Entrez le numéro de carte",
+        "cvv": "CVV",
+        "enterCvv": "Entrez le CVV",
+        "expiryDate": "Date d'expiration",
+        "enterExpiryDate": "MM/AA",
+        "cardPin": "Code PIN de la carte",
+        "enterCardPin": "Entrez le code PIN",
+        "cancel": "Annuler",
+        "saveCard": "Enregistrer la carte"
+      },
+      "cardNumberPlaceholder": "**** - **** - **** - ****",
+      "expiry": "Expiration",
+      "expiryPlaceholder": "MM/AA",
+      "cvv": "CVV",
+      "cvvPlaceholder": "***",
+      "saveCard": "Sauvegarder les détails de la carte",
+      "securedBy": "Sécurisé par Paystack",
+      "processing": "En cours...",
+      "payNow": "Payer"
+    },
+    "ussd": {
+      "title": "Paiement par USSD",
+      "selectBank": "Sélectionner une Banque",
+      "chooseBank": "Choisir une Banque",
+      "dial": "Composer",
+      "copied": "Copié !",
+      "payNow": "Payer Maintenant"
+    },
+    "success": "Réussi"
+  },
+  "history": {
+    "title": "Historique des Transactions",
+    "endOfTransactions": "Vous avez atteint la fin de la liste",
+    "filterByDate": "Filtrer par date",
+    "filterByType": "Filtrer par type",
+    "filterByStatus": "Filtrer par statut",
+    "allTime": "Tout le temps",
+    "today": "Aujourd'hui",
+    "thisWeek": "Cette semaine",
+    "thisMonth": "Ce mois",
+    "allTransactions": "Toutes les transactions",
+    "allStatus": "Tous les statuts",
+    "success": "Réussi",
+    "pending": "En attente",
+    "failed": "Échoué",
+    "applyFilters": "Appliquer les filtres",
+    "date": "Date",
+    "type": "Type",
+    "amount": "Montant",
+    "status": "Statut",
+    "reference": "Référence",
+    "noTransactions": "Aucune transaction",
+    "transactions": {
+      "airtime": "Crédit",
+      "data": "Internet",
+      "electricity": "Électricité",
+      "cable": "Câble Télé"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bon retour",
+    "overview": "Vue d'ensemble",
+    "consumption": "Consommation d'énergie",
+    "billing": "Facturation",
+    "reports": "Rapports",
+    "greeting": "Bonjour, {name}",
+    "whatBill": "Quelle facture payez-vous aujourd'hui?",
+    "yourBalance": "Votre Solde",
+    "quickActions": "Actions Rapides",
+    "recentActivity": "Activité Récente",
+    "services": {
+      "airtime": "Crédit",
+      "data": "Internet",
+      "cableTV": "Câble Télé",
+      "electricity": "Électricité"
+    },
+    "wallet": {
+      "title": "Portefeuille",
+      "balance": "Solde",
+      "addMoney": "Ajouter de l'argent",
+      "withdraw": "Retirer",
+      "transfer": "Transférer"
+    },
+    "history": {
+      "title": "Historique des transactions",
+      "requestStatement": "Demander un relevé",
+      "scheduled": "Programmées",
+      "date": "Date",
+      "type": "Type",
+      "amount": "Montant",
+      "status": "État"
+    },
+    "transactions": {
+      "airtime": "Crédit",
+      "data": "Internet",
+      "electricity": "Électricité",
+      "cable": "Câble Télé",
+      "walletFunding": "Alimentation du Portefeuille",
+      "transfer": "Transfert",
+      "billPayment": "Paiement de Facture"
+    },
+    "statuses": {
+      "successful": "Réussi",
+      "failed": "Échec",
+      "pending": "En attente",
+      "processing": "Traitement en cours"
+    }
+  },
+  "filters": {
+    "applyFilters": "Appliquer les filtres",
+    "clearAll": "Tout effacer",
+    "selectDateRange": "Sélectionner une plage de dates",
+    "selectType": "Sélectionner un type",
+    "selectStatus": "Sélectionner un statut"
+  },
+  "meter": {
+    "powerUsage": "Consommation d'énergie",
+    "energyBalance": "Solde d'énergie",
+    "voltage": "Tension",
+    "frequency": "Fréquence",
+    "digitalMeter": "Affichage compteur numérique:",
+    "enoughCredit": "Suffisant",
+    "lowCredit": "Faible",
+    "walletBalance": "Solde",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté"
+  },
+  "noResults": {
+    "title": "Aucun résultat trouvé",
+    "description": "Aucune transaction ne correspond à vos critères de recherche.",
+    "clearFilters": "Effacer les filtres"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page",
+    "of": "sur",
+    "itemsPerPage": "Éléments par page"
+  },
+  "export": {
+    "title": "Exporter les transactions",
+    "format": "Format",
+    "dateRange": "Plage de dates",
+    "export": "Exporter",
+    "cancel": "Annuler",
+    "success": "Exportation réussie",
+    "error": "Erreur lors de l'exportation"
+  },
+  "legal": {
+    "copyright": "BelPower. Tous droits réservés.",
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "contactUs": "Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter à support@belpower.com.",
+    "terms": {
+      "metadata": {
+        "title": "Conditions d'utilisation - BelPower",
+        "description": "Lisez les Conditions d'utilisation de BelPower, une plateforme numérique gérée par Belsoft Systems Ltd."
+      },
+      "termsOfUseContent": {
+        "sections": {
+        "agreementTitle": "Titre de l'accord",
+        "agreementText": "Ces Conditions d'utilisation («Conditions») régissent votre accès et votre utilisation de BelPower, une plateforme de services publics numérique alimentée par Belsoft Systems Ltd. En accédant ou en utilisant l'application BelPower, vous acceptez d'être lié par ces Conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser l'application.",
+        "introduction": {
+          "title": "1. Introduction",
+          "companyIntro": {
+            "title": "1. Introduction de l'entreprise",
+            "text": "BelPower est une plateforme qui permet aux utilisateurs d'acheter commodément des jetons d'électricité prépayés via WhatsApp ou le web. Nous visons à simplifier l'accès aux services publics, à fournir une expérience transparente et à autonomiser les ménages et entreprises à travers le Nigeria."
+          },
+          "legalAgreement": {
+            "title": "2. Accord légal",
+            "text": "Ces Conditions constituent un accord juridiquement contraignant entre vous («l'Utilisateur») et Belsoft Systems Ltd («BelPower», «nous», «notre» ou «nos»). Votre utilisation continue de la plateforme indique votre acceptation de ces Conditions et de notre Politique de Confidentialité."
+          }
+        },
+        "changesToTerms": {
+          "title": "3. Modifications des conditions",
+          "termsChanges": {
+            "title": "Modifications des conditions",
+            "text1": "BelPower se réserve le droit de modifier ces conditions à tout moment. Lorsque des modifications surviennent, nous allons :",
+            "listItems": ["Publier les conditions mises à jour sur notre site web ou plateforme"],
+            "text2": "Nous nous réservons le droit de modifier ces Conditions d'utilisation à tout moment. Nous fournirons un avis de toute modification en mettant à jour la date «Dernière mise à jour» en haut de ces Conditions d'utilisation. Votre utilisation continue de l'application après toute telle modification constitue votre acceptation des nouvelles Conditions d'utilisation."
+          }
+        },
+        "eligibility": {
+          "title": "4. Éligibilité",
+          "ageRestriction": {
+            "title": "Restriction d'âge",
+            "text1": "Pour utiliser BelPower, vous devez :",
+            "listItems": [
+              "Avoir au moins 18 ans",
+              "Posséder la capacité légale de conclure des contrats contraignants",
+              "Utiliser le service uniquement à des fins légales"
+            ],
+            "text2": "Vous devez avoir au moins 18 ans pour utiliser cette application. En utilisant l'application, vous représentez et garantissez que vous avez au moins 18 ans."
+          }
+        },
+        "accountSecurity": {
+          "title": "5. Sécurité du compte",
+          "accountResponsibility": {
+            "title": "Responsabilité du compte",
+            "text1": "Vous êtes responsable de :",
+            "listItems": [
+              "Maintenir la confidentialité de votre compte WhatsApp",
+              "Personnaliser votre expérience et vos préférences",
+              "Toutes les activités qui se produisent sous votre numéro de téléphone ou session"
+            ],
+            "text2": "Si vous soupçonnez un accès non autorisé, veuillez nous en informer immédiatement via support@belpower.ng.",
+            "text3": "BelPower n'est pas responsable des pertes résultant d'un accès non autorisé dû à votre négligence."
+          }
+        },
+        "intellectualProperty": {
+          "title": "6. Droits de propriété intellectuelle",
+          "intellectualProperty": {
+            "title": "Propriété intellectuelle",
+            "text1": "Tout le contenu, les fonctionnalités et les fonctionnalités de l'application, y compris mais sans s'y limiter le texte, les graphiques, les logos et les logiciels, sont la propriété de BelPower et sont protégés par les lois sur le droit d'auteur, les marques et d'autres lois sur la propriété intellectuelle.",
+            "text2": "Vous ne devez pas :",
+            "listItems": [
+              "Copier, reproduire ou distribuer toute partie de la plateforme sans autorisation",
+              "Ingénierie inverse ou tenter d'extraire le code source",
+              "Utiliser notre image de marque sans consentement écrit"
+            ],
+            "text3": "La violation de cette clause peut entraîner une action en justice."
+          }
+        },
+        "termination": {
+          "title": "7. Résiliation",
+          "terminationRights": {
+            "title": "Droits de résiliation",
+            "text1": "Vous acceptez d'utiliser l'application uniquement à des fins légales et conformément à ces Conditions d'utilisation. Vous acceptez de ne pas utiliser l'application :",
+            "listItems": [
+              "De quelque manière que ce soit qui enfreint toute loi ou réglementation applicable",
+              "Pour vous engager dans toute activité frauduleuse ou illégale",
+              "Pour usurper l'identité ou tenter de se faire passer pour BelPower, un employé de BelPower, un autre utilisateur ou toute autre personne ou entité",
+              "Pour vous engager dans toute conduite qui restreint ou inhibe l'utilisation ou la jouissance de l'application par quiconque"
+            ],
+            "text2": "Vous pouvez également cesser d'utiliser BelPower à tout moment. Lors de la résiliation, vos données seront conservées conformément à notre Politique de Confidentialité."
+          }
+        },
+        "limitationOfLiability": {
+          "title": "8. Limitation de responsabilité",
+          "limitationOfLiability": {
+            "title": "Limitation de responsabilité",
+            "text1": "Dans la mesure maximale permise par la loi :",
+            "listItems": [
+              "En aucun cas BelPower ne sera responsable de tout dommage indirect, accessoire, spécial, consécutif ou punitif, y compris mais sans s'y limiter la perte de profits, de données, d'utilisation, de bonne volonté ou d'autres pertes intangibles, résultant de votre accès ou de votre utilisation ou de votre incapacité à accéder ou à utiliser l'application.",
+              "Votre seul recours en cas d'insatisfaction est de cesser d'utiliser le service."
+            ]
+          }
+        }
+        }
+      }
+    },
+    "privacy": {
+      "metadata": {
+        "title": "Politique de confidentialité - BelPower",
+        "description": "Lisez la Politique de confidentialité de BelPower pour comprendre comment nous collectons, utilisons et protégeons vos informations personnelles."
+      },
+      "privacyPolicyContent": {
+        "sections": {
+          "overview": {
+            "title": "1. Aperçu",
+            "text": "BelPower («nous», «notre» ou «nos») s'engage à protéger votre vie privée. Cette Politique de confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez nos services. Veuillez lire attentivement cette politique. Si vous n'êtes pas d'accord avec les termes de cette Politique de confidentialité, veuillez ne pas accéder à l'application."
+          },
+          "informationCollection": {
+            "title": "2. Collecte d'informations",
+            "personalInformation": {
+              "title": "Informations personnelles que nous traitons",
+              "text": "Nous collectons les données personnelles suivantes lorsque vous interagissez avec nos services :",
+              "listItems": [
+                "Nom complet",
+                "Numéro de téléphone (WhatsApp)",
+                "Adresse e-mail (facultatif)",
+                "Numéro de compteur et informations sur le fournisseur",
+                "Données de localisation (pour la pertinence des transactions et l'analyse)",
+                "Détail des transactions (montants, fréquence, jetons)",
+                "Informations de parrainage (si vous parrainez ou êtes parrainé)"
+              ]
+            },
+            "additionalInformation": {
+              "text": "Nous pouvons également collecter :",
+              "listItems": [
+                "Informations sur l'appareil (type de navigateur, système d'exploitation, adresse IP)",
+                "Comportement d'utilisation pour l'analyse et le dépannage"
+              ]
+            },
+            "sensitiveInformation": {
+              "title": "Informations sensibles",
+              "text": "Nous ne collectons ni ne stockons de données sensibles telles que :",
+              "listItems": [
+                "Pièces d'identité émises par le gouvernement",
+                "Données biométriques",
+                "Détails de la carte de paiement (les informations de carte sont traitées par des processeurs tiers sécurisés)"
+              ]
+            }
+          },
+          "useOfInformation": {
+            "title": "3. Utilisation des informations",
+            "processingDetails": {
+              "title": "Comment nous traitons vos données",
+              "text": "Nous utilisons les informations que nous collectons pour :",
+              "listItems": [
+                "Traiter vos achats d'électricité via BuyPower",
+                "Envoyer des confirmations de transaction et des informations sur les jetons",
+                "Personnaliser votre expérience et vos préférences",
+                "Fournir des rappels ou des alertes concernant la faible quantité d'énergie ou les recharges",
+                "Support client et résolution des litiges",
+                "Analyse pour améliorer la plateforme",
+                "Prévenir la fraude et assurer la sécurité de la plateforme",
+                "Se conformer aux obligations légales"
+              ]
+            }
+          },
+          "informationSharing": {
+            "title": "4. Partage d'informations",
+            "dataSharing": {
+              "title": "Partage de données",
+              "text1": "Nous ne vendons pas vos données personnelles.",
+              "text2": "Nous ne pouvons partager vos informations qu'avec :",
+              "listItems": [
+                "BuyPower, notre partenaire de service, pour traiter la vente d'électricité",
+                "Processeurs de paiement (ex. Paystack, Flutterwave) pour finaliser en toute sécurité les paiements",
+                "Forces de l'ordre ou autorités réglementaires lorsque la loi l'exige",
+                "Prestataires de services tiers (uniquement sous des accords de confidentialité stricts) pour le support client, l'analyse ou la communication"
+              ]
+            }
+          },
+          "dataProtection": {
+            "title": "5. Protection des données",
+            "protectionMeasures": {
+              "title": "Comment nous protégeons vos informations",
+              "text": "BelPower met en œuvre des mesures de sécurité conformes aux normes de l'industrie, notamment :",
+              "listItems": [
+                "Chiffrement de bout en bout des messages WhatsApp",
+                "HTTPS pour tout le trafic web",
+                "Traitement sécurisé des paiements tokenisés via des fournisseurs certifiés",
+                "Contrôle d'accès basé sur les rôles pour le personnel",
+                "Tests de pénétration réguliers et audits système",
+                "Protocoles stricts d'accès aux données pour les employés et partenaires"
+              ]
+            }
+          },
+          "dataRetention": {
+            "title": "6. Conservation des données",
+            "retentionPolicy": {
+              "title": "Combien de temps nous stockons vos données",
+              "text": "Nous ne conservons vos données personnelles que le temps nécessaire :",
+              "listItems": [
+                "Données de transaction : 5 ans (à des fins réglementaires)",
+                "Données des utilisateurs inactifs : Supprimées ou rendues anonymes après 12 mois",
+                "Journaux de parrainage : Conservés jusqu'à 6 mois pour le traitement des récompenses"
+              ],
+              "note": "Vous pouvez demander la suppression à tout moment (voir Section 7)."
+            }
+          },
+          "yourRights": {
+            "title": "7. Vos droits",
+            "userRights": {
+              "text": "Vous disposez des droits suivants en vertu des lois nigérianes sur la protection des données et du RGPD (le cas échéant) :",
+              "listItems": [
+                "Droit d'accès – Afficher les données que nous détenons vous concernant",
+                "Droit de rectification – Corriger des informations erronées ou obsolètes",
+                "Droit à l'effacement – Demander la suppression de vos données",
+                "Droit de limiter le traitement – Restreindre la manière dont vos données sont utilisées",
+                "Droit à la portabilité des données – Obtenir vos données dans un format lisible",
+                "Droit d'opposition – Vous désinscrire de certains types de traitements",
+                "Droit de retirer le consentement – À tout moment"
+              ],
+              "contact": "Pour exercer ces droits, veuillez nous contacter à privacy@belpower.ng."
+            }
+          },
+          "cookies": {
+            "title": "8. Cookies",
+            "cookiePolicy": {
+              "title": "Notre politique de cookies",
+              "text1": "BelPower utilise des cookies et des technologies de suivi pour :",
+              "listItems": [
+                "Enregistrer votre session",
+                "Comprendre le comportement des utilisateurs (ex. analyse d'utilisation)",
+                "Améliorer les performances et la vitesse",
+                "Mémoriser les préférences des utilisateurs"
+              ],
+              "text2": "Nous n'utilisons pas de cookies pour stocker des informations personnelles sensibles. Vous pouvez contrôler les paramètres des cookies depuis votre navigateur ou vous désinscrire des outils de suivi (ex. Google Analytics)."
+            }
+          },
+          "contactUs": {
+            "title": "9. Contactez-nous",
+            "contactDetails": {
+              "text": "Pour toute question concernant la vie privée ou pour exercer vos droits, contactez notre Délégué à la protection des données (DPO) :",
+              "contactInfo": {
+                "name": "Kelvine Arinze Chiazor – Belsoft Systems Ltd.",
+                "email": "privacy@belsoftsystems.com",
+                "phone": [
+                  "+234 812 959 8167",
+                  "+234 907 116 0843"
+                ],
+                "address": "Adresse du bureau :"
+              }
+            }
+          },
+          "updates": {
+            "title": "10. Mises à jour de la politique de confidentialité",
+            "updatePolicy": {
+              "title": "Notifications de modification de la politique",
+              "text": "Nous pourrions mettre à jour cette politique de confidentialité de temps à autre. Lorsque nous le ferons, nous :",
+              "listItems": [
+                "Publierons la version mise à jour sur notre site web",
+                "Informerons les utilisateurs via WhatsApp ou e-mail (si accordé)",
+                "Afficherons clairement la date d'entrée en vigueur"
+              ],
+              "note": "Nous vous encourageons à consulter régulièrement cette politique pour rester informé."
+            }
+          }
+        }
+      }
+    }
+  }
+}
