@@ -200,12 +200,87 @@
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   padding: 1.5rem;
   min-height: 250px;
+  position: relative;
 }
 .admin_homePage .chart_card h2 {
   font-size: 1.125rem;
   font-weight: 600;
   color: #000;
   margin: 0 0 1rem 0;
+}
+
+/* View Button */
+.admin_homePage .view_button {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #0064FF;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+.admin_homePage .view_button:hover {
+  background-color: #0056cc;
+}
+
+/* Chart Modal */
+.admin_homePage .chart_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+.admin_homePage .chart_modal_content {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.admin_homePage .chart_modal_content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 1.5rem 0;
+}
+.admin_homePage .close_modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: none;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease-in-out;
+}
+.admin_homePage .close_modal:hover {
+  background-color: #e5e7eb;
+  color: #000;
 }
 
 .empty_fallback {

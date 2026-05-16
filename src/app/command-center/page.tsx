@@ -1,10 +1,11 @@
 'use client';
 
-import { FaHome, FaUsers, FaClipboardList, FaClock } from 'react-icons/fa';
+import { FaHome, FaUsers, FaClipboardList, FaClock, FaExpand } from 'react-icons/fa';
 import '@/styles/adminHome.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useState } from 'react';
 
 type Transaction = {
   id: string;
@@ -19,6 +20,8 @@ type NewUser = {
 };
 
 function DashboardHome() {
+  const [expandedChart, setExpandedChart] = useState<string | null>(null);
+
   const stats = [
     {
       icon: <FaHome className="text-green-500 text-2xl" />,
@@ -122,6 +125,16 @@ function DashboardHome() {
     { month: 'Jun', users: 720 },
   ];
 
+  // Transaction volume data for chart
+  const transactionVolumeData = [
+    { month: 'Jan', volume: 1200 },
+    { month: 'Feb', volume: 1800 },
+    { month: 'Mar', volume: 2100 },
+    { month: 'Apr', volume: 2800 },
+    { month: 'May', volume: 3200 },
+    { month: 'Jun', volume: 4100 },
+  ];
+
   // Helper function to get user initials
   const getInitials = (name: string) => {
     return name
@@ -220,6 +233,9 @@ function DashboardHome() {
                 <Line type="monotone" dataKey="revenue" stroke="#0064FF" strokeWidth={2} dot={{ fill: '#0064FF' }} />
               </LineChart>
             </ResponsiveContainer>
+            <button className="view_button" onClick={() => setExpandedChart('revenue')}>
+              <FaExpand /> View
+            </button>
           </div>
           <div className="chart_card">
             <h2>User Growth</h2>
@@ -228,16 +244,100 @@ function DashboardHome() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
                 <YAxis stroke="#6b7280" fontSize={12} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
                 />
                 <Legend />
                 <Bar dataKey="users" fill="#0064FF" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+            <button className="view_button" onClick={() => setExpandedChart('userGrowth')}>
+              <FaExpand /> View
+            </button>
+          </div>
+          <div className="chart_card">
+            <h2>Transaction Volume</h2>
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={transactionVolumeData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="volume" stroke="#0064FF" fill="#0064FF" fillOpacity={0.3} />
+              </AreaChart>
+            </ResponsiveContainer>
+            <button className="view_button" onClick={() => setExpandedChart('transactionVolume')}>
+              <FaExpand /> View
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Expanded Chart Modal */}
+      {expandedChart && (
+        <div className="chart_modal" onClick={() => setExpandedChart(null)}>
+          <div className="chart_modal_content" onClick={(e) => e.stopPropagation()}>
+            <button className="close_modal" onClick={() => setExpandedChart(null)}>
+              ✕
+            </button>
+            {expandedChart === 'revenue' && (
+              <>
+                <h2>Revenue Overview</h2>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={revenueData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="month" stroke="#6b7280" fontSize={14} />
+                    <YAxis stroke="#6b7280" fontSize={14} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                      formatter={(value: unknown) => typeof value === 'number' ? formatPrice(value) : String(value || '')}
+                    />
+                    <Legend />
+                    <Line type="monotone" dataKey="revenue" stroke="#0064FF" strokeWidth={3} dot={{ fill: '#0064FF', r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </>
+            )}
+            {expandedChart === 'userGrowth' && (
+              <>
+                <h2>User Growth</h2>
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={userGrowthData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="month" stroke="#6b7280" fontSize={14} />
+                    <YAxis stroke="#6b7280" fontSize={14} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                    />
+                    <Legend />
+                    <Bar dataKey="users" fill="#0064FF" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </>
+            )}
+            {expandedChart === 'transactionVolume' && (
+              <>
+                <h2>Transaction Volume</h2>
+                <ResponsiveContainer width="100%" height={400}>
+                  <AreaChart data={transactionVolumeData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="month" stroke="#6b7280" fontSize={14} />
+                    <YAxis stroke="#6b7280" fontSize={14} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                    />
+                    <Legend />
+                    <Area type="monotone" dataKey="volume" stroke="#0064FF" fill="#0064FF" fillOpacity={0.3} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
