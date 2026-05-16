@@ -169,31 +169,13 @@ export default function AdminTopBar() {
             <div className="relative">
               <button 
                 onClick={() => setIsOpen(!isOpen)} 
-                className="topbar_profile" 
+                className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 cursor-pointer p-0 bg-transparent flex items-center justify-center hover:border-blue-700 transition-colors"
                 title="Open profile menu"
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  border: '2px solid #0064FF',
-                  cursor: 'pointer',
-                  padding: 0,
-                  background: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
               >
                 <img
                   src={"/Profile.png"}
                   alt="Profile"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
+                  className="w-full h-full object-cover"
                 />
               </button>
 
@@ -232,31 +214,13 @@ export default function AdminTopBar() {
           <div className="relative">
             <button 
               onClick={() => setIsOpen(!isOpen)} 
-              className="topbar_profile" 
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 cursor-pointer p-0 bg-transparent flex items-center justify-center hover:border-blue-700 transition-colors"
               title="Open profile menu"
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                overflow: 'hidden',
-                border: '2px solid #0064FF',
-                cursor: 'pointer',
-                padding: 0,
-                background: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
             >
               <img
                 src={"/Profile.png"}
                 alt="Profile"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block'
-                }}
+                className="w-full h-full object-cover"
               />
             </button>
 
