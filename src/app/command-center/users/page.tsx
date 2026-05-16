@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import { TbCancel } from 'react-icons/tb';
-import Image from 'next/image';
 import { FaUserPlus, FaUserCheck, FaUserSlash, FaTrashAlt, FaSearch } from 'react-icons/fa';
 import '@/styles/adminUsers.css';
 
@@ -165,7 +164,7 @@ export default function UsersPage() {
                   <tr key={idx}>
                     <td className="py-3">
                       <div className="avatar_container">
-                        <Image src={user.avatar} alt="avatar" width={24} height={24} />
+                        <img src={user.avatar} alt="avatar" />
                         <div>
                           <p className="name">{user.name}</p>
                           <p className="email">{user.email}</p>

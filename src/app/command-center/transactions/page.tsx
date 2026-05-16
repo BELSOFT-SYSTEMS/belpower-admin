@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { FaSearch, FaCheckCircle, FaClock, FaTimesCircle, FaHome } from 'react-icons/fa';
 import '@/styles/adminTransactions.css';
 import { formatPrice } from '@/utils/FormatPrice';
@@ -174,7 +173,7 @@ export default function TransactionsPage() {
                   >
                     <td className="py-3">{tx.id}</td>
                     <td className="py-3 avatar_container">
-                      <Image src={tx.avatar} alt="avatar" width={24} height={24} />
+                      <img src={tx.avatar} alt="avatar" />
                       {tx.name}
                     </td>
                     <td>{tx.service}</td>
