@@ -1,0 +1,48 @@
+@import "../../../app/globals.css";
+
+/* nav bar styling starts */
+.topbar {
+  @apply fixed top-0 w-full h-16 z-[999] transition-all duration-200 ease-in-out bg-[#FDFDFD] border-b border-[#F4F4F4];
+}
+.topbar .topbar_logo {
+  @apply w-32;
+}
+.topbar .topbar_logo img {
+  @apply w-full h-full object-cover;
+}
+.topbar .topbar_right {
+  @apply flex items-center gap-6;
+}
+.topbar .notify_icon {
+  @apply text-[20px] cursor-pointer;
+}
+.notification_unread {
+  @apply absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping;
+}
+.notification_read {
+  @apply absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500;
+}
+.topbar .topbar_profile {
+  @apply w-10 h-10 rounded-full overflow-hidden border border-[#0064FF];
+}
+.topbar .topbar_profile img {
+  @apply object-cover w-full h-full;
+}
+.topbar .desktop_topbar {
+  @apply hidden lg:flex items-center justify-between w-full;
+}
+.topbar .mobile_topbar {
+  @apply lg:hidden flex justify-between items-center w-full;
+}
+/* nav bar styling ends */
+.profile_card {
+  @apply absolute top-full bg-white shadow-lg rounded-lg p-4 z-[1000] border border-gray-200 space-y-2
+    left-4 lg:left-auto lg:right-7;
+}
+
+.profile_card a {
+  @apply w-full px-4 py-2 text-left text-sm rounded-md hover:bg-gray-100 flex items-center gap-2;
+}
+.profile_card button {
+  @apply w-full px-4 py-2 text-left text-sm rounded-md text-red-500 hover:bg-gray-100 flex items-center gap-2;
+}

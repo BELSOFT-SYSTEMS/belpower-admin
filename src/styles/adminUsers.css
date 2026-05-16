@@ -1,0 +1,124 @@
+@import "../app/globals.css";
+
+.users_page {
+    @apply pb-10 min-h-screen
+}
+.color_purple {
+  @apply bg-purple-100 text-purple-700;
+}
+.success_color {
+  @apply bg-green-100 text-green-700;
+}
+.pending_color {
+  @apply bg-yellow-100 text-yellow-700;
+}
+.empty_fallback {
+    @apply text-center text-gray-500 py-6
+}
+.users_page section {
+  @apply mb-10;
+}
+.users_page section h2 {
+  @apply text-lg font-semibold;
+}
+.users_page section .section_header {
+  @apply flex justify-between items-center mb-4;
+}
+.users_page h1 {
+  @apply text-2xl font-semibold mb-6;
+}
+.users_page .stats_section {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8;
+}
+.users_page .stats_section .stats_card {
+  @apply rounded-md p-4 flex flex-col gap-4 border;
+}
+.users_page .stats_section .stats_header {
+  @apply flex items-center justify-between;
+}
+.users_page .stats_section .stats_header p {
+  @apply text-sm text-gray-500;
+}
+.users_page .stats_card h2 {
+  @apply font-bold text-lg;
+}
+.users_page .stats_card .stats_bottom p {
+  @apply text-xs text-gray-400;
+}
+
+/* MANAGE USERS */
+.manage_header {
+    @apply flex justify-between items-center mb-4
+}
+.search_container {
+    @apply relative
+}
+.search_container input {
+    @apply pl-10 pr-4 py-2 rounded-md border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600
+}
+.search_container svg {
+    @apply absolute top-3 left-3 text-gray-400 text-sm
+}
+
+
+
+.users_page .table_container {
+    @apply overflow-x-auto
+}
+.users_page .table_container table {
+    @apply min-w-full text-sm
+}
+.users_page .table_container table thead {
+    @apply text-left
+}
+/* .admin_homePage .table_container table thead tr {
+    @apply text-gray-700
+} */
+.users_page .table_container table tbody tr {
+    @apply hover:bg-gray-50 transition-all duration-300 ease-in-out
+}
+.table_container table tbody .avatar_container {
+    @apply flex items-center gap-3
+}
+.table_container table tbody .avatar_container img {
+    @apply w-8 h-8 rounded-full
+}
+.table_container table tbody .avatar_container .name {
+    @apply font-medium
+}
+.table_container table tbody .avatar_container .email {
+    @apply text-xs text-gray-500
+}
+.users_page .transaction_status {
+    @apply px-3 py-1 text-xs rounded-full
+}
+
+.users_page .user_actions {
+    @apply flex items-center gap-3 text-gray-600 
+}
+.users_page .user_actions .suspend {
+    @apply flex flex-col items-center text-gray-600 hover:text-black text-sm
+}
+.users_page .user_actions .deactivate {
+    @apply flex flex-col items-center text-gray-600 hover:text-black text-sm
+}
+.users_page .user_actions .delete {
+    @apply flex flex-col items-center text-xs text-red-600 hover:text-red-800
+}
+
+/* PAGINATION */
+.pagination_section {
+    @apply mt-6 flex justify-center items-center gap-2
+}
+.pagination_section .pagination_btn {
+    @apply border border-blue-700 px-3 py-2 rounded hover:bg-gray-100
+}
+.pagination_section .current {
+    @apply px-4 py-2 rounded
+}
+.pagination_section .btn_active {
+    @apply bg-gradient-to-b from-[#0064FF] to-[#000041] hover:bg-blue-400 text-white
+}
+.pagination_section .btn_inactive {
+    @apply border border-blue-700 hover:bg-gray-100
+}

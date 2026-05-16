@@ -1,0 +1,90 @@
+@import "../app/globals.css";
+
+.color_purple {
+  @apply bg-purple-100 text-purple-700;
+}
+.success_color {
+  @apply bg-green-100 text-green-700;
+}
+.pending_color {
+  @apply bg-yellow-100 text-yellow-700;
+}
+.failed_color {
+  @apply bg-red-100 text-red-600;
+}
+
+.admin_homePage {
+  @apply pb-10 min-h-screen;
+}
+.admin_homePage section {
+  @apply mb-10;
+}
+.admin_homePage section h2 {
+  @apply text-lg font-semibold;
+}
+.admin_homePage section .section_header {
+  @apply flex justify-between items-center mb-4;
+}
+.admin_homePage section .download {
+  @apply text-sm text-blue-600;
+}
+.admin_homePage h1 {
+  @apply text-2xl font-semibold mb-6;
+}
+.admin_homePage .stats_section {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+.admin_homePage .stats_card {
+  @apply border p-4 rounded-md flex flex-col justify-center gap-4;
+}
+.admin_homePage .stats_card h2 {
+  @apply font-bold text-lg;
+}
+.admin_homePage .stats_card p {
+  @apply text-sm text-gray-500;
+}
+
+.admin_homePage .table_container {
+  @apply overflow-x-auto;
+}
+.admin_homePage .table_container table {
+  @apply min-w-full text-sm;
+}
+.admin_homePage .table_container table thead {
+  @apply text-left;
+}
+.admin_homePage .table_container table thead tr {
+  @apply text-gray-700;
+}
+.admin_homePage .table_container table tbody tr {
+  @apply hover:bg-gray-50 transition-all duration-300 ease-in-out;
+}
+.table_container table tbody .avatar_container {
+  @apply flex items-center gap-2;
+}
+.table_container table tbody .avatar_container img {
+  @apply w-8 h-8 rounded-full;
+}
+.transaction_status {
+  @apply px-2 py-1 text-xs rounded-full;
+}
+
+.user_status {
+  @apply px-2 py-1 text-xs rounded-full bg-green-100 text-green-700;
+}
+.user_actions {
+  @apply flex items-center gap-3 text-gray-600;
+}
+.user_actions .suspend {
+  @apply flex flex-col items-center text-gray-600 hover:text-black text-sm;
+}
+.user_actions .deactivate {
+  @apply flex flex-col items-center text-gray-600 hover:text-black text-sm;
+}
+.user_actions .delete {
+  @apply flex flex-col items-center text-xs text-red-600 hover:text-red-800;
+}
+
+.empty_fallback {
+  @apply text-center text-gray-500 py-6;
+}
