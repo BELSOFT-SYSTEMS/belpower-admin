@@ -76,10 +76,7 @@
   display: block;
 }
 .topbar .desktop_topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  display: none;
 }
 @media (min-width: 1024px) {
   .topbar .desktop_topbar {
@@ -114,7 +111,13 @@
   flex-direction: column;
   gap: 0.25rem;
   min-width: 200px;
-  right: 0;
+  left: 0;
+}
+@media (min-width: 1024px) {
+  .profile_card {
+    left: auto;
+    right: 0;
+  }
 }
 
 .profile_card a {
