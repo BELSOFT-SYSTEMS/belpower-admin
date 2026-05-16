@@ -2,7 +2,6 @@
 
 // External imports
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -147,12 +146,9 @@ export default function AdminTopBar() {
         <div className="desktop_topbar">
           {/* Logo */}
           <div className="topbar_logo">
-            <Image
+            <img
               src={"/belpower_full.png"}
               alt="Logo"
-              width={500}
-              height={500}
-              priority
             />
           </div>
 
@@ -172,12 +168,9 @@ export default function AdminTopBar() {
             {/* Profile Button with Dropdown */}
             <div className="relative">
               <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
-                <Image
+                <img
                   src={"/Profile.png"}
                   alt="Profile"
-                  width={400}
-                  height={400}
-                  priority
                 />
               </button>
 
@@ -215,12 +208,9 @@ export default function AdminTopBar() {
           {/* Profile Button with Dropdown */}
           <div className="relative">
             <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
-              <Image
+              <img
                 src={"/Profile.png"}
                 alt="Profile"
-                width={400}
-                height={400}
-                priority
               />
             </button>
 
