@@ -100,7 +100,7 @@
 }
 @media (min-width: 1024px) {
   .admin_homePage .content_grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 30% 70%;
   }
 }
 
