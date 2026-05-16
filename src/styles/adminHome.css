@@ -208,22 +208,6 @@
   margin: 0 0 1rem 0;
 }
 
-/* Chart Placeholder */
-.admin_homePage .chart_placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  background-color: #f9fafb;
-  border-radius: 0.375rem;
-  border: 2px dashed #e5e7eb;
-}
-.admin_homePage .chart_placeholder p {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
 .empty_fallback {
   text-align: center;
   color: #6b7280;

@@ -4,6 +4,7 @@ import { FaHome, FaUsers, FaClipboardList, FaClock } from 'react-icons/fa';
 import '@/styles/adminHome.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 type Transaction = {
   id: string;
@@ -101,6 +102,26 @@ function DashboardHome() {
     },
   ];
 
+  // Revenue data for chart
+  const revenueData = [
+    { month: 'Jan', revenue: 400000 },
+    { month: 'Feb', revenue: 600000 },
+    { month: 'Mar', revenue: 550000 },
+    { month: 'Apr', revenue: 800000 },
+    { month: 'May', revenue: 700000 },
+    { month: 'Jun', revenue: 950000 },
+  ];
+
+  // User growth data for chart
+  const userGrowthData = [
+    { month: 'Jan', users: 150 },
+    { month: 'Feb', users: 230 },
+    { month: 'Mar', users: 310 },
+    { month: 'Apr', users: 420 },
+    { month: 'May', users: 580 },
+    { month: 'Jun', users: 720 },
+  ];
+
   // Helper function to get user initials
   const getInitials = (name: string) => {
     return name
@@ -186,15 +207,34 @@ function DashboardHome() {
         <div className="right_column">
           <div className="chart_card">
             <h2>Revenue Overview</h2>
-            <div className="chart_placeholder">
-              <p>Chart placeholder - Revenue data</p>
-            </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={revenueData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                  formatter={(value: number | string) => typeof value === 'number' ? formatPrice(value) : value}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" stroke="#0064FF" strokeWidth={2} dot={{ fill: '#0064FF' }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
           <div className="chart_card">
             <h2>User Growth</h2>
-            <div className="chart_placeholder">
-              <p>Chart placeholder - User growth data</p>
-            </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={userGrowthData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                />
+                <Legend />
+                <Bar dataKey="users" fill="#0064FF" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
