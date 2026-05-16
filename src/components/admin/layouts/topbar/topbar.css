@@ -79,7 +79,10 @@
   display: block;
 }
 .topbar .desktop_topbar {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 @media (min-width: 1024px) {
   .topbar .desktop_topbar {
@@ -90,10 +93,7 @@
   }
 }
 .topbar .mobile_topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  display: none;
 }
 @media (min-width: 1024px) {
   .topbar .mobile_topbar {
