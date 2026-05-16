@@ -214,7 +214,7 @@ function DashboardHome() {
                 <YAxis stroke="#6b7280" fontSize={12} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
-                  formatter={(value: number | string) => typeof value === 'number' ? formatPrice(value) : value}
+                  formatter={(value: unknown) => typeof value === 'number' ? formatPrice(value) : String(value || '')}
                 />
                 <Legend />
                 <Line type="monotone" dataKey="revenue" stroke="#0064FF" strokeWidth={2} dot={{ fill: '#0064FF' }} />
