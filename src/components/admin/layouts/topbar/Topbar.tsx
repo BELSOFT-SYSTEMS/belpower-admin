@@ -169,7 +169,51 @@ export default function AdminTopBar() {
               )}
             </button>
 
-            {/* Profile Button */}
+            {/* Profile Button with Dropdown */}
+            <div className="relative">
+              <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
+                <Image
+                  src={"/Profile.png"}
+                  alt="Profile"
+                  width={400}
+                  height={400}
+                  priority
+                />
+              </button>
+
+              {/* Profile Dropdown */}
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    ref={modalRef}
+                    className="profile_card"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  >
+                    {/* Account Link */}
+                    <Link
+                      href={"/command-center/settings"}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <IoMdSettings />
+                      {t('profileDropdown.Settings')}
+                    </Link>
+
+                    {/* Logout Button */}
+                    <LogoutButton />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="mobile_topbar">
+          {/* Profile Button with Dropdown */}
+          <div className="relative">
             <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
               <Image
                 src={"/Profile.png"}
@@ -179,21 +223,33 @@ export default function AdminTopBar() {
                 priority
               />
             </button>
-          </div>
-        </div>
 
-        {/* Mobile Layout */}
-        <div className="mobile_topbar">
-          {/* Profile Button */}
-          <button onClick={() => setIsOpen(!isOpen)} className="topbar_profile" title="Open profile menu">
-            <Image
-              src={"/Profile.png"}
-              alt="Profile"
-              width={400}
-              height={400}
-              priority
-            />
-          </button>
+            {/* Profile Dropdown */}
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  ref={modalRef}
+                  className="profile_card"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  {/* Account Link */}
+                  <Link
+                    href={"/command-center/settings"}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <IoMdSettings />
+                    {t('profileDropdown.Settings')}
+                  </Link>
+
+                  {/* Logout Button */}
+                  <LogoutButton />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Notification Button */}
           <button onClick={() => setIsModalOpen(true)} className="relative">
@@ -206,41 +262,6 @@ export default function AdminTopBar() {
             )}
           </button>
         </div>
-
-        {/* Profile Dropdown */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              ref={modalRef}
-              className=""
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                className="profile_card profile_mobile"
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              >
-                {/* Account Link */}
-                <Link
-                  href={"/command-center/settings"}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <IoMdSettings />
-                  {t('profileDropdown.Settings')}
-                </Link>
-
-                {/* Logout Button */}
-                <div className="px-4 py-2">
-                  <LogoutButton />
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Notifications Modal */}
         <NotificationModal
