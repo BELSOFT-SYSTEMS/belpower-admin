@@ -1,0 +1,205 @@
+.settings_page {
+  width: 100%;
+  max-width: none;
+  padding-bottom: 2.5rem;
+}
+
+.settings_page h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem;
+}
+
+.settings_page .page_subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+.settings_page .settings_banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.settings_page .settings_banner_success {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.settings_page .settings_banner_info {
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #1d4ed8;
+}
+
+.settings_page .settings_banner_icon {
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  margin-top: 0.125rem;
+}
+
+.settings_page .settings_banner_body {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings_page .settings_banner_body strong {
+  display: block;
+  font-weight: 600;
+  color: inherit;
+  margin-bottom: 0.125rem;
+}
+
+.settings_page .settings_banner_body p {
+  margin: 0;
+  color: #374151;
+  font-size: 0.8125rem;
+}
+
+.settings_page .settings_banner_success .settings_banner_body p {
+  color: #166534;
+}
+
+.settings_page .settings_banner_info .settings_banner_body p {
+  color: #1e40af;
+}
+
+.settings_page .settings_banner_dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.125rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.settings_page .settings_banner_dismiss:hover {
+  color: #111827;
+}
+
+.settings_page .settings_card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.settings_page .settings_card_header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.settings_page .settings_card_header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.settings_page .settings_card_header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.settings_page .settings_toggle_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.settings_page .settings_toggle_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.settings_page .settings_toggle_row:last-child {
+  border-bottom: none;
+}
+
+.settings_page .settings_toggle_copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings_page .settings_toggle_label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.settings_page .settings_toggle_desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.settings_page .settings_toggle_row.is_active .settings_toggle_label {
+  color: #b45309;
+}
+
+.settings_page .settings_switch {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.5rem;
+}
+
+.settings_page .settings_switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings_page .settings_switch_track {
+  position: absolute;
+  inset: 0;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.settings_page .settings_switch_track::after {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.settings_page .settings_switch input:checked + .settings_switch_track {
+  background: #f59e0b;
+}
+
+.settings_page .settings_switch input:checked + .settings_switch_track::after {
+  transform: translateX(1.25rem);
+}
+
+.settings_page .settings_switch input:focus-visible + .settings_switch_track {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}

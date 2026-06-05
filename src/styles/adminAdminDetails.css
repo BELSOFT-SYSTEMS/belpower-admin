@@ -1,0 +1,149 @@
+@import "./adminShared.css";
+
+.admin_details_page {
+  padding-bottom: 2.5rem;
+  min-height: 100vh;
+}
+
+.admin_details_page .profile_header {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.admin_details_page .profile_main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin_details_page .profile_main h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+}
+
+.admin_details_page .profile_main p {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0.2rem 0 0;
+}
+
+.admin_details_page .profile_main .pill {
+  margin-top: 0.5rem;
+  margin-right: 0.35rem;
+}
+
+.admin_details_page .profile_actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin_details_page .profile_actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.admin_details_page .profile_actions .action_edit {
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+.admin_details_page .profile_actions .action_edit:hover {
+  background: #eff6ff;
+}
+
+.admin_details_page .profile_actions .action_reset {
+  color: #b45309;
+  border-color: #fdba74;
+}
+
+.admin_details_page .profile_actions .action_reset:hover {
+  background: #fff7ed;
+}
+
+.admin_details_page .profile_actions .action_delete {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.admin_details_page .profile_actions .action_delete:hover {
+  background: #fef2f2;
+}
+
+.admin_details_page .overview_grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .admin_details_page .overview_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.admin_details_page .overview_item {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+.admin_details_page .overview_item dt {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.admin_details_page .overview_item dd {
+  margin: 0.35rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin_details_page .logs_section h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: #111827;
+}
+
+.admin_details_page .tabs_container {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.admin_details_page .tab_panel {
+  margin-top: 1rem;
+}
+
+.admin_details_page .empty_fallback {
+  text-align: center;
+  color: #6b7280;
+  padding: 1.5rem;
+  font-size: 0.875rem;
+}

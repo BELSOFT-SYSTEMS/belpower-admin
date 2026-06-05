@@ -1,0 +1,619 @@
+@import "../app/globals.css";
+
+/* —— Tabs —— */
+.admin_tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0;
+}
+
+.admin_tab {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.admin_tab:hover {
+  color: #111827;
+}
+
+.admin_tab_active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.admin_tab_badge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.6875rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.admin_tab_badge.alert {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* —— Filters (history-style) —— */
+.admin_filter_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin_filter_select {
+  min-width: 10rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: #fff;
+  color: #111827;
+}
+
+.admin_filter_select:focus {
+  outline: none;
+  ring: 2px;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 0.2);
+}
+
+/* —— Transaction list row (frontend history pattern) —— */
+.admin_txn_list {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.admin_txn_row {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.admin_txn_row:last-child {
+  border-bottom: none;
+}
+
+.admin_txn_row:hover {
+  background: #f9fafb;
+}
+
+.admin_txn_icon_wrap {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.admin_txn_icon_wrap img {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+}
+
+.admin_txn_row_body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 0.75rem;
+}
+
+.admin_txn_row_top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.admin_txn_title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin_txn_date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+.admin_txn_row_bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.admin_txn_amount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin_txn_user {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.admin_txn_pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.admin_txn_row_scheduled {
+  background: linear-gradient(90deg, #fffbeb 0%, #ffffff 12%);
+}
+
+.admin_txn_row_scheduled:hover {
+  background: linear-gradient(90deg, #fef3c7 0%, #f9fafb 12%);
+}
+
+.admin_txn_date_scheduled {
+  color: #c2410c;
+  font-weight: 500;
+}
+
+/* —— Status pills —— */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.pill_success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.pill_pending {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.pill_scheduled {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.pill_failed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.pill_active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.pill_dormant {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.pill_new {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.pill_blocked {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.pill_fraud {
+  background: #fef2f2;
+  color: #dc2626;
+  margin-left: 0.35rem;
+}
+
+.pill_fraud::before {
+  content: '⚠ ';
+}
+
+/* —— Alert banners —— */
+.admin_alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.admin_alert_warning {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+}
+
+.admin_alert_danger {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+/* —— Receipt detail (frontend historyDetails pattern) —— */
+.receipt_page_wrap {
+  max-width: 48rem;
+}
+
+.receipt_back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4b5563;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0;
+}
+
+.receipt_back:hover {
+  color: #111827;
+}
+
+.receipt_card {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .receipt_card {
+    padding: 1.5rem 3rem;
+  }
+}
+
+.receipt_section_title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: #111827;
+}
+
+.receipt_section_title span {
+  color: #2563eb;
+}
+
+.receipt_service_block {
+  margin-bottom: 1.5rem;
+}
+
+.receipt_provider_row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.receipt_provider_icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 9999px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.receipt_provider_icon .provider_img {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
+.receipt_provider_meta {
+  background: #f3f4f6;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  color: #374151;
+  flex: 1;
+}
+
+.receipt_provider_meta p {
+  margin: 0.25rem 0;
+}
+
+.receipt_breakdown_box {
+  background: #f3f4f6;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.receipt_amount_row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.receipt_amount_row span:first-child {
+  color: #6b7280;
+}
+
+.receipt_token_highlight {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  text-align: center;
+  border: 1px dashed #93c5fd;
+}
+
+.receipt_token_highlight .token_label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem;
+}
+
+.receipt_token_highlight .token_value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+  margin: 0;
+}
+
+.receipt_token_highlight .token_sub {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0;
+}
+
+.receipt_ref_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.receipt_ref_row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.receipt_ref_row dt {
+  color: #6b7280;
+}
+
+.receipt_ref_row dd {
+  margin: 0;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* —— User list row —— */
+.admin_user_row {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  gap: 0.75rem;
+}
+
+.admin_user_row:last-child {
+  border-bottom: none;
+}
+
+.admin_user_row_link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 0.375rem;
+  transition: background 0.15s;
+}
+
+.admin_user_row_link:hover {
+  background: #f9fafb;
+}
+
+.admin_user_meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.admin_user_meta_link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.25rem;
+  transition: background 0.15s;
+}
+
+.admin_user_meta_link:hover {
+  background: #f9fafb;
+}
+
+.admin_user_last_active {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0.35rem 0 0;
+}
+
+.admin_user_avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  object-fit: cover;
+}
+
+/* List row avatars (users + admin management) */
+.admin_user_row_link .admin_user_avatar_initials {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border-radius: 9999px;
+  border: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Profile header avatars (user + admin detail) */
+.profile_main .admin_user_avatar_initials,
+.profile_main .admin_user_avatar_initials--lg {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  border-radius: 9999px;
+  border: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.admin_user_info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin_user_name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.9375rem;
+}
+
+.admin_user_email {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.admin_panel_card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.admin_data_table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.admin_data_table th {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  color: #6b7280;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin_data_table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #111827;
+}
+
+.admin_stat_grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .admin_stat_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin_stat_grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.admin_stat_card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.admin_stat_card p {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem;
+}
+
+.admin_stat_card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #111827;
+}
