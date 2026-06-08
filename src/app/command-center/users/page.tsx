@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fa';
 import '@/styles/adminUsers.css';
 import '@/styles/adminShared.css';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { MOCK_USERS_LIST } from '@/data/adminMockData';
 import { getAvatarBackground, getUserInitials } from '@/utils/userAvatar';
 
@@ -96,18 +97,20 @@ export default function UsersPage() {
         </div>
 
         <div className="admin_filter_row">
-          <select
-            className="admin_filter_select"
+          <AdminDropdown
+            variant="filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="__all__">All status</option>
-            <option value="active">Active</option>
-            <option value="new">New</option>
-            <option value="dormant">Dormant</option>
-            <option value="blocked">Blocked</option>
-            <option value="suspicious">Suspicious only</option>
-          </select>
+            onChange={setStatusFilter}
+            aria-label="Filter by status"
+            options={[
+              { value: '__all__', label: 'All status' },
+              { value: 'active', label: 'Active' },
+              { value: 'new', label: 'New' },
+              { value: 'dormant', label: 'Dormant' },
+              { value: 'blocked', label: 'Blocked' },
+              { value: 'suspicious', label: 'Suspicious only' },
+            ]}
+          />
         </div>
 
         <div className="admin_txn_list">

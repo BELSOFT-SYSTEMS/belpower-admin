@@ -1,4 +1,5 @@
 @import "../app/globals.css";
+@import "./adminDropdown.css";
 
 /* —— Tabs —— */
 .admin_tabs {
@@ -57,22 +58,7 @@
   margin-bottom: 1rem;
 }
 
-.admin_filter_select {
-  min-width: 10rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  background: #fff;
-  color: #111827;
-}
-
-.admin_filter_select:focus {
-  outline: none;
-  ring: 2px;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgb(37 99 235 / 0.2);
-}
+/* Filter dropdowns use AdminDropdown (adminDropdown.css) */
 
 /* —— Transaction list row (frontend history pattern) —— */
 .admin_txn_list {

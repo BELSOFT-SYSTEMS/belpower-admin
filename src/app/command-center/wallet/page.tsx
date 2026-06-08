@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import '@/styles/adminWallet.css';
 import '@/styles/adminShared.css';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { formatPrice } from '@/utils/FormatPrice';
 import {
   BUYPOWER_WALLET_BALANCE,
@@ -134,29 +135,31 @@ export default function WalletPage() {
         </div>
 
         <div className="admin_filter_row">
-          <select
-            className="admin_filter_select"
+          <AdminDropdown
+            variant="filter"
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={setCategoryFilter}
             aria-label="Filter by activity type"
-          >
-            <option value={FILTER_ALL}>All wallet activity</option>
-            <option value="deposit">Wallet funding</option>
-            <option value="debit">Wallet debit</option>
-          </select>
-          <select
-            className="admin_filter_select"
+            options={[
+              { value: FILTER_ALL, label: 'All wallet activity' },
+              { value: 'deposit', label: 'Wallet funding' },
+              { value: 'debit', label: 'Wallet debit' },
+            ]}
+          />
+          <AdminDropdown
+            variant="filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={setStatusFilter}
             aria-label="Filter by status"
-          >
-            <option value={FILTER_ALL}>All status</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="flagged">Flagged</option>
-          </select>
+            options={[
+              { value: FILTER_ALL, label: 'All status' },
+              { value: 'completed', label: 'Completed' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'failed', label: 'Failed' },
+              { value: 'scheduled', label: 'Scheduled' },
+              { value: 'flagged', label: 'Flagged' },
+            ]}
+          />
         </div>
 
         <div className="admin_txn_list">

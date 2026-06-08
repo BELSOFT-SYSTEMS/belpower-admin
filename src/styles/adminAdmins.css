@@ -239,8 +239,7 @@
   margin-bottom: 0.35rem;
 }
 
-.admin_form_row input,
-.admin_form_row select {
+.admin_form_row input {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid #d1d5db;
@@ -251,7 +250,7 @@
 }
 
 .admin_form_row input:focus,
-.admin_form_row select:focus {
+.admin_dropdown .admin_dropdown_trigger:focus-visible {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);

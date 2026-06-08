@@ -26,6 +26,7 @@ import type { AdminAccount, AdminFormValues, AdminRole } from '@/types/adminMana
 import { ADMIN_ROLE_LABELS } from '@/types/adminManagement';
 import { getAvatarBackground, getUserInitials } from '@/utils/userAvatar';
 import { formatAdminRole, getRolePillClass } from '@/utils/adminRoleDisplay';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 
 const FILTER_ALL = '__all__';
 
@@ -174,27 +175,30 @@ export default function AdminsPage() {
         </div>
 
         <div className="admin_filter_row">
-          <select
-            className="admin_filter_select"
+          <AdminDropdown
+            variant="filter"
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-          >
-            <option value={FILTER_ALL}>All roles</option>
-            {(Object.keys(ADMIN_ROLE_LABELS) as AdminRole[]).map((role) => (
-              <option key={role} value={role}>
-                {ADMIN_ROLE_LABELS[role]}
-              </option>
-            ))}
-          </select>
-          <select
-            className="admin_filter_select"
+            onChange={setRoleFilter}
+            aria-label="Filter by role"
+            options={[
+              { value: FILTER_ALL, label: 'All roles' },
+              ...(Object.keys(ADMIN_ROLE_LABELS) as AdminRole[]).map((role) => ({
+                value: role,
+                label: ADMIN_ROLE_LABELS[role],
+              })),
+            ]}
+          />
+          <AdminDropdown
+            variant="filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value={FILTER_ALL}>All status</option>
-            <option value="active">Active</option>
-            <option value="suspended">Suspended</option>
-          </select>
+            onChange={setStatusFilter}
+            aria-label="Filter by status"
+            options={[
+              { value: FILTER_ALL, label: 'All status' },
+              { value: 'active', label: 'Active' },
+              { value: 'suspended', label: 'Suspended' },
+            ]}
+          />
         </div>
 
         <div className="admin_txn_list">

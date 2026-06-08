@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { FaSearch, FaCheckCircle, FaClock, FaTimesCircle, FaHome, FaCalendarAlt } from 'react-icons/fa';
 import '@/styles/adminTransactions.css';
 import '@/styles/adminShared.css';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { MOCK_TRANSACTIONS } from '@/data/adminMockData';
 import { AdminTransactionRow } from '@/components/admin/transactions/AdminTransactionRow';
 import { matchesTransactionStatusFilter } from '@/utils/adminTransactionDisplay';
@@ -98,32 +99,34 @@ export default function TransactionsPage() {
         </div>
 
         <div className="admin_filter_row">
-          <select
-            className="admin_filter_select"
+          <AdminDropdown
+            variant="filter"
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
+            onChange={setCategoryFilter}
             aria-label="Filter by service"
-          >
-            <option value={FILTER_ALL}>All services</option>
-            <option value="electricity">Electricity</option>
-            <option value="airtime">Airtime</option>
-            <option value="data">Data</option>
-            <option value="cable">Cable</option>
-            <option value="deposit">Wallet funding</option>
-          </select>
-          <select
-            className="admin_filter_select"
+            options={[
+              { value: FILTER_ALL, label: 'All services' },
+              { value: 'electricity', label: 'Electricity' },
+              { value: 'airtime', label: 'Airtime' },
+              { value: 'data', label: 'Data' },
+              { value: 'cable', label: 'Cable' },
+              { value: 'deposit', label: 'Wallet funding' },
+            ]}
+          />
+          <AdminDropdown
+            variant="filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={setStatusFilter}
             aria-label="Filter by status"
-          >
-            <option value={FILTER_ALL}>All status</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="flagged">Flagged</option>
-          </select>
+            options={[
+              { value: FILTER_ALL, label: 'All status' },
+              { value: 'completed', label: 'Completed' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'failed', label: 'Failed' },
+              { value: 'scheduled', label: 'Scheduled' },
+              { value: 'flagged', label: 'Flagged' },
+            ]}
+          />
         </div>
 
         <div className="admin_txn_list">

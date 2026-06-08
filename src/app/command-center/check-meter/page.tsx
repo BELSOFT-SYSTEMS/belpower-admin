@@ -4,6 +4,8 @@ import { Suspense, useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
 import '@/styles/adminCheckMeter.css';
+import '@/styles/adminShared.css';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { DISCO_NAMES } from '@/constants/discoNames';
 import { verifyMeter } from '@/lib/meterVerification';
 import type { MeterVerificationResult } from '@/types/meterVerification';
@@ -31,6 +33,22 @@ function CheckMeterPageContent() {
   const [result, setResult] = useState<MeterVerificationResult | null>(null);
 
   const discoOptions = useMemo(() => DISCO_OPTIONS, []);
+
+  const discoDropdownOptions = useMemo(
+    () => [
+      { value: '', label: 'Select disco' },
+      ...discoOptions.map((d) => ({ value: d.code, label: d.name })),
+    ],
+    [discoOptions]
+  );
+
+  const meterTypeOptions = useMemo(
+    () => [
+      { value: 'PREPAID', label: 'Prepaid' },
+      { value: 'POSTPAID', label: 'Postpaid' },
+    ],
+    []
+  );
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -91,33 +109,24 @@ function CheckMeterPageContent() {
             <label className="check_meter_label" htmlFor="disco">
               Disco
             </label>
-            <select
+            <AdminDropdown
               id="disco"
-              className="check_meter_select"
               value={disco}
-              onChange={(e) => setDisco(e.target.value)}
-            >
-              <option value="">Select disco</option>
-              {discoOptions.map((d) => (
-                <option key={d.code} value={d.code}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
+              onChange={setDisco}
+              options={discoDropdownOptions}
+              placeholder="Select disco"
+            />
           </div>
           <div>
             <label className="check_meter_label" htmlFor="vend_type">
               Meter type
             </label>
-            <select
+            <AdminDropdown
               id="vend_type"
-              className="check_meter_select"
               value={vendType}
-              onChange={(e) => setVendType(e.target.value as 'PREPAID' | 'POSTPAID')}
-            >
-              <option value="PREPAID">Prepaid</option>
-              <option value="POSTPAID">Postpaid</option>
-            </select>
+              onChange={(value) => setVendType(value as 'PREPAID' | 'POSTPAID')}
+              options={meterTypeOptions}
+            />
           </div>
         </div>
         <div className="check_meter_form_actions">

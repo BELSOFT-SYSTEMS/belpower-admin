@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import type { AdminFormValues, AdminRole, AdminStatus } from '@/types/adminManagement';
 import { ADMIN_ROLE_LABELS, ADMIN_ROLES } from '@/types/adminManagement';
 
@@ -104,28 +105,27 @@ export function AdminFormModal({
           </div>
           <div className="admin_form_row">
             <label htmlFor="admin-role">Role</label>
-            <select
+            <AdminDropdown
               id="admin-role"
               value={form.role}
-              onChange={(e) => set('role', e.target.value as AdminRole)}
-            >
-              {ADMIN_ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {ADMIN_ROLE_LABELS[role]}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => set('role', value as AdminRole)}
+              options={ADMIN_ROLES.map((role) => ({
+                value: role,
+                label: ADMIN_ROLE_LABELS[role],
+              }))}
+            />
           </div>
           <div className="admin_form_row">
             <label htmlFor="admin-status">Status</label>
-            <select
+            <AdminDropdown
               id="admin-status"
               value={form.status}
-              onChange={(e) => set('status', e.target.value as AdminStatus)}
-            >
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-            </select>
+              onChange={(value) => set('status', value as AdminStatus)}
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'suspended', label: 'Suspended' },
+              ]}
+            />
           </div>
           {mode === 'create' && (
             <p className="admin_form_hint">

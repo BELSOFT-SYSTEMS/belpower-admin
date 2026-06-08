@@ -11,6 +11,8 @@ import {
   FaWallet,
   FaServer,
   FaUserShield,
+  FaBell,
+  FaEnvelope,
 } from 'react-icons/fa';
 
 type NavItem = {
@@ -49,6 +51,16 @@ export function Sidebar() {
       name: 'Admin Management',
       href: '/command-center/admins',
       icon: <FaUserShield className="w-5 h-5" />,
+    },
+    {
+      name: 'Notifications',
+      href: '/command-center/notifications',
+      icon: <FaBell className="w-5 h-5" />,
+    },
+    {
+      name: 'Messages',
+      href: '/command-center/messages',
+      icon: <FaEnvelope className="w-5 h-5" />,
     },
     { name: 'Settings', href: '/command-center/settings', icon: <FaCog className="w-5 h-5" /> },
   ];

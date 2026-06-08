@@ -1,0 +1,238 @@
+/* Custom admin dropdowns — replaces native <select> */
+
+.admin_dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.admin_dropdown.filter {
+  width: auto;
+  min-width: 10rem;
+}
+
+.admin_dropdown_trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #111827;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin_dropdown.filter .admin_dropdown_trigger {
+  min-width: 10rem;
+  border-color: #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.admin_dropdown_trigger:hover:not(:disabled) {
+  border-color: #9ca3af;
+}
+
+.admin_dropdown_trigger:focus-visible {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.admin_dropdown.is_open .admin_dropdown_trigger {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.admin_dropdown_trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
+
+.admin_dropdown_trigger_label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin_dropdown_trigger_label.is_placeholder {
+  color: #6b7280;
+}
+
+.admin_dropdown_chevron {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  transition: transform 0.15s;
+}
+
+.admin_dropdown.is_open .admin_dropdown_chevron {
+  transform: rotate(180deg);
+}
+
+.admin_dropdown_menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.admin_dropdown_option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.875rem;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  color: #111827;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin_dropdown_option:hover {
+  background: #f9fafb;
+}
+
+.admin_dropdown_option.is_selected {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 500;
+}
+
+/* Multi-select */
+.admin_multiselect {
+  position: relative;
+  width: 100%;
+}
+
+.admin_multiselect_trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #111827;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.admin_multiselect.is_open .admin_multiselect_trigger {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.admin_multiselect_menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+}
+
+.admin_multiselect_menu_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.875rem;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.admin_multiselect_clear {
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.admin_multiselect_clear:hover {
+  text-decoration: underline;
+}
+
+.admin_multiselect_options {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+  max-height: 14rem;
+  overflow-y: auto;
+}
+
+.admin_multiselect_option {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.admin_multiselect_option:hover {
+  background: #f9fafb;
+}
+
+.admin_multiselect_option input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #2563eb;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.admin_multiselect_option span {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin_multiselect_selected_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.admin_multiselect_tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #93c5fd;
+}
