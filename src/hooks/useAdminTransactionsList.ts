@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 import { getTransactionsList } from '@/lib/adminTransactions';
 import type {
   TransactionType,
@@ -8,6 +9,11 @@ import type {
   TransactionsListStats,
   TransactionsQuickActions,
 } from '@/types/adminTransactions';
+import {
+  filterInternalTestTransactions,
+  resolveCanViewInternalTest,
+} from '@/utils/adminInternalTestAccess';
+import { canViewTransactionMoneyStats } from '@/utils/adminTransactionStatsAccess';
 
 const FILTER_ALL = '__all__';
 
@@ -38,6 +44,7 @@ export function useAdminTransactionsList({
   limit = 20,
   enabled = true,
 }: UseAdminTransactionsListOptions) {
+  const { admin } = useAdminAuth();
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [data, setData] = useState<TransactionsListData | null>(null);
   const [cachedStats, setCachedStats] = useState<TransactionsListStats | null>(null);
@@ -96,10 +103,31 @@ export function useAdminTransactionsList({
     refresh();
   }, [enabled, refresh]);
 
+  const canViewInternalTestTransactions = useMemo(
+    () => resolveCanViewInternalTest(data?.filters, admin),
+    [data?.filters, admin]
+  );
+
+  const canViewMoneyStats = useMemo(
+    () => canViewTransactionMoneyStats(admin, data?.filters),
+    [admin, data?.filters]
+  );
+
+  const transactions = useMemo(
+    () =>
+      filterInternalTestTransactions(
+        data?.transactions ?? [],
+        canViewInternalTestTransactions
+      ),
+    [data?.transactions, canViewInternalTestTransactions]
+  );
+
   return {
-    transactions: data?.transactions ?? [],
+    transactions,
     quickActions: data?.quickActions ?? DEFAULT_QUICK_ACTIONS,
     filters: data?.filters ?? null,
+    canViewInternalTestTransactions,
+    canViewMoneyStats,
     stats: cachedStats,
     pagination: data?.pagination ?? null,
     isLoading,

@@ -43,6 +43,7 @@ export function AdminTransactionsListPanel({
     isLoading,
     error,
     refresh,
+    canViewInternalTestTransactions,
   } = useAdminTransactionsList({
     search: searchTerm,
     typeFilter: categoryFilter,
@@ -90,6 +91,7 @@ export function AdminTransactionsListPanel({
       page={page}
       showUser={showUser}
       showQuickActions={canUseQuickActions}
+      showInternalTestBadge={canViewInternalTestTransactions}
       isInternalTestAccount={isInternalTestAccount}
       actingTxnId={actingTxnId}
       transactions={transactions}

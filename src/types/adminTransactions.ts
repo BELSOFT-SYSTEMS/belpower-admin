@@ -38,11 +38,27 @@ export type TransactionsCountStat = {
   definition: string;
 };
 
+/**
+ * GET /transactions stats (includeStats=true) and GET /transactions/overview.
+ *
+ * Backend contract:
+ * - Always return count stats: totalTransactions, completedTransactions,
+ *   pendingTransactions, refundTransactions, scheduled, flagged.
+ * - Return money stats (totalVolume, completed, pending, refunds) only when
+ *   the caller has dashboard.money_stats (super_admin, finance).
+ * - Set filters.canViewMoneyStats to match whether money fields are present.
+ */
 export type TransactionsListStats = {
-  totalVolume: TransactionsVolumeStat;
-  completed: TransactionsCountVolumeStat;
-  pending: TransactionsCountVolumeStat;
-  refunds: TransactionsCountVolumeStat;
+  /** ₦ totals — present only when filters.canViewMoneyStats is true */
+  totalVolume?: TransactionsVolumeStat | null;
+  completed?: TransactionsCountVolumeStat | null;
+  pending?: TransactionsCountVolumeStat | null;
+  refunds?: TransactionsCountVolumeStat | null;
+  /** Count-only — always returned for roles with transactions.list */
+  totalTransactions: TransactionsCountStat;
+  completedTransactions: TransactionsCountStat;
+  pendingTransactions: TransactionsCountStat;
+  refundTransactions: TransactionsCountStat;
   scheduled: TransactionsCountStat;
   flagged: TransactionsCountStat;
 };
@@ -51,6 +67,8 @@ export type TransactionsListFilters = {
   types: TransactionType[];
   statuses: Array<TransactionStatus | 'flagged' | 'scheduled'>;
   canViewInternalTestTransactions: boolean;
+  /** True for super_admin and finance (dashboard.money_stats). */
+  canViewMoneyStats: boolean;
   appliedType: string | null;
   appliedStatus: string | null;
   appliedFlagged: boolean;

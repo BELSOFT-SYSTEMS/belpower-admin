@@ -38,6 +38,7 @@ import {
   isScheduledTransaction,
 } from '@/utils/adminTransactionDisplay';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { resolveCanViewInternalTest } from '@/utils/adminInternalTestAccess';
 import { useAdminTransactionDetail } from '@/hooks/useAdminTransactionDetail';
 import {
   blockTransaction,
@@ -70,7 +71,8 @@ export default function TransactionDetailPage() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const transactionId = params?.id ?? '';
-  const { canAccess } = useAdminAuth();
+  const { canAccess, admin } = useAdminAuth();
+  const showInternalTestBadge = resolveCanViewInternalTest(null, admin);
   const { detail, isLoading, error, errorCode, refresh } =
     useAdminTransactionDetail(transactionId);
   const [activeTab, setActiveTab] = useState('overview');
@@ -299,7 +301,7 @@ export default function TransactionDetailPage() {
               <span className={`pill ${getTransactionStatusPillClass(transaction)}`}>
                 {getTransactionStatusLabel(transaction)}
               </span>
-              {detail.user.isInternalTestAccount && (
+              {showInternalTestBadge && detail.user.isInternalTestAccount && (
                 <span className="pill pill_internal_test">Internal test</span>
               )}
             </div>
@@ -381,7 +383,9 @@ export default function TransactionDetailPage() {
             <TransactionCustomerCard
               transaction={transaction}
               userEmail={detail.user.email}
-              isInternalTestAccount={detail.user.isInternalTestAccount}
+              isInternalTestAccount={
+                showInternalTestBadge && detail.user.isInternalTestAccount
+              }
             />
           </div>
         </div>

@@ -152,6 +152,18 @@ function normalizeVolumeStat(raw: RawRecord | undefined) {
   };
 }
 
+function countStatFromVolume(
+  countStat: ReturnType<typeof normalizeCountStat>,
+  volumeStat: ReturnType<typeof normalizeCountVolumeStat>
+) {
+  if (countStat) return countStat;
+  if (!volumeStat) return undefined;
+  return {
+    count: volumeStat.count,
+    definition: volumeStat.definition,
+  };
+}
+
 function normalizeStats(raw: RawRecord | null | undefined): TransactionsListStats | null {
   if (!raw) return null;
 
@@ -163,12 +175,55 @@ function normalizeStats(raw: RawRecord | null | undefined): TransactionsListStat
   );
   const pending = normalizeCountVolumeStat(pick<RawRecord>(raw, 'pending', 'pending'));
   const refunds = normalizeCountVolumeStat(pick<RawRecord>(raw, 'refunds', 'refunds'));
+
+  const totalTransactions = normalizeCountStat(
+    pick<RawRecord>(raw, 'totalTransactions', 'total_transactions')
+  );
+  const completedTransactions = countStatFromVolume(
+    normalizeCountStat(
+      pick<RawRecord>(raw, 'completedTransactions', 'completed_transactions')
+    ),
+    completed
+  );
+  const pendingTransactions = countStatFromVolume(
+    normalizeCountStat(
+      pick<RawRecord>(raw, 'pendingTransactions', 'pending_transactions')
+    ),
+    pending
+  );
+  const refundTransactions = countStatFromVolume(
+    normalizeCountStat(pick<RawRecord>(raw, 'refundTransactions', 'refund_transactions')),
+    refunds
+  );
+
   const scheduled = normalizeCountStat(pick<RawRecord>(raw, 'scheduled', 'scheduled'));
   const flagged = normalizeCountStat(pick<RawRecord>(raw, 'flagged', 'flagged'));
 
-  if (!totalVolume || !completed || !pending || !refunds || !scheduled || !flagged) return null;
+  if (
+    !completedTransactions ||
+    !pendingTransactions ||
+    !refundTransactions ||
+    !scheduled ||
+    !flagged
+  ) {
+    return null;
+  }
 
-  return { totalVolume, completed, pending, refunds, scheduled, flagged };
+  return {
+    totalVolume: totalVolume ?? null,
+    completed: completed ?? null,
+    pending: pending ?? null,
+    refunds: refunds ?? null,
+    totalTransactions: totalTransactions ?? {
+      count: 0,
+      definition: '',
+    },
+    completedTransactions,
+    pendingTransactions,
+    refundTransactions,
+    scheduled,
+    flagged,
+  };
 }
 
 function normalizeFilters(raw: RawRecord | undefined): TransactionsListFilters {
@@ -190,6 +245,11 @@ function normalizeFilters(raw: RawRecord | undefined): TransactionsListFilters {
       source,
       'canViewInternalTestTransactions',
       'can_view_internal_test_transactions'
+    ),
+    canViewMoneyStats: pickBool(
+      source,
+      'canViewMoneyStats',
+      'can_view_money_stats'
     ),
     appliedType: pickString(source, 'appliedType', 'applied_type'),
     appliedStatus: pickString(source, 'appliedStatus', 'applied_status'),

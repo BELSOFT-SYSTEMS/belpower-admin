@@ -19,6 +19,7 @@ type AdminTransactionsListViewProps = {
   page: number;
   showUser?: boolean;
   showQuickActions?: boolean;
+  showInternalTestBadge?: boolean;
   isInternalTestAccount?: boolean;
   actingTxnId: string | null;
   transactions: ApiTransactionListItem[];
@@ -50,6 +51,7 @@ export function AdminTransactionsListView({
   page,
   showUser = true,
   showQuickActions = false,
+  showInternalTestBadge = false,
   isInternalTestAccount = false,
   actingTxnId,
   transactions,
@@ -134,7 +136,10 @@ export function AdminTransactionsListView({
                     showUser={showUser}
                     showQuickActions={showQuickActions}
                     quickActions={quickActions}
-                    isInternalTestAccount={tx.isInternalTestAccount ?? isInternalTestAccount}
+                    isInternalTestAccount={
+                      showInternalTestBadge &&
+                      (tx.isInternalTestAccount ?? isInternalTestAccount)
+                    }
                     rowBusy={actingTxnId === tx.id}
                     onReview={onReview}
                     onBlock={onBlock}
