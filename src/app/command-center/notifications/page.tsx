@@ -177,9 +177,15 @@ export default function NotificationsPage() {
 
     try {
       const result = await sendCampaign(estimatePayload);
-      setBanner(
-        `"${result.broadcast.template_title}" sent to ${result.notifications_sent.toLocaleString()} recipient(s) successfully.`
-      );
+      const pushNote =
+        result.push && result.push.delivered > 0
+          ? ` Push delivered to ${result.push.delivered.toLocaleString()} device(s).`
+          : result.push && result.push.skipped_no_tokens > 0
+            ? ' Push not sent — selected user(s) have no registered device tokens.'
+            : result.push && result.push.failed > 0
+              ? ` Push failed for ${result.push.failed.toLocaleString()} user(s) — check Firebase/VAPID config.`
+              : '';
+      setBanner(`${result.message || `"${result.broadcast.template_title}" sent successfully.`}${pushNote}`);
       if (canViewHistory) {
         setActiveTab('history');
       }

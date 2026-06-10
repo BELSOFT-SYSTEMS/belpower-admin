@@ -133,9 +133,21 @@ export async function estimateNotificationAudience(
   };
 }
 
+export type CampaignPushStats = {
+  attempted: number;
+  delivered: number;
+  skipped_no_tokens: number;
+  failed: number;
+};
+
 export async function sendNotificationCampaign(
   payload: SendNotificationPayload
-): Promise<{ broadcast: SentNotification; notifications_sent: number }> {
+): Promise<{
+  broadcast: SentNotification;
+  notifications_sent: number;
+  push: CampaignPushStats | null;
+  message: string;
+}> {
   const res = await fetch(`${ADMIN_API_BASE}/notifications/campaign`, {
     method: 'POST',
     headers: adminHeaders({ 'Content-Type': 'application/json' }),
@@ -150,6 +162,7 @@ export async function sendNotificationCampaign(
   const body = await handleAdminResponse<{
     broadcast?: Record<string, unknown>;
     notifications_sent?: number;
+    push?: CampaignPushStats | null;
   }>(res, 'Failed to send notification');
 
   const broadcastRaw = body.data?.broadcast ?? {};
@@ -159,6 +172,8 @@ export async function sendNotificationCampaign(
       sent_by: 'You',
     }),
     notifications_sent: Number(body.data?.notifications_sent ?? 0),
+    push: body.data?.push ?? null,
+    message: body.message ?? 'Notification sent',
   };
 }
 
