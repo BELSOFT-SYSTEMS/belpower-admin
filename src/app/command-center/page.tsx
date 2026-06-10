@@ -11,6 +11,7 @@ import { formatLastActive } from '@/utils/formatLastActive';
 import { getInitialsFromDisplayName } from '@/utils/userAvatar';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { formatAdminRole, getRolePillClass } from '@/utils/adminRoleDisplay';
 import { useDashboardOverview } from '@/hooks/useDashboardOverview';
 import {
   mapCountChartPoints,
@@ -45,7 +46,7 @@ type StatCard = {
 function DashboardHome() {
   const searchParams = useSearchParams();
   const userIdFilter = searchParams.get('userId') ?? undefined;
-  const { displayName } = useAdminAuth();
+  const { displayName, admin } = useAdminAuth();
   const { data, isLoading, error, refresh } = useDashboardOverview({ userId: userIdFilter });
   const [expandedChart, setExpandedChart] = useState<string | null>(null);
 
@@ -146,7 +147,12 @@ function DashboardHome() {
 
   return (
     <div className="admin_homePage">
-      <h1>Welcome, {displayName}</h1>
+      <div className="admin_home_welcome">
+        <h1>Welcome, {displayName}</h1>
+        {admin?.role ? (
+          <span className={getRolePillClass(admin.role)}>{formatAdminRole(admin.role)}</span>
+        ) : null}
+      </div>
 
       {appliedUserId && (
         <p className="dashboard_user_filter_note">

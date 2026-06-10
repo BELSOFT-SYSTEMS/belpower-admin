@@ -46,10 +46,18 @@
 .admin_homePage section .download:hover {
   color: #1d4ed8;
 }
-.admin_homePage h1 {
+.admin_home_welcome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin_home_welcome h1 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin: 0;
   color: #000;
 }
 

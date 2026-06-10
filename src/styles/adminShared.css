@@ -259,6 +259,31 @@
   color: #6d28d9;
 }
 
+.pill_role_super_admin {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.pill_role_admin {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.pill_role_support {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.pill_role_finance {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.pill_role_content_manager {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
 .pill_fraud {
   background: #fef2f2;
   color: #dc2626;
