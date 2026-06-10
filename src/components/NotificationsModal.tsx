@@ -1,125 +1,77 @@
 /**
- * NotificationsModal Component
- *
- * A modal component that displays user notifications with filtering capabilities.
- * Features include:
- * - Animated transitions using Framer Motion
- * - Notification filtering (All, Read, Unread, Offers)
- * - Internationalization support
- * - Read status tracking
- * - Time-ago formatting with translations
- * - Responsive design
- *
- * @example
- * <NotificationsModal
- *   isOpen={isModalOpen}
- *   onClose={() => setModalOpen(false)}
- *   notifications={userNotifications}
- *   markAsRead={(id) => markNotificationAsRead(id)}
+ * NotificationsModal — belpower-staging design:
+ * full-screen backdrop + top-right panel slide-in (Framer Motion).
  */
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { IoClose } from 'react-icons/io5';
 import { BsBellFill, BsCheckAll, BsExclamationTriangle } from 'react-icons/bs';
+import { Loader2 } from 'lucide-react';
 import { useAppTranslation } from '@/hooks/useAppTranslation';
 import { TranslationErrorBoundary } from './TranslationErrorBoundary';
 import '@/styles/notificationsModal.css';
 
-/** Interface defining the structure of a notification */
-interface Notification {
-  /** Unique identifier for the notification */
-  id: number;
-  /** Title of the notification */
-  title: string;
-  /** Content of the notification */
+export interface Notification {
+  id: string | number;
+  uuid?: string;
+  title?: string;
   message: string;
-  /** Category of the notification */
   type: 'Airtime' | 'Data' | 'Offers' | 'Electricity' | 'Other' | 'Cable';
-  /** Whether the notification has been read */
   read: boolean;
-  /** Timestamp when the notification was created */
   createdAt: Date;
-  /** Optional: Additional details to show when expanded */
   details?: string;
 }
 
-/** Props for the NotificationsModal component */
 interface NotificationsModalProps {
-  /** Controls the visibility of the modal */
   isOpen: boolean;
-  /** Callback function to close the modal */
   onClose: () => void;
-  /** Array of notifications to display */
   notifications: Notification[];
-  /** Callback function to mark a notification as read */
-  markAsRead: (id: number) => void;
-  /** Optional: Callback to clear all notifications */
-  clearAll?: () => void;
-  /** Optional: Callback to mark all notifications as read */
+  markAsRead: (id: string | number) => void;
   markAllAsRead?: () => void;
+  isLoading?: boolean;
+  inboxUnavailable?: boolean;
 }
 
-/**
- * A modal component that displays and manages user notifications.
- * Provides filtering options and animated transitions.
- */
-// Inner component that contains the actual modal implementation
 const NotificationsModalContent = ({
   isOpen,
   onClose,
   notifications = [],
   markAsRead,
-  // clearAll,
   markAllAsRead,
+  isLoading = false,
+  inboxUnavailable = false,
 }: NotificationsModalProps) => {
-  const { t, error } = useAppTranslation();
-  // Debug: Log notifications when they change
-  useEffect(() => {
-    console.log('Notifications in modal:', JSON.stringify(notifications, null, 2));
-  }, [notifications]);
-  const [selectedNotification, setSelectedNotification] = useState<number | null>(null);
+  const { t } = useAppTranslation();
+  const [selectedNotification, setSelectedNotification] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'read' | 'unread' | 'offers'>('all');
 
-  // Filter notifications based on the selected filter
-  const filteredNotifications = notifications.filter((n) => {
-    if (filter === 'all') return true;
-    if (filter === 'read') return n.read;
-    if (filter === 'unread') return !n.read;
-    if (filter === 'offers') return n.type === 'Offers';
-    return true;
-  });
+  const filteredNotifications = useMemo(() => {
+    return notifications.filter((n) => {
+      if (filter === 'all') return true;
+      if (filter === 'read') return n.read;
+      if (filter === 'unread') return !n.read;
+      if (filter === 'offers') return n.type === 'Offers';
+      return true;
+    });
+  }, [notifications, filter]);
 
-  // Handle notification click - mark as read and toggle details
-  const handleNotificationClick = (id: number, e: React.MouseEvent) => {
+  const handleNotificationClick = (id: string | number, e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Notification clicked:', id);
 
-    // Find the clicked notification
-    const notification = notifications.find((n) => n.id === id);
-    console.log('Notification details:', notification);
-
+    const key = String(id);
+    const notification = notifications.find((n) => String(n.id) === key);
     if (!notification) return;
 
-    // Only mark as read if it's not already read
-    if (notification.read === false) {
+    if (!notification.read) {
       markAsRead(id);
     }
 
-    // Toggle the selected notification
-    setSelectedNotification((prev) => {
-      const newState = prev === id ? null : id;
-      console.log('Selected notification state:', newState);
-      console.log(
-        'Selected notification details:',
-        notifications.find((n) => n.id === id)?.details
-      );
-      return newState;
-    });
+    setSelectedNotification((prev) => (prev === key ? null : key));
   };
 
-  // Format time ago with i18n support
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -147,7 +99,6 @@ const NotificationsModalContent = ({
       : t('notification.timeAgo.daysAgo', { count: days });
   };
 
-  // Handle mark all as read
   const handleMarkAllAsRead = () => {
     if (markAllAsRead) {
       markAllAsRead();
@@ -156,204 +107,175 @@ const NotificationsModalContent = ({
     }
   };
 
-  // Handle clear all
-  // const handleClearAll = () => {
-  //   if (clearAll) {
-  //     clearAll();
-  //   }
-  //   setSelectedNotification(null);
-  // };
-
-  if (!isOpen) return null;
-
-  // If there's an error loading translations, show a fallback UI
-  if (error) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="rounded-lg bg-red-50 p-6 shadow-lg">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <BsExclamationTriangle className="h-5 w-5 text-red-400" aria-hidden="true" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Error loading notifications</h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>We&apos;re having trouble loading your notifications. Please try again later.</p>
-              </div>
-              <div className="mt-4">
-                <button
-                  type="button"
-                  className="rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
-                  onClick={onClose}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-start justify-end p-4 pt-20 text-center">
-        {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/30 transition-opacity"
-          aria-hidden="true"
-          onClick={onClose}
-          style={{
-            opacity: 1,
-            transition: 'opacity 200ms ease-in-out',
-          }}
-        />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[1000] overflow-y-auto">
+          <motion.div
+            className="fixed inset-0 bg-black/30"
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={onClose}
+          />
 
-        {/* Modal */}
-        <div
-          className="relative w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            transform: 'translateX(0)',
-            transition: 'transform 300ms ease-out, opacity 300ms ease-out',
-            opacity: 1,
-          }}
-        >
-          {/* Header */}
-          <div className="sticky top-0 z-10 bg-white px-6 py-4 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">{t('notification.title')}</h3>
-              <button
-                onClick={onClose}
-                className="rounded-full p-1 hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                aria-label={t('common.close')}
-              >
-                <IoClose className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="mt-3 flex space-x-1 rounded-lg bg-gray-100 p-1">
-              {(['all', 'unread', 'read', 'offers'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setFilter(tab)}
-                  className={`flex-1 rounded-md py-2 text-xs font-medium transition-colors ${
-                    filter === tab
-                      ? 'bg-white text-black font-semibold shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {t(`notification.${tab}`)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Notifications List */}
-          <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
-            {filteredNotifications.length > 0 ? (
-              <ul className="divide-y divide-gray-100">
-                {filteredNotifications.map((notification) => (
-                  <li
-                    key={notification.id}
-                    className={`px-6 py-3 hover:bg-gray-50 cursor-pointer ${
-                      !notification.read ? 'bg-blue-50' : ''
-                    }`}
+          <div className="flex min-h-screen items-start justify-end p-4 pt-20 text-center pointer-events-none">
+            <motion.div
+              className="pointer-events-auto relative w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[calc(100vh-6rem)]"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="notifications-modal-title"
+              initial={{ opacity: 0, x: 28, scale: 0.98 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 28, scale: 0.98 }}
+              transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <div className="sticky top-0 z-10 shrink-0 bg-white px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <h3
+                    id="notifications-modal-title"
+                    className="text-lg font-semibold text-gray-900"
                   >
-                    <div
-                      className="flex items-start justify-between w-full cursor-pointer"
-                      onClick={(e) => handleNotificationClick(notification.id, e)}
+                    {t('notification.title')}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-full p-1 hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                    aria-label={t('common.close')}
+                  >
+                    <IoClose className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="mt-3 flex space-x-1 rounded-lg bg-gray-100 p-1">
+                  {(['all', 'unread', 'read', 'offers'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setFilter(tab)}
+                      className={`flex-1 rounded-md py-2 text-xs font-medium transition-colors ${
+                        filter === tab
+                          ? 'bg-white text-primary shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
                     >
-                      <div className="flex items-start gap-3 w-full">
-                        <div className="mt-1">
-                          <div
-                            className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                              notification.read ? 'bg-gray-300' : 'bg-primary'
-                            }`}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 text-left">
-                            {notification.title}
-                          </p>
-
-                          <div className="mt-2 flex items-center text-xs text-gray-500">
-                            <span>{formatTimeAgo(notification.createdAt)}</span>
-                            <span className="mx-1">•</span>
-                            <span className="capitalize">{notification.type.toLowerCase()}</span>
-                          </div>
-                        </div>
-                      </div>
-                      {!notification.read && (
-                        <span className="inline-flex h-2 w-2 rounded-full bg-blue-600 ml-2 mt-1.5 flex-shrink-0" />
-                      )}
-                    </div>
-
-                    {selectedNotification === notification.id && (
-                      <div className="mt-2 pl-5 pr-2">
-                        <div className="text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 p-4 rounded-lg whitespace-pre-wrap break-words text-left shadow-sm">
-                          <div className="font-medium text-gray-700 mb-2 text-xs uppercase tracking-wide">
-                            Message
-                          </div>
-                          {notification.message}
-                        </div>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <BsBellFill className="mx-auto mb-3 text-gray-200" size={32} />
-                <p className="text-gray-500 text-sm">{t('notification.noNotifications')}</p>
+                      {t(`notification.${tab}`)}
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
+
+              {inboxUnavailable && (
+                <div className="mx-6 mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left text-xs text-amber-900">
+                  <BsExclamationTriangle className="mt-0.5 shrink-0" aria-hidden />
+                  <span>
+                    Could not reach the admin inbox endpoint (
+                    <code className="text-[0.7rem]">GET /notifications/inbox</code>
+                    ). Check that the API is deployed and your admin account is linked to a
+                    BelPower user for push/in-app alerts.
+                  </span>
+                </div>
+              )}
+
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                {isLoading ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-16 text-gray-500">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <p className="text-sm">{t('common.loading')}</p>
+                  </div>
+                ) : filteredNotifications.length > 0 ? (
+                  <ul className="divide-y divide-gray-100">
+                    {filteredNotifications.map((notification) => (
+                      <li
+                        key={notification.uuid ?? String(notification.id)}
+                        className={`px-6 py-3 hover:bg-gray-50 cursor-pointer ${
+                          !notification.read ? 'bg-blue-50' : ''
+                        }`}
+                      >
+                        <div
+                          className="flex items-start justify-between w-full cursor-pointer"
+                          onClick={(e) => handleNotificationClick(notification.id, e)}
+                        >
+                          <div className="flex items-start gap-3 w-full">
+                            <div className="mt-1">
+                              <div
+                                className={`w-2 h-2 rounded-full shrink-0 ${
+                                  notification.read ? 'bg-gray-300' : 'bg-primary'
+                                }`}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 text-left">
+                                {notification.title ?? notification.message}
+                              </p>
+                              <div className="mt-2 flex items-center text-xs text-gray-500">
+                                <span>{formatTimeAgo(notification.createdAt)}</span>
+                                <span className="mx-1">•</span>
+                                <span className="capitalize">
+                                  {notification.type.toLowerCase()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          {!notification.read && (
+                            <span className="inline-flex h-2 w-2 rounded-full bg-blue-600 ml-2 mt-1.5 shrink-0" />
+                          )}
+                        </div>
+
+                        {selectedNotification === String(notification.id) && (
+                          <div className="mt-2 pl-5 pr-2">
+                            <div className="text-sm text-gray-600 bg-linear-to-r from-gray-50 to-blue-50 border border-gray-200 p-4 rounded-lg whitespace-pre-wrap wrap-break-words text-left shadow-sm">
+                              <div className="font-medium text-gray-700 mb-2 text-xs uppercase tracking-wide">
+                                Message
+                              </div>
+                              {notification.message}
+                            </div>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                    <BsBellFill className="mx-auto mb-3 text-gray-200" size={32} />
+                    <p className="text-gray-500 text-sm">{t('notification.noNotifications')}</p>
+                  </div>
+                )}
+              </div>
+
+              {notifications.length > 0 && (
+                <div className="sticky bottom-0 shrink-0 bg-white border-t border-gray-100 px-6 py-3">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMarkAllAsRead();
+                    }}
+                    className="flex items-center text-sm font-medium text-primary hover:text-primary-dark disabled:opacity-50"
+                    disabled={!notifications.some((n) => !n.read)}
+                  >
+                    <BsCheckAll className="mr-1.5 h-4 w-4" />
+                    {t('notification.markAllAsRead')}
+                  </button>
+                </div>
+              )}
+            </motion.div>
           </div>
-
-          {/* Footer Actions */}
-          {notifications.length > 0 && (
-            <div className="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-3">
-              <div className="flex justify-between">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleMarkAllAsRead();
-                  }}
-                  className="flex items-center text-sm font-medium text-black hover:text-gray-700 disabled:opacity-50"
-                  disabled={!notifications.some((n) => !n.read)}
-                >
-                  <BsCheckAll className="mr-1.5 h-4 w-4" />
-                  {t('notification.markAllAsRead')}
-                </button>
-                {/* <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleClearAll();
-                  }}
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900 disabled:opacity-50"
-                  disabled={notifications.length === 0}
-                >
-                  {t('notification.clearAll')}
-                </button> */}
-              </div>
-            </div>
-          )}
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 };
 
-// Export the wrapped component with error boundary
 export default function NotificationsModal(props: NotificationsModalProps) {
   return (
     <TranslationErrorBoundary
       fallback={
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
           <div className="rounded-lg bg-white p-6 shadow-xl">
             <h3 className="text-lg font-medium text-gray-900">Something went wrong</h3>
             <p className="mt-2 text-sm text-gray-600">
@@ -361,8 +283,9 @@ export default function NotificationsModal(props: NotificationsModalProps) {
             </p>
             <div className="mt-4">
               <button
+                type="button"
                 onClick={props.onClose}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
               >
                 Close
               </button>

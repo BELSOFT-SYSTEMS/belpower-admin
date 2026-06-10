@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   FaArrowLeft,
@@ -12,9 +12,12 @@ import {
   FaClock,
   FaCheckCircle,
   FaCreditCard,
+  FaRedo,
 } from 'react-icons/fa';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { formatPrice } from '@/utils/FormatPrice';
-import { getTransactionById } from '@/data/adminMockData';
+import { TransactionAmountBreakdown } from '@/components/admin/transactions/TransactionAmountBreakdown';
 import { TransactionServiceDetail } from '@/components/admin/transactions/TransactionServiceDetail';
 import { TransactionPaymentReferences } from '@/components/admin/transactions/TransactionPaymentReferences';
 import { TransactionFraudAudit } from '@/components/admin/transactions/TransactionFraudAudit';
@@ -25,6 +28,8 @@ import {
   getTransactionIconFallback,
 } from '@/utils/transactionIcons';
 import { getTransactionTitle } from '@/data/adminMockData';
+import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
 import {
   formatScheduledFrequency,
   formatTxnDateTime,
@@ -32,6 +37,24 @@ import {
   getTransactionStatusPillClass,
   isScheduledTransaction,
 } from '@/utils/adminTransactionDisplay';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminTransactionDetail } from '@/hooks/useAdminTransactionDetail';
+import {
+  blockTransaction,
+  clearTransactionReview,
+  requeryTransaction,
+  unblockTransaction,
+} from '@/lib/adminTransactions';
+import { mapApiTransactionDetail } from '@/utils/mapApiTransactionDetail';
+import {
+  getReceiptScheduleProps,
+  mapAdminTransactionToReceipt,
+} from '@/utils/mapAdminTransactionToReceipt';
+import { downloadTransactionReceiptPDF } from '@/utils/pdfUtils';
+import {
+  getTransactionQuickActionAvailability,
+  getTransactionQuickActionTitle,
+} from '@/utils/transactionQuickActionState';
 import '@/styles/adminTransactionDetails.css';
 import '@/styles/adminShared.css';
 
@@ -42,32 +65,157 @@ const TABS = [
   { id: 'fraud', label: 'Fraud & audit' },
 ];
 
-function formatDisplayDate(iso: string | null) {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
-}
-
 export default function TransactionDetailPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const transactionId = params?.id ?? '';
+  const { canAccess } = useAdminAuth();
+  const { detail, isLoading, error, errorCode, refresh } =
+    useAdminTransactionDetail(transactionId);
   const [activeTab, setActiveTab] = useState('overview');
+  const [isActing, setIsActing] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && TABS.some((item) => item.id === tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const transaction = useMemo(
-    () => getTransactionById(params?.id ?? ''),
-    [params?.id]
+    () => (detail ? mapApiTransactionDetail(detail) : null),
+    [detail]
   );
 
-  if (!transaction) {
+  const quickActionContext = detail
+    ? {
+        reviewStatus: detail.fraud.reviewStatus,
+        requeryEligible: detail.requery.eligible,
+        requeryRecommended: detail.requery.recommended,
+        requeryReason: detail.requery.reason,
+      }
+    : undefined;
+
+  const quickActionAvailability = transaction
+    ? getTransactionQuickActionAvailability(transaction, quickActionContext)
+    : null;
+
+  const handleReview = () => {
+    if (!quickActionAvailability?.canReview) return;
+    setActiveTab('fraud');
+    router.replace(`/command-center/transactions/${transactionId}?tab=fraud`);
+  };
+
+  const handleBlock = async () => {
+    if (!transaction || !quickActionAvailability?.canBlock) return;
+    setIsActing(true);
+    try {
+      await blockTransaction(transaction.id);
+      toast.success(`Transaction ${transaction.reference} blocked.`);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to block transaction.');
+    } finally {
+      setIsActing(false);
+    }
+  };
+
+  const handleUnblock = async () => {
+    if (!transaction || !quickActionAvailability?.canUnblock) return;
+    setIsActing(true);
+    try {
+      await unblockTransaction(transaction.id);
+      toast.success(`Transaction ${transaction.reference} unblocked.`);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to unblock transaction.');
+    } finally {
+      setIsActing(false);
+    }
+  };
+
+  const handleClearReview = async () => {
+    if (!transaction || !quickActionAvailability?.canClearReview) return;
+    setIsActing(true);
+    try {
+      await clearTransactionReview(transaction.id);
+      toast.success(`Review cleared for ${transaction.reference}.`);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to clear review.');
+    } finally {
+      setIsActing(false);
+    }
+  };
+
+  const handleRequery = async () => {
+    if (!transaction || !detail?.requery.eligible) return;
+    setIsActing(true);
+    try {
+      await requeryTransaction(transaction.id);
+      toast.success(`Requery started for ${transaction.reference}.`);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to requery transaction.');
+    } finally {
+      setIsActing(false);
+    }
+  };
+
+  const handlePrintReceipt = async () => {
+    if (!detail) return;
+    setIsPrinting(true);
+    try {
+      const receiptData = mapAdminTransactionToReceipt(detail);
+      const schedule = getReceiptScheduleProps(detail);
+      const ok = await downloadTransactionReceiptPDF(
+        receiptData,
+        schedule.isScheduled,
+        schedule.frequency,
+        schedule.nextPurchaseDate
+      );
+      if (ok) {
+        toast.success('Receipt PDF downloaded.');
+      } else {
+        toast.error('Failed to generate receipt PDF.');
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to generate receipt PDF.');
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
+  if (!canAccess('transactions.list')) {
+    return (
+      <div className="receipt_page_wrap transaction_details_page">
+        <h1>Transaction details</h1>
+        <p className="empty_fallback">You do not have access to transactions.</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="receipt_page_wrap transaction_details_page">
+        <button
+          type="button"
+          className="receipt_back"
+          onClick={() => router.push('/command-center/transactions')}
+        >
+          <FaArrowLeft /> Back to transactions
+        </button>
+        <div className="users_page_loading" style={{ padding: '4rem 0' }}>
+          <Loader2 className="animate-spin" size={32} aria-hidden />
+          <p>Loading transaction…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !detail || !transaction) {
     return (
       <div className="receipt_page_wrap transaction_details_page">
         <button
@@ -78,7 +226,7 @@ export default function TransactionDetailPage() {
           <FaArrowLeft /> Back to transactions
         </button>
         <div className="admin_panel_card">
-          <p>Transaction not found.</p>
+          <p>{errorCode === 'NOT_FOUND' ? 'Transaction not found.' : error ?? 'Transaction not found.'}</p>
         </div>
       </div>
     );
@@ -93,6 +241,17 @@ export default function TransactionDetailPage() {
       badge: transaction.suspicious ? '!' : undefined,
     },
   ];
+  const quickActions = detail.quickActions;
+  const showReview = Boolean(quickActions.review);
+  const showBlock = Boolean(quickActions.block);
+  const showUnblock = Boolean(quickActions.unblock && transaction.is_blocked);
+  const showClearReview = Boolean(
+    quickActions.clearReview && quickActionAvailability?.canClearReview
+  );
+  const showRequery = Boolean(
+    quickActions.requery && detail.requery.eligible
+  );
+  const requeryReason = detail.requery.reason?.trim();
 
   return (
     <div className="receipt_page_wrap transaction_details_page">
@@ -110,7 +269,9 @@ export default function TransactionDetailPage() {
           <div>
             <strong>Suspicious transaction</strong>
             <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem' }}>
-              {transaction.fraud_reason ?? 'Flagged by fraud detection rules.'}
+              {detail.fraud.riskReason ??
+                transaction.fraud_reason ??
+                'Flagged by fraud detection rules.'}
             </p>
           </div>
         </div>
@@ -133,29 +294,95 @@ export default function TransactionDetailPage() {
             <div>
               <h1>{getTransactionTitle(transaction)}</h1>
               <p className="txn_meta">
-                {transaction.reference} · {transaction.user_name}
+                {transaction.reference} · {detail.user.fullName}
               </p>
               <span className={`pill ${getTransactionStatusPillClass(transaction)}`}>
                 {getTransactionStatusLabel(transaction)}
               </span>
+              {detail.user.isInternalTestAccount && (
+                <span className="pill pill_internal_test">Internal test</span>
+              )}
             </div>
           </div>
           <div className="detail_header_right">
             <div className="header_actions">
-              <button type="button" className="header_action_print">
-                <FaPrint /> Print
+              <button
+                type="button"
+                className="header_action_print"
+                disabled={isPrinting || isActing}
+                title="Download transaction receipt PDF"
+                onClick={handlePrintReceipt}
+              >
+                <FaPrint /> {isPrinting ? 'Generating…' : 'Print'}
               </button>
-              <button type="button" className="header_action_review">
-                <FaClipboardCheck /> Review
-              </button>
-              <button type="button" className="header_action_block">
-                <FaBan /> Block
-              </button>
-              <button type="button" className="header_action_unblock">
-                <FaUnlock /> Unblock
-              </button>
+              {showReview && (
+                <button
+                  type="button"
+                  className="header_action_review"
+                  disabled={!quickActionAvailability?.canReview || isActing}
+                  title={getTransactionQuickActionTitle('review', transaction, quickActionContext)}
+                  onClick={handleReview}
+                >
+                  <FaClipboardCheck /> Review
+                </button>
+              )}
+              {showBlock && (
+                <button
+                  type="button"
+                  className="header_action_block"
+                  disabled={!quickActionAvailability?.canBlock || isActing}
+                  title={getTransactionQuickActionTitle('block', transaction, quickActionContext)}
+                  onClick={handleBlock}
+                >
+                  <FaBan /> Block
+                </button>
+              )}
+              {showUnblock && (
+                <button
+                  type="button"
+                  className="header_action_unblock"
+                  disabled={!quickActionAvailability?.canUnblock || isActing}
+                  title={getTransactionQuickActionTitle('unblock', transaction, quickActionContext)}
+                  onClick={handleUnblock}
+                >
+                  <FaUnlock /> Unblock
+                </button>
+              )}
+              {showClearReview && (
+                <button
+                  type="button"
+                  className="header_action_clear_review"
+                  disabled={isActing}
+                  title={getTransactionQuickActionTitle(
+                    'clearReview',
+                    transaction,
+                    quickActionContext
+                  )}
+                  onClick={handleClearReview}
+                >
+                  <FaCheckCircle /> Clear review
+                </button>
+              )}
+              {showRequery && (
+                <button
+                  type="button"
+                  className="header_action_requery"
+                  disabled={isActing}
+                  title={getTransactionQuickActionTitle('requery', transaction, quickActionContext)}
+                  onClick={handleRequery}
+                >
+                  <FaRedo /> Manual requery
+                </button>
+              )}
             </div>
-            <TransactionCustomerCard transaction={transaction} />
+            {showRequery && detail.requery.recommended && requeryReason && (
+              <p className="header_requery_hint">{requeryReason}</p>
+            )}
+            <TransactionCustomerCard
+              transaction={transaction}
+              userEmail={detail.user.email}
+              isInternalTestAccount={detail.user.isInternalTestAccount}
+            />
           </div>
         </div>
 
@@ -163,13 +390,37 @@ export default function TransactionDetailPage() {
 
         {activeTab === 'overview' && (
           <div className="tab_panel txn_overview_tab">
+            {(detail.requery.autoRequeryPaused ||
+              detail.requery.recommended ||
+              detail.requery.requeryCount > 0) && (
+              <div className="admin_requery_banner">
+                <strong>Requery status</strong>
+                {requeryReason && <p>{requeryReason}</p>}
+                <p className="admin_requery_meta">
+                  Auto attempts: {detail.requery.requeryCount} / {detail.requery.maxRequeryCount}
+                  {detail.requery.lastRequeryAt &&
+                    ` · Last auto: ${formatAdminDateTime(detail.requery.lastRequeryAt)}`}
+                  {detail.requery.nextRetryAt &&
+                    ` · Next retry: ${formatAdminDateTime(detail.requery.nextRetryAt)}`}
+                  {detail.requery.timeoutReason &&
+                    ` · ${detail.requery.timeoutReason.replace(/_/g, ' ')}`}
+                </p>
+                {detail.requery.autoRequeryPaused && detail.requery.autoRequeryPausedReason && (
+                  <p className="admin_requery_note">
+                    Auto-requery paused ({detail.requery.autoRequeryPausedReason.replace(/_/g, ' ')}
+                    ).
+                  </p>
+                )}
+              </div>
+            )}
+
             {isScheduledTransaction(transaction) && transaction.scheduled_info && (
               <div className="admin_scheduled_banner">
                 <strong>Scheduled purchase</strong>
                 <p>
                   Repeats {formatScheduledFrequency(transaction.scheduled_info.frequency).toLowerCase()}
                   . Next run:{' '}
-                  <strong>{formatDisplayDate(transaction.scheduled_info.next_purchase)}</strong>
+                  <strong>{formatAdminDateTime(transaction.scheduled_info.next_purchase)}</strong>
                 </p>
                 <p className="admin_scheduled_note">
                   Payment is drawn from the user&apos;s wallet on each scheduled date. Ensure
@@ -207,22 +458,7 @@ export default function TransactionDetailPage() {
               <div className="txn_overview_payment_card">
                 <h4 className="txn_overview_card_title">Payment summary</h4>
                 <div className="txn_overview_breakdown">
-                  <div className="txn_overview_breakdown_row">
-                    <span>Amount Purchased</span>
-                    <span>{formatPrice(transaction.amount)}</span>
-                  </div>
-                  <div className="txn_overview_breakdown_row">
-                    <span>Service charge</span>
-                    <span>{formatPrice(transaction.service_charge)}</span>
-                  </div>
-                  <div className="txn_overview_breakdown_row">
-                    <span>VAT</span>
-                    <span>{formatPrice(transaction.vat)}</span>
-                  </div>
-                  <div className="txn_overview_breakdown_row txn_overview_breakdown_total">
-                    <span>Total paid</span>
-                    <strong>{formatPrice(transaction.total_amount)}</strong>
-                  </div>
+                  <TransactionAmountBreakdown transaction={transaction} />
                 </div>
               </div>
             </div>
@@ -233,7 +469,7 @@ export default function TransactionDetailPage() {
                 <div>
                   <span className="txn_overview_timeline_label">Created</span>
                   <span className="txn_overview_timeline_value">
-                    {formatDisplayDate(transaction.created_at)}
+                    {formatAdminDateTime(transaction.created_at)}
                   </span>
                 </div>
               </div>
@@ -242,7 +478,7 @@ export default function TransactionDetailPage() {
                 <div>
                   <span className="txn_overview_timeline_label">Completed</span>
                   <span className="txn_overview_timeline_value">
-                    {formatDisplayDate(transaction.completed_at)}
+                    {formatAdminDateTime(transaction.completed_at)}
                   </span>
                 </div>
               </div>
@@ -251,7 +487,9 @@ export default function TransactionDetailPage() {
                 <div>
                   <span className="txn_overview_timeline_label">Payment method</span>
                   <span className="txn_overview_timeline_value">
-                    {transaction.payment_method ?? '—'}
+                    {getPaymentMethodLabel(
+                      detail.payment.method ?? transaction.payment_method
+                    )}
                   </span>
                 </div>
               </div>
@@ -278,13 +516,13 @@ export default function TransactionDetailPage() {
 
         {activeTab === 'payment' && (
           <div className="tab_panel">
-            <TransactionPaymentReferences transaction={transaction} />
+            <TransactionPaymentReferences transaction={transaction} payment={detail.payment} />
           </div>
         )}
 
         {activeTab === 'fraud' && (
           <div className="tab_panel">
-            <TransactionFraudAudit transaction={transaction} />
+            <TransactionFraudAudit transaction={transaction} fraud={detail.fraud} />
           </div>
         )}
       </div>

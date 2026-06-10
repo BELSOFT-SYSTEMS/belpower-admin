@@ -11,7 +11,9 @@ import {
   getTransactionIconFallback,
 } from '@/utils/transactionIcons';
 import { getTransactionTitle } from '@/data/adminMockData';
+import { TransactionAmountBreakdown } from '@/components/admin/transactions/TransactionAmountBreakdown';
 import { formatPrice } from '@/utils/FormatPrice';
+import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
 
 type Props = {
   transaction: AdminTransaction;
@@ -119,7 +121,35 @@ export function TransactionServiceDetail({ transaction }: Props) {
               <>
                 <ServiceField label="Customer name" value={transaction.customer_name} />
                 <ServiceField label="Address" value={transaction.address} />
-                <ServiceField label="Payment method" value={transaction.payment_method} />
+                <ServiceField
+                  label="Payment method"
+                  value={getPaymentMethodLabel(transaction.payment_method)}
+                />
+                <ServiceField label="Amount paid" value={formatPrice(transaction.amount)} />
+                <ServiceField
+                  label="Amount purchased"
+                  value={formatPrice(transaction.amount_purchased ?? 0)}
+                />
+                <ServiceField
+                  label="Service charge"
+                  value={formatPrice(transaction.service_charge)}
+                />
+                <ServiceField label="VAT" value={formatPrice(transaction.vat)} />
+                <ServiceField label="Total paid" value={formatPrice(transaction.total_amount)} />
+              </>
+            )}
+            {isCable && (
+              <>
+                <ServiceField
+                  label="Payment method"
+                  value={getPaymentMethodLabel(transaction.payment_method)}
+                />
+                <ServiceField label="Package amount" value={formatPrice(transaction.amount)} />
+                <ServiceField
+                  label="Service charge"
+                  value={formatPrice(transaction.service_charge)}
+                />
+                <ServiceField label="Total paid" value={formatPrice(transaction.total_amount)} />
               </>
             )}
             {isCable && <ServiceField label="Customer" value={transaction.customer_name} />}
@@ -141,54 +171,16 @@ export function TransactionServiceDetail({ transaction }: Props) {
         <section className="service_detail_panel">
           <h4 className="service_detail_panel_title">Payment breakdown</h4>
           <div className="service_detail_payment_box">
-            {isElectricity && (
-              <>
-                <PaymentRow label="Amount paid" value={formatPrice(transaction.amount)} />
-                <PaymentRow
-                  label="Service charge"
-                  value={formatPrice(transaction.service_charge)}
-                />
-                <PaymentRow
-                  label="Amount purchased"
-                  value={formatPrice(transaction.amount - transaction.vat)}
-                />
-                <PaymentRow label="VAT" value={formatPrice(transaction.vat)} />
-                <PaymentRow
-                  label="Total"
-                  value={<strong>{formatPrice(transaction.total_amount)}</strong>}
-                />
-              </>
-            )}
-            {isCable && (
-              <>
-                <PaymentRow label="Package amount" value={formatPrice(transaction.amount)} />
-                <PaymentRow
-                  label="Service charge"
-                  value={formatPrice(transaction.service_charge)}
-                />
-                <PaymentRow
-                  label="Total"
-                  value={<strong>{formatPrice(transaction.total_amount)}</strong>}
-                />
-              </>
-            )}
-            {(isAirtime || isData) && (
-              <>
-                <PaymentRow label="Amount paid" value={formatPrice(transaction.amount)} />
-                <PaymentRow
-                  label="Service charge"
-                  value={formatPrice(transaction.service_charge)}
-                />
-                <PaymentRow
-                  label="Total"
-                  value={<strong>{formatPrice(transaction.total_amount)}</strong>}
-                />
-              </>
-            )}
-            {isDeposit && (
+            {isDeposit ? (
               <PaymentRow
                 label="Amount credited"
                 value={<strong>{formatPrice(transaction.total_amount)}</strong>}
+              />
+            ) : (
+              <TransactionAmountBreakdown
+                transaction={transaction}
+                rowClassName="service_detail_payment_row"
+                totalClassName="service_detail_payment_row"
               />
             )}
           </div>

@@ -22,10 +22,12 @@
   padding-bottom: 2.5rem;
   min-height: 100vh;
 }
-.transactions_page section {
+.transactions_page section,
+.admin_txn_list_panel {
     margin-bottom: 2.5rem;
 }
-.transactions_page section h2 {
+.transactions_page section h2,
+.admin_txn_list_panel h2 {
     font-size: 1.125rem;
     font-weight: 600;
     color: #000;
@@ -53,6 +55,139 @@
   margin-bottom: 1.5rem;
   color: #000;
 }
+
+.admin_txn_list_panel .admin_txn_row_wrap,
+.transactions_page .admin_txn_row_wrap {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  gap: 0.75rem;
+}
+
+.admin_txn_list_panel .admin_txn_row_wrap:last-child,
+.transactions_page .admin_txn_row_wrap:last-child {
+  border-bottom: none;
+}
+
+.admin_txn_list_panel .admin_txn_row_link,
+.transactions_page .admin_txn_row_link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.375rem 0;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 0.375rem;
+  transition: background 0.15s;
+}
+
+.admin_txn_list_panel .admin_txn_row_link:hover,
+.transactions_page .admin_txn_row_link:hover {
+  background: #f9fafb;
+}
+
+.admin_txn_list_panel .admin_txn_row_wrap_scheduled,
+.transactions_page .admin_txn_row_wrap_scheduled {
+  background: linear-gradient(90deg, #fffbeb 0%, #ffffff 12%);
+}
+
+.admin_txn_list_panel .admin_txn_row_wrap_scheduled .admin_txn_row_link:hover,
+.transactions_page .admin_txn_row_wrap_scheduled .admin_txn_row_link:hover {
+  background: linear-gradient(90deg, #fef3c7 0%, #f9fafb 12%);
+}
+
+.admin_txn_list_panel .admin_txn_meta,
+.transactions_page .admin_txn_meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.admin_txn_list_panel .admin_txn_meta_link,
+.transactions_page .admin_txn_meta_link {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.25rem;
+  transition: background 0.15s;
+}
+
+.admin_txn_list_panel .admin_txn_meta_link:hover,
+.transactions_page .admin_txn_meta_link:hover {
+  background: #f9fafb;
+}
+
+.admin_txn_list_panel .txn_list_quick_actions,
+.transactions_page .txn_list_quick_actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.admin_txn_list_panel .txn_quick_action,
+.transactions_page .txn_quick_action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.admin_txn_list_panel .txn_quick_action.action_review,
+.transactions_page .txn_quick_action.action_review {
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+.admin_txn_list_panel .txn_quick_action.action_review:hover:not(:disabled),
+.transactions_page .txn_quick_action.action_review:hover:not(:disabled) {
+  background: #eff6ff;
+}
+
+.admin_txn_list_panel .txn_quick_action.action_block,
+.transactions_page .txn_quick_action.action_block {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.admin_txn_list_panel .txn_quick_action.action_block:hover:not(:disabled),
+.transactions_page .txn_quick_action.action_block:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.admin_txn_list_panel .txn_quick_action.action_unblock,
+.transactions_page .txn_quick_action.action_unblock {
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.admin_txn_list_panel .txn_quick_action.action_unblock:hover:not(:disabled),
+.transactions_page .txn_quick_action.action_unblock:hover:not(:disabled) {
+  background: #f0fdf4;
+}
+
+.admin_txn_list_panel .txn_quick_action:disabled,
+.transactions_page .txn_quick_action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .transactions_page .stats_section {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -71,7 +206,7 @@
 
 @media (min-width: 1280px) {
   .transactions_page .stats_section {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }
 .transactions_page .stats_card {
@@ -99,15 +234,24 @@
   margin: 0;
 }
 
+.transactions_page .stats_card_subtitle {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0.125rem 0 0;
+}
+
+.admin_txn_list_panel .manage_header,
 .transactions_page .manage_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
+.admin_txn_list_panel .search_container,
 .transactions_page .search_container {
     position: relative;
 }
+.admin_txn_list_panel .search_container input,
 .transactions_page .search_container input {
     padding-left: 2.5rem;
     padding-right: 1rem;
@@ -120,10 +264,12 @@
     width: 250px;
     transition: border-color 200ms ease-in-out;
 }
+.admin_txn_list_panel .search_container input:focus,
 .transactions_page .search_container input:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
+.admin_txn_list_panel .search_container svg,
 .transactions_page .search_container svg {
     position: absolute;
     top: 0.75rem;
@@ -195,49 +341,96 @@
     font-size: 0.875rem;
 }
 
-/* PAGINATION */
-.pagination_section {
+.transactions_user_filter_note {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.transactions_user_filter_note code {
+    font-size: 0.8125rem;
+    color: #374151;
+}
+
+.admin_txn_list_loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.transactions_pagination_bar {
     margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.transactions_pagination_meta {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.admin_txn_title .pill_refund,
+.admin_txn_title .pill_cashback,
+.admin_txn_title .pill_internal_test {
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+/* PAGINATION — match users page */
+.admin_txn_list_panel .pagination_section,
+.transactions_page .pagination_section {
+    margin-top: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
 }
-.pagination_section .pagination_btn {
-    border: 1px solid #1d4ed8;
+
+.admin_txn_list_panel .pagination_section .pagination_btn,
+.transactions_page .pagination_section .pagination_btn {
+    border: 1px solid #e5e7eb;
     padding: 0.5rem 0.75rem;
     border-radius: 0.25rem;
     background-color: #fff;
+    color: #111827;
     cursor: pointer;
     font-size: 0.875rem;
+    font-weight: 500;
     transition: all 200ms ease-in-out;
 }
-.pagination_section .pagination_btn:hover {
+
+.admin_txn_list_panel .pagination_section .pagination_btn:hover:not(:disabled),
+.transactions_page .pagination_section .pagination_btn:hover:not(:disabled) {
     background-color: #f3f4f6;
+    border-color: #d1d5db;
 }
-.pagination_section .pagination_btn:disabled {
+
+.admin_txn_list_panel .pagination_section .pagination_btn:disabled,
+.transactions_page .pagination_section .pagination_btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    color: #6b7280;
 }
-.pagination_section .current {
+
+.admin_txn_list_panel .pagination_section .current,
+.transactions_page .pagination_section .current {
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
-    cursor: pointer;
+    cursor: default;
     font-size: 0.875rem;
     transition: all 200ms ease-in-out;
 }
-.pagination_section .btn_active {
+
+.admin_txn_list_panel .pagination_section .btn_active,
+.transactions_page .pagination_section .btn_active {
     background: linear-gradient(to bottom, #0064FF, #000041);
     color: #fff;
     border: none;
-}
-.pagination_section .btn_active:hover {
-    background: linear-gradient(to bottom, #3b82f6, #000041);
-}
-.pagination_section .btn_inactive {
-    border: 1px solid #1d4ed8;
-    color: #1d4ed8;
-}
-.pagination_section .btn_inactive:hover {
-    background-color: #f3f4f6;
 }

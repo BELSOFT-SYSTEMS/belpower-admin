@@ -16,13 +16,36 @@ export type MeterVerificationPayload = {
   CustomerAddress?: string;
 };
 
-export type MeterVerificationResult = {
-  success: boolean;
+export type MeterElectricityPurchaseUser = {
+  id: string;
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+};
+
+export type MeterElectricityPurchase = {
+  id: string;
+  reference: string;
+  status: string;
+  amount: number;
+  amountPurchased?: number | null;
+  totalAmount: number;
+  serviceCharge?: number;
+  vat?: number;
+  createdAt: string;
+  completedAt?: string | null;
+  paymentMethod?: string | null;
+  user?: MeterElectricityPurchaseUser | null;
+  isSuspicious?: boolean;
+  reviewStatus?: string | null;
+};
+
+/** Normalized result for Check Meter page (POST /admin/meters/verify). */
+export type MeterVerifyResult = {
   message: string;
-  data: {
-    success: boolean;
-    data: MeterVerificationPayload;
-    verification_id: string;
-    expires_at: string;
-  };
+  meterNumber: string;
+  verificationSuccess: boolean;
+  payload: MeterVerificationPayload;
+  electricityPurchases: MeterElectricityPurchase[];
+  purchaseCount: number;
 };

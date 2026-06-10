@@ -121,7 +121,34 @@
 .user_details_page .tab_hint {
   font-size: 0.8125rem;
   color: #6b7280;
-  margin: 0 0 1rem;
+  margin: 0;
+}
+
+.user_details_page .tab_hint_row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.user_details_page .tab_hint_links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.user_details_page .tab_hint_link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.user_details_page .tab_hint_link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
 }
 
 .user_details_page .detail_grid {
@@ -563,7 +590,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: #111827;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
 }
 
 .user_details_page .security_flagged_reason {
@@ -660,14 +687,62 @@
   background: #fef2f2;
 }
 
-.transactions_subtitle {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: -0.75rem 0 1.5rem;
+.user_details_page .security_action_btn.action_delete {
+  color: #991b1b;
+  border-color: #fca5a5;
+  background: #fef2f2;
 }
 
-.transactions_list_section {
+.user_details_page .security_action_btn.action_delete:hover {
+  background: #fee2e2;
+}
+
+.user_details_page .security_action_btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.user_details_page .security_action_btn:disabled:hover {
+  background: #fff;
+}
+
+.user_details_page .user_txn_tab_panel {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.user_details_page .user_txn_tab_panel .manage_header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.user_details_page .user_txn_tab_panel .search_container input {
+  width: 100%;
+  max-width: 220px;
+}
+
+.user_details_page .user_txn_tab_panel .admin_txn_list {
   margin-top: 0.5rem;
+}
+
+.user_details_page .user_txn_tab_panel .admin_txn_list_error,
+.user_details_page .user_txn_tab_panel .admin_txn_list_empty {
+  padding: 1.5rem 0;
+}
+
+@media (max-width: 639px) {
+  .user_details_page .user_txn_tab_panel .manage_header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .user_details_page .user_txn_tab_panel .search_container input {
+    max-width: none;
+    width: 100%;
+  }
 }
 
 /* Stats — match home / users list */
@@ -925,7 +1000,7 @@
 }
 
 .user_details_page .meter_number_mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
   letter-spacing: 0.02em;
 }
 

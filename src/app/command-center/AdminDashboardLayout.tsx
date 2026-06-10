@@ -1,11 +1,14 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Sidebar } from '@/components/admin/Sidebar';
 import AdminTopBar from '@/components/admin/layouts/topbar/Topbar';
 import { formatAdminDocumentTitle } from '@/utils/adminPageTitle';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { PUBLIC_ADMIN_PATHS } from '@/constants/adminNavPermissions';
+import { redirectToSignIn } from '@/lib/adminAuth';
 
 type AdminDashboardProps = {
   children: ReactNode;
@@ -13,48 +16,27 @@ type AdminDashboardProps = {
 
 export default function AdminDashboardLayout({ children }: AdminDashboardProps) {
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated, isLoading } = useAdminAuth();
+  const isPublicRoute = PUBLIC_ADMIN_PATHS.some((path) => pathname === path);
 
   useEffect(() => {
     document.title = formatAdminDocumentTitle(pathname);
   }, [pathname]);
 
   useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const response = await fetch('/api/admin/auth/verify', {
-          credentials: 'include',
-        });
+    if (isLoading) return;
 
-        if (!response.ok) {
-          if (pathname !== '/command-center/sign-in') {
-            const from =
-              pathname === '/command-center'
-                ? ''
-                : `?from=${encodeURIComponent(pathname || '/command-center')}`;
-            window.location.href = `/command-center/sign-in${from}`;
-            return;
-          }
-        } else {
-          if (pathname === '/command-center/sign-in') {
-            const searchParams = new URLSearchParams(window.location.search);
-            const from = searchParams.get('from') || '/command-center';
-            window.location.href = from;
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Auth verification error:', error);
-        if (pathname !== '/command-center/sign-in') {
-          window.location.href = '/command-center/sign-in';
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (!isAuthenticated && !isPublicRoute) {
+      redirectToSignIn(pathname);
+      return;
+    }
 
-    verifyAuth();
-  }, [pathname]);
+    if (isAuthenticated && pathname === '/command-center/sign-in') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const from = searchParams.get('from') || '/command-center';
+      window.location.href = from;
+    }
+  }, [isLoading, isAuthenticated, isPublicRoute, pathname]);
 
   if (isLoading) {
     return (
@@ -67,8 +49,12 @@ export default function AdminDashboardLayout({ children }: AdminDashboardProps) 
     );
   }
 
-  if (pathname === '/command-center/sign-in') {
+  if (isPublicRoute) {
     return <>{children}</>;
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (

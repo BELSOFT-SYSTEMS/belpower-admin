@@ -70,7 +70,7 @@
 }
 
 .check_meter_input_mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
   letter-spacing: 0.02em;
 }
 
@@ -212,6 +212,31 @@
   margin-top: 0.5rem;
 }
 
+.check_meter_tabs_container {
+  padding: 1.25rem;
+}
+
+.check_meter_tab_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.check_meter_tab_hint_row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.check_meter_tab_hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
 .check_meter_sections {
   display: flex;
   flex-direction: column;
@@ -280,7 +305,7 @@
 }
 
 .check_meter_field_value_mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
   font-size: 0.875rem;
   letter-spacing: 0.02em;
 }
@@ -312,4 +337,140 @@
 .check_meter_meta_panel {
   background: #f9fafb;
   border-color: #e5e7eb;
+}
+
+.check_meter_warning_banner {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.check_meter_warning_icon {
+  color: #d97706;
+}
+
+.check_meter_purchases_tab {
+  gap: 0;
+}
+
+.check_meter_purchases_header_bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+}
+
+.check_meter_purchases_title {
+  margin: 0 0 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.check_meter_purchases_subtitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.check_meter_purchases_badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.check_meter_purchases_list .admin_txn_list {
+  border-radius: 0.75rem;
+}
+
+.check_meter_purchase_row {
+  color: #111827;
+}
+
+.check_meter_purchase_row:hover {
+  background: #f9fafb;
+}
+
+.check_meter_purchase_ref {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+}
+
+.check_meter_purchase_meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.check_meter_purchase_user {
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.check_meter_purchase_breakdown {
+  font-size: 0.75rem;
+  color: #374151;
+  line-height: 1.35;
+}
+
+.check_meter_purchase_payment {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.check_meter_purchases_empty_card {
+  padding: 2rem 1.25rem;
+  text-align: center;
+  background: #fff;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.75rem;
+}
+
+.check_meter_purchases_empty_title {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.check_meter_purchases_empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .check_meter_purchase_row .admin_txn_row_bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .check_meter_purchase_row .admin_txn_pills {
+    justify-content: flex-start;
+  }
+
+  .check_meter_purchase_row .admin_txn_row_top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
 }

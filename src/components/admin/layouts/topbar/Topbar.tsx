@@ -1,59 +1,45 @@
 "use client";
 
-// External imports
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Icons
 import { IoMdNotifications } from "react-icons/io";
 import { IoMdSettings } from "react-icons/io";
-
-// Internal imports
 import { useAppTranslation } from "@/hooks/useAppTranslation";
 import NotificationModal from "@/components/NotificationsModal";
 import "@/components/admin/layouts/topbar/topbar.css";
 import { LogoutButton } from "@/components/admin/LogoutButton";
+import { AdminAvatar } from "@/components/admin/AdminAvatar";
+import { useAdminAuth } from "@/context/AdminAuthContext";
+import { useAdminInboxNotifications } from "@/hooks/useAdminInboxNotifications";
+import { useAdminWebPush } from "@/hooks/useAdminWebPush";
 
-/**
- * Interface for notification items
- */
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  type: "Airtime" | "Data" | "Offers" | "Electricity" | "Other" | "Cable";
-  read: boolean;
-  createdAt: Date;
-  details?: string;
-}
-
-/**
- * TopBar component - Displays the application's top navigation bar
- * Includes profile dropdown and notifications
- */
 export default function AdminTopBar() {
-  // State management
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { displayName, admin, isAuthenticated } = useAdminAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Refs and hooks
   const modalRef = useRef<HTMLDivElement>(null);
   const { t } = useAppTranslation();
 
-  /**
-   * Handler functions
-   */
-  const closeModal = () => setIsOpen(false);
+  const inboxEnabled = isAuthenticated;
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    refresh,
+    isLoading,
+    inboxUnavailable,
+  } = useAdminInboxNotifications(inboxEnabled);
 
-  /**
-   * Click outside handler for profile dropdown
-   */
+  useAdminWebPush(inboxEnabled);
+
+  const closeProfileMenu = () => setIsOpen(false);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        closeModal();
+        closeProfileMenu();
       }
     };
 
@@ -66,133 +52,59 @@ export default function AdminTopBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  /**
-   * Notification management
-   */
   useEffect(() => {
-    // Load notifications from localStorage
-    const stored = localStorage.getItem("notifications");
-    if (stored) {
-      const parsed: Notification[] = JSON.parse(stored).map(
-        (n: Notification) => ({
-          ...n,
-          createdAt: new Date(n.createdAt),
-        })
-      );
-      setNotifications(parsed);
-    } else {
-      // Initialize with dummy notifications if none exist
-      const dummyNotifications: Notification[] = [
-        {
-          id: 1,
-          title: "Airtime Received",
-          message: "You have received Airtime!",
-          type: "Airtime",
-          read: false,
-          createdAt: new Date(),
-        },
-        {
-          id: 2,
-          title: "New Data Plan",
-          message: "New Data Plan Available",
-          type: "Data",
-          read: false,
-          createdAt: new Date(),
-        },
-        {
-          id: 3,
-          title: "Electricity Bill",
-          message: "Electricity Bill Due Soon",
-          type: "Electricity",
-          read: false,
-          createdAt: new Date(),
-        },
-        {
-          id: 4,
-          title: "Special Offer",
-          message: "Special Offer Just for You!",
-          type: "Offers",
-          read: true,
-          createdAt: new Date(),
-        },
-      ];
-
-      localStorage.setItem("notifications", JSON.stringify(dummyNotifications));
-      setNotifications(dummyNotifications);
+    if (isModalOpen) {
+      refresh();
     }
-  }, []);
+  }, [isModalOpen, refresh]);
 
-  // Persist notifications to localStorage when they change
-  useEffect(() => {
-    if (notifications.length > 0) {
-      localStorage.setItem("notifications", JSON.stringify(notifications));
-    }
-  }, [notifications]);
+  const unreadAriaLabel =
+    unreadCount === 1
+      ? t("notification.unreadCount.singular")
+      : t("notification.unreadCount.plural", { count: unreadCount });
 
-  // Calculate number of unread notifications
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  // Mark a notification as read
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  };
+  const renderBell = (size: number) => (
+    <button
+      type="button"
+      onClick={() => setIsModalOpen((open) => !open)}
+      className="relative"
+      aria-label="Notifications"
+      aria-expanded={isModalOpen}
+      title="Notifications"
+    >
+      <IoMdNotifications size={size} className="notify_icon" />
+      {unreadCount > 0 && (
+        <>
+          <span className="notification_unread" aria-hidden="true" />
+          <span className="notification_read" aria-hidden="true" />
+          <span className="sr-only">{unreadAriaLabel}</span>
+        </>
+      )}
+    </button>
+  );
 
   return (
     <div className="topbar">
       <div className="container">
-        {/* Desktop Layout */}
         <div className="desktop_topbar">
-          {/* Logo */}
           <div className="topbar_logo">
-            <img
-              src={"/belpower_full.png"}
-              alt="Logo"
-            />
+            <img src="/belpower_full.png" alt="Logo" />
           </div>
 
-          {/* Right section: Notifications & Profile */}
           <div className="topbar_right">
-            {/* Notification Button */}
-            <button onClick={() => setIsModalOpen(true)} className="relative">
-              <IoMdNotifications size={25} className="notify_icon" />
-              {unreadCount > 0 && (
-                <>
-                  <span className="notification_unread"></span>
-                  <span className="notification_read"></span>
-                </>
-              )}
-            </button>
+            {renderBell(25)}
 
-            {/* Profile Button with Dropdown */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className="topbar_profile"
                 aria-label="Open profile menu"
                 title="Profile"
               >
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #0064FF 0%, #004fcc 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    color: 'white',
-                    border: '2px solid #f0f4ff',
-                  }}
-                >
-                  AD
-                </div>
+                <AdminAvatar size={40} />
               </button>
 
-              {/* Profile Dropdown */}
               <AnimatePresence>
                 {isOpen && (
                   <motion.div
@@ -203,16 +115,22 @@ export default function AdminTopBar() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   >
-                    {/* Account Link */}
+                    <div className="profile_card_user">
+                      <AdminAvatar size={36} />
+                      <div>
+                        <p className="profile_card_name">{displayName}</p>
+                        {admin?.email && (
+                          <p className="profile_card_email">{admin.email}</p>
+                        )}
+                      </div>
+                    </div>
                     <Link
-                      href={"/command-center/settings"}
+                      href="/command-center/settings"
                       onClick={() => setIsOpen(false)}
                     >
                       <IoMdSettings />
-                      {t('profileDropdown.Settings')}
+                      {t("profileDropdown.Settings")}
                     </Link>
-
-                    {/* Logout Button */}
                     <LogoutButton />
                   </motion.div>
                 )}
@@ -221,36 +139,18 @@ export default function AdminTopBar() {
           </div>
         </div>
 
-        {/* Mobile Layout */}
         <div className="mobile_topbar">
-          {/* Profile Button with Dropdown */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
               className="topbar_profile"
               aria-label="Open profile menu"
               title="Profile"
             >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #0064FF 0%, #004fcc 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: 'white',
-                  border: '2px solid #f0f4ff',
-                }}
-              >
-                AD
-              </div>
+              <AdminAvatar size={40} />
             </button>
 
-            {/* Profile Dropdown */}
             <AnimatePresence>
               {isOpen && (
                 <motion.div
@@ -261,40 +161,39 @@ export default function AdminTopBar() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
-                  {/* Account Link */}
+                  <div className="profile_card_user">
+                    <AdminAvatar size={36} />
+                    <div>
+                      <p className="profile_card_name">{displayName}</p>
+                      {admin?.email && (
+                        <p className="profile_card_email">{admin.email}</p>
+                      )}
+                    </div>
+                  </div>
                   <Link
-                    href={"/command-center/settings"}
+                    href="/command-center/settings"
                     onClick={() => setIsOpen(false)}
                   >
                     <IoMdSettings />
-                    {t('profileDropdown.Settings')}
+                    {t("profileDropdown.Settings")}
                   </Link>
-
-                  {/* Logout Button */}
                   <LogoutButton />
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Notification Button */}
-          <button onClick={() => setIsModalOpen(true)} className="relative">
-            <IoMdNotifications size={30} className="notify_icon" />
-            {unreadCount > 0 && (
-              <>
-                <span className="notification_unread"></span>
-                <span className="notification_read"></span>
-              </>
-            )}
-          </button>
+          {renderBell(30)}
         </div>
 
-        {/* Notifications Modal */}
         <NotificationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           notifications={notifications}
           markAsRead={markAsRead}
+          markAllAsRead={markAllAsRead}
+          isLoading={isLoading}
+          inboxUnavailable={inboxUnavailable}
         />
       </div>
     </div>

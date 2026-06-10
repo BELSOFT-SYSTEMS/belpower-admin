@@ -55,7 +55,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'Hi, I bought electricity but did not receive my token.',
       timestamp: '10:15 AM',
-      sent_at: '2026-06-03T10:15:00',
+      sent_at: '2026-06-03T10:15:00Z',
     },
     {
       id: 'm2',
@@ -63,7 +63,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'admin',
       text: 'Hello John, I can help with that. Please share your transaction reference.',
       timestamp: '10:18 AM',
-      sent_at: '2026-06-03T10:18:00',
+      sent_at: '2026-06-03T10:18:00Z',
     },
     {
       id: 'm3',
@@ -71,7 +71,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'TRX-789456',
       timestamp: '10:20 AM',
-      sent_at: '2026-06-03T10:20:00',
+      sent_at: '2026-06-03T10:20:00Z',
     },
     {
       id: 'm4',
@@ -79,7 +79,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'admin',
       text: 'Found it — your token is 1234-5678-9012-3456. It has also been sent to your email.',
       timestamp: '10:35 AM',
-      sent_at: '2026-06-03T10:35:00',
+      sent_at: '2026-06-03T10:35:00Z',
     },
     {
       id: 'm5',
@@ -87,7 +87,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'Thanks, the token worked!',
       timestamp: '10:42 AM',
-      sent_at: '2026-06-03T10:42:00',
+      sent_at: '2026-06-03T10:42:00Z',
     },
   ],
   'conv-debbie': [
@@ -97,7 +97,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'I added my meter yesterday but it still shows unverified.',
       timestamp: 'Yesterday',
-      sent_at: '2026-06-02T14:00:00',
+      sent_at: '2026-06-02T14:00:00Z',
     },
     {
       id: 'm7',
@@ -105,7 +105,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'admin',
       text: 'Hi Debbie, we are reviewing your meter details. This usually takes up to 24 hours.',
       timestamp: 'Yesterday',
-      sent_at: '2026-06-02T15:30:00',
+      sent_at: '2026-06-02T15:30:00Z',
     },
     {
       id: 'm8',
@@ -113,7 +113,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'My meter verification is still pending.',
       timestamp: 'Yesterday',
-      sent_at: '2026-06-02T18:00:00',
+      sent_at: '2026-06-02T18:00:00Z',
     },
   ],
   'conv-michael': [
@@ -123,7 +123,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'Can you check transaction TRX-789460?',
       timestamp: 'Mon',
-      sent_at: '2026-06-01T09:00:00',
+      sent_at: '2026-06-01T09:00:00Z',
     },
   ],
   'conv-anita': [
@@ -133,7 +133,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'user',
       text: 'How do I schedule a weekly electricity purchase?',
       timestamp: 'May 28',
-      sent_at: '2026-05-28T11:00:00',
+      sent_at: '2026-05-28T11:00:00Z',
     },
     {
       id: 'm11',
@@ -141,7 +141,7 @@ const INITIAL_MESSAGES: Record<string, ChatMessage[]> = {
       sender: 'admin',
       text: 'Go to Electricity → Schedule purchase and pick weekly frequency. I can walk you through it if needed.',
       timestamp: 'May 28',
-      sent_at: '2026-05-28T11:15:00',
+      sent_at: '2026-05-28T11:15:00Z',
     },
   ],
 };

@@ -3,7 +3,11 @@
 import { useState } from 'react';
 import { FaCopy, FaCheck, FaCreditCard, FaClock, FaCalendarCheck } from 'react-icons/fa';
 import { AdminTransaction } from '@/data/adminMockData';
+import type { TransactionPaymentInfo } from '@/types/adminTransactions';
+import { TransactionAmountBreakdown } from '@/components/admin/transactions/TransactionAmountBreakdown';
 import { formatPrice } from '@/utils/FormatPrice';
+import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
+import { formatAdminDateTime } from '@/utils/formatAdminDate';
 import {
   formatScheduledFrequency,
   formatTxnDateTime,
@@ -12,22 +16,8 @@ import {
 
 type Props = {
   transaction: AdminTransaction;
+  payment?: TransactionPaymentInfo;
 };
-
-function formatDisplayDate(iso: string | null) {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
-}
 
 function CopyableRef({
   label,
@@ -67,17 +57,9 @@ function CopyableRef({
   );
 }
 
-function AmountRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="payment_ref_amount_row">
-      <span>{label}</span>
-      <span>{value}</span>
-    </div>
-  );
-}
-
-export function TransactionPaymentReferences({ transaction }: Props) {
+export function TransactionPaymentReferences({ transaction, payment }: Props) {
   const scheduled = isScheduledTransaction(transaction) && transaction.scheduled_info;
+  const paymentMethod = payment?.method ?? transaction.payment_method;
 
   return (
     <div className="payment_ref_tab">
@@ -93,7 +75,7 @@ export function TransactionPaymentReferences({ transaction }: Props) {
           <div>
             <span className="payment_ref_hero_label">Payment method</span>
             <span className="payment_ref_method_value">
-              {transaction.payment_method ?? 'N/A'}
+              {getPaymentMethodLabel(paymentMethod)}
             </span>
           </div>
         </div>
@@ -107,18 +89,28 @@ export function TransactionPaymentReferences({ transaction }: Props) {
             {transaction.order_id && (
               <CopyableRef label="Order ID" value={transaction.order_id} />
             )}
+            {payment?.gatewayReference && (
+              <CopyableRef label="Gateway reference" value={payment.gatewayReference} />
+            )}
+            {payment?.walletDebitReference && (
+              <CopyableRef
+                label="Wallet debit reference"
+                value={payment.walletDebitReference}
+              />
+            )}
+            {payment?.providerReference && (
+              <CopyableRef label="Provider reference" value={payment.providerReference} />
+            )}
           </div>
         </section>
 
         <section className="payment_ref_panel">
           <h4 className="payment_ref_panel_title">Amount breakdown</h4>
           <div className="payment_ref_amount_box">
-            <AmountRow label="Amount" value={formatPrice(transaction.amount)} />
-            <AmountRow label="Service charge" value={formatPrice(transaction.service_charge)} />
-            <AmountRow label="VAT" value={formatPrice(transaction.vat)} />
-            <AmountRow
-              label="Total paid"
-              value={<strong>{formatPrice(transaction.total_amount)}</strong>}
+            <TransactionAmountBreakdown
+              transaction={transaction}
+              rowClassName="payment_ref_amount_row"
+              totalClassName="payment_ref_amount_total"
             />
           </div>
         </section>
@@ -132,7 +124,7 @@ export function TransactionPaymentReferences({ transaction }: Props) {
             <div>
               <span className="payment_ref_timeline_label">Created</span>
               <span className="payment_ref_timeline_value">
-                {formatDisplayDate(transaction.created_at)}
+                {formatAdminDateTime(transaction.created_at)}
               </span>
             </div>
           </div>
@@ -141,7 +133,7 @@ export function TransactionPaymentReferences({ transaction }: Props) {
             <div>
               <span className="payment_ref_timeline_label">Completed</span>
               <span className="payment_ref_timeline_value">
-                {formatDisplayDate(transaction.completed_at)}
+                {formatAdminDateTime(transaction.completed_at)}
               </span>
             </div>
           </div>

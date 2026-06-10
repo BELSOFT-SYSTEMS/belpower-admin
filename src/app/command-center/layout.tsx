@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { AdminAuthProvider } from '@/context/AdminAuthContext';
 import AdminDashboardLayout from './AdminDashboardLayout';
 
 export const metadata: Metadata = {
@@ -15,5 +16,9 @@ export default function CommandCenterLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <AdminDashboardLayout>{children}</AdminDashboardLayout>;
+  return (
+    <AdminAuthProvider>
+      <AdminDashboardLayout>{children}</AdminDashboardLayout>
+    </AdminAuthProvider>
+  );
 }

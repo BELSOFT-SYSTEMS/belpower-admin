@@ -1,70 +1,39 @@
-// Remove unused toast import
-// import { toast } from 'sonner';
-
-const API_BASE_URL = '/api/admin';
+import {
+  adminFetch,
+  adminHeaders,
+  ADMIN_API_BASE,
+  clearAdminSession,
+  redirectToSignIn,
+} from '@/lib/adminAuth';
 
 export interface ApiResponse<T> {
   data?: T;
   message?: string;
   error?: string;
+  success?: boolean;
 }
 
-// Define proper types instead of using 'any'
 interface ApiRequestOptions extends RequestInit {
   headers?: Record<string, string>;
 }
 
 export const adminApi = {
-  /**
-   * Make an authenticated API request
-   */
   async request<T = unknown>(endpoint: string, options: ApiRequestOptions = {}): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        credentials: 'include',
-      });
-
-      const data: ApiResponse<T> = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Request failed');
-      }
-
-      return data.data as T;
+      return await adminFetch<T>(path, options);
     } catch (error) {
       console.error('API request failed:', error);
-
-      // Handle 401 Unauthorized
-      if (error instanceof Error && error.message.includes('401')) {
-        // Clear any existing auth state
-        document.cookie = 'adminToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        // Redirect to login
-        window.location.href = '/admin/sign-in';
-      }
-
-      // Re-throw the error for the caller to handle
       throw error;
     }
   },
 
-  /**
-   * GET request
-   */
   async get<T = unknown>(endpoint: string, params?: Record<string, string>): Promise<T> {
     const queryString = params ? `?${new URLSearchParams(params)}` : '';
     return this.request<T>(`${endpoint}${queryString}`, { method: 'GET' });
   },
 
-  /**
-   * POST request
-   */
   async post<T = unknown>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
@@ -72,9 +41,6 @@ export const adminApi = {
     });
   },
 
-  /**
-   * PUT request
-   */
   async put<T = unknown>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PUT',
@@ -82,31 +48,35 @@ export const adminApi = {
     });
   },
 
-  /**
-   * DELETE request
-   */
   async delete<T = unknown>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'DELETE' });
   },
 
-  /**
-   * Upload file
-   */
   async upload<T = unknown>(endpoint: string, file: File, fieldName = 'file'): Promise<T> {
     const formData = new FormData();
     formData.append(fieldName, file);
+    const token = adminHeaders().Authorization;
 
-    return this.request<T>(endpoint, {
+    const res = await fetch(`${ADMIN_API_BASE}${endpoint}`, {
       method: 'POST',
       body: formData,
-      headers: {
-        // Let the browser set the Content-Type with boundary
-      },
+      headers: token ? { Authorization: token } : undefined,
     });
+
+    const body = (await res.json()) as ApiResponse<T>;
+
+    if (res.status === 401) {
+      clearAdminSession();
+      redirectToSignIn();
+      throw new Error('Session expired');
+    }
+
+    if (!res.ok || body.success === false) {
+      throw new Error(body.error || body.message || 'Request failed');
+    }
+
+    return body.data as T;
   },
 };
 
-// Export a hook for components to use
-export const useAdminApi = () => {
-  return adminApi;
-};
+export const useAdminApi = () => adminApi;

@@ -132,6 +132,12 @@
   transition: background 0.15s, border-color 0.15s;
 }
 
+.detail_header_row .header_actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .detail_header_row .header_action_print {
   color: #111827;
   border-color: #d1d5db;
@@ -156,7 +162,7 @@
   color: #ea580c;
 }
 
-.detail_header_row .header_action_review:hover {
+.detail_header_row .header_action_review:hover:not(:disabled) {
   background: #fff7ed;
 }
 
@@ -169,7 +175,7 @@
   color: #dc2626;
 }
 
-.detail_header_row .header_action_block:hover {
+.detail_header_row .header_action_block:hover:not(:disabled) {
   background: #fef2f2;
 }
 
@@ -182,8 +188,72 @@
   color: #16a34a;
 }
 
-.detail_header_row .header_action_unblock:hover {
+.detail_header_row .header_action_unblock:hover:not(:disabled) {
   background: #f0fdf4;
+}
+
+.detail_header_row .header_action_clear_review {
+  color: #059669;
+  border-color: #6ee7b7;
+}
+
+.detail_header_row .header_action_clear_review svg {
+  color: #059669;
+}
+
+.detail_header_row .header_action_clear_review:hover:not(:disabled) {
+  background: #ecfdf5;
+}
+
+.detail_header_row .header_action_requery {
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+.detail_header_row .header_action_requery svg {
+  color: #2563eb;
+}
+
+.detail_header_row .header_action_requery:hover:not(:disabled) {
+  background: #eff6ff;
+}
+
+.detail_header_right .header_requery_hint {
+  margin: 0.5rem 0 0;
+  max-width: 22rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #4b5563;
+}
+
+.transaction_details_page .admin_requery_banner {
+  margin-bottom: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+  background: #eff6ff;
+}
+
+.transaction_details_page .admin_requery_banner strong {
+  display: block;
+  font-size: 0.875rem;
+  color: #1e40af;
+  margin-bottom: 0.25rem;
+}
+
+.transaction_details_page .admin_requery_banner p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #1e3a8a;
+}
+
+.transaction_details_page .admin_requery_meta {
+  color: #374151 !important;
+}
+
+.transaction_details_page .admin_requery_note {
+  font-size: 0.75rem !important;
+  color: #6b7280 !important;
 }
 
 .tab_panel {
@@ -257,7 +327,7 @@
   margin: 0 0 0.5rem;
   font-size: 0.8125rem;
   color: #6b7280;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
 }
 
 .txn_overview_payment_card {
@@ -405,6 +475,13 @@
   color: #111827;
 }
 
+.txn_overview_user_email {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
+}
+
 .txn_overview_user_hint {
   display: block;
   font-size: 0.75rem;
@@ -469,7 +546,7 @@
 }
 
 .service_detail_mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
   font-weight: 600;
   color: #111827;
 }
@@ -625,7 +702,7 @@
   border-radius: 0.5rem;
   font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: 700;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
   color: #1d4ed8;
   letter-spacing: 0.12em;
   text-align: center;
@@ -753,7 +830,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-sora), sans-serif;
   color: #111827;
   word-break: break-all;
 }

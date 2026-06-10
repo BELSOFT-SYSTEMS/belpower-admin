@@ -6,12 +6,22 @@ export type TransactionIconInput = {
   type: string;
   provider?: string;
   service?: string;
+  cashback_source_type?: string | null;
 };
 
 export function getTransactionIcon(transaction: TransactionIconInput): string {
   const type = (transaction.type || transaction.service || '').toLowerCase();
 
-  if (type === 'deposit' || type === 'wallet') return '/wallet.png';
+  if (type === 'cashback') {
+    const source = (transaction.cashback_source_type || '').toLowerCase();
+    if (source === 'airtime') return '/airtime.png';
+    if (source === 'data') return '/data.png';
+    return '/wallet.png';
+  }
+
+  if (type === 'deposit' || type === 'wallet' || type === 'refund') {
+    return '/wallet.png';
+  }
 
   if (['airtime', 'data'].includes(type)) {
     const providerLower = (transaction.provider || '').toLowerCase();
@@ -37,6 +47,7 @@ export function getTransactionIcon(transaction: TransactionIconInput): string {
 
   if (type === 'electricity') {
     const providerLower = (transaction.provider || '').toLowerCase();
+    // Only map to assets that exist in /public — everything else uses electricity.png
     const discoMap: Record<string, string> = {
       aedc: '/aedc.png',
       abuja: '/aedc.png',
@@ -44,24 +55,12 @@ export function getTransactionIcon(transaction: TransactionIconInput): string {
       eko: '/ekedc.png',
       ikedc: '/ikedc.png',
       ikeja: '/ikedc.png',
-      ibedc: '/ibedc.png',
-      ibadan: '/ibedc.png',
-      enugu: '/eedc.png',
-      eedc: '/eedc.png',
-      jos: '/jedc.png',
-      jedc: '/jedc.png',
       kaduna: '/kaedc.png',
       kaedc: '/kaedc.png',
       kaedco: '/kaedc.png',
-      kano: '/kedc.png',
-      kedco: '/kedc.png',
       ph: '/phedc.jpeg',
       phedc: '/phedc.jpeg',
       phed: '/phedc.jpeg',
-      benin: '/bedc.png',
-      bedc: '/bedc.png',
-      yola: '/yedc.png',
-      yedc: '/yedc.png',
     };
     return discoMap[providerLower] || '/electricity.png';
   }
@@ -102,8 +101,13 @@ export function getDiscoIcon(discoCode: string): string {
   });
 }
 
+/** Provider logo for receipt PDF header — matches belpower-frontend iconUtils */
+export function getProviderLogo(provider: string, type: string): string {
+  return getTransactionIcon({ type, provider });
+}
+
 export function getTransactionIconFallback(type: string): string {
-  if (type === 'deposit') return '/wallet.png';
+  if (type === 'deposit' || type === 'refund' || type === 'cashback') return '/wallet.png';
   if (type === 'electricity') return '/electricity.png';
   if (['airtime', 'data'].includes(type)) return `/${type}.png`;
   return '/electricity.png';

@@ -1,35 +1,30 @@
+import { formatInTimeZone } from 'date-fns-tz';
 import type { AdminTransaction } from '@/data/adminMockData';
+import type { TransactionReviewStatus } from '@/types/adminTransactions';
+import { ADMIN_DISPLAY_TIMEZONE, parseApiDate } from '@/utils/parseApiDate';
 
 export type ScheduledInfo = {
   frequency: string;
   next_purchase: string;
 };
 
+function formatTxnAbsolute(iso: string, withYear: boolean): string {
+  const date = parseApiDate(iso);
+  if (!date) return '—';
+
+  return formatInTimeZone(
+    date,
+    ADMIN_DISPLAY_TIMEZONE,
+    withYear ? 'MMM d, yyyy, h:mm aa' : 'MMM d, h:mm aa'
+  );
+}
+
 export function formatTxnDateTime(iso: string) {
-  try {
-    return new Date(iso).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
+  return formatTxnAbsolute(iso, true);
 }
 
 export function formatTxnDateShort(iso: string) {
-  try {
-    return new Date(iso).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
+  return formatTxnAbsolute(iso, false);
 }
 
 export function formatScheduledFrequency(frequency: string) {
@@ -64,6 +59,17 @@ export function getTransactionListDate(tx: AdminTransaction) {
     return `Next · ${formatTxnDateShort(tx.scheduled_info.next_purchase)}`;
   }
   return formatTxnDateShort(tx.created_at);
+}
+
+const REVIEW_STATUS_LABELS: Record<TransactionReviewStatus, string> = {
+  cleared: 'Cleared',
+  under_review: 'Under review',
+  escalated: 'Escalated',
+  pending: 'Pending review',
+};
+
+export function getTransactionReviewStatusLabel(status: TransactionReviewStatus) {
+  return REVIEW_STATUS_LABELS[status] ?? status;
 }
 
 export function matchesTransactionStatusFilter(

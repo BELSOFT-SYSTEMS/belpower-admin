@@ -6,9 +6,15 @@ import { getAvatarBackground, getInitialsFromDisplayName } from '@/utils/userAva
 
 type Props = {
   transaction: AdminTransaction;
+  userEmail?: string | null;
+  isInternalTestAccount?: boolean;
 };
 
-export function TransactionCustomerCard({ transaction }: Props) {
+export function TransactionCustomerCard({
+  transaction,
+  userEmail,
+  isInternalTestAccount,
+}: Props) {
   return (
     <section className="txn_overview_section txn_overview_user_card txn_detail_customer_card">
       <Link
@@ -27,6 +33,10 @@ export function TransactionCustomerCard({ transaction }: Props) {
         </span>
         <div>
           <span className="txn_overview_user_name">{transaction.user_name}</span>
+          {userEmail && <span className="txn_overview_user_email">{userEmail}</span>}
+          {isInternalTestAccount && (
+            <span className="pill pill_internal_test">Internal test</span>
+          )}
           <span className="txn_overview_user_hint">View user profile →</span>
         </div>
       </Link>

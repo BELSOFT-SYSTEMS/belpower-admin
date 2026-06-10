@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FaPaperPlane, FaSearch, FaComments } from 'react-icons/fa';
 import '@/styles/adminMessages.css';
 import '@/styles/adminShared.css';
@@ -22,6 +23,7 @@ function parseUserName(fullName: string) {
 }
 
 export default function MessagesPage() {
+  const searchParams = useSearchParams();
   const conversations = useMessagesStore();
   const storeVersion = useMessagesStoreVersion();
   const [activeId, setActiveId] = useState<string | null>(
@@ -56,6 +58,16 @@ export default function MessagesPage() {
         c.last_message.toLowerCase().includes(q)
     );
   }, [conversations, searchTerm]);
+
+  useEffect(() => {
+    const userId = searchParams?.get('userId');
+    if (!userId) return;
+
+    const conversation = getConversationsSnapshot().find((c) => c.user_id === userId);
+    if (conversation) {
+      setActiveId(conversation.id);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (activeId) {

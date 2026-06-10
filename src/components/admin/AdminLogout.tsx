@@ -1,30 +1,16 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { LogOut } from 'lucide-react';
 import Button from '@/components/ui/button';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 
 export function AdminLogout() {
-  const router = useRouter();
+  const { logout } = useAdminAuth();
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
-      const response = await fetch('/api/admin/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Logout failed');
-      }
-
-      // Clear any client-side state if needed
-      localStorage.removeItem('adminToken');
-
-      // Redirect to login page
-      router.push('/command-center/sign-in');
-      router.refresh();
+      logout();
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to log out. Please try again.');

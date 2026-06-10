@@ -222,6 +222,43 @@
   color: #dc2626;
 }
 
+.pill_requery {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.pill_refund {
+  background: #ecfdf5;
+  color: #047857;
+  margin-left: 0.35rem;
+}
+
+.pill_cashback {
+  background: #fef3c7;
+  color: #b45309;
+  margin-left: 0.35rem;
+}
+
+.pill_suspended {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.pill_inactive {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.pill_deleted {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.pill_internal_test {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
 .pill_fraud {
   background: #fef2f2;
   color: #dc2626;
@@ -382,7 +419,7 @@
 .receipt_token_highlight .token_value {
   font-size: 1.125rem;
   font-weight: 700;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-sora), sans-serif;
   margin: 0;
 }
 

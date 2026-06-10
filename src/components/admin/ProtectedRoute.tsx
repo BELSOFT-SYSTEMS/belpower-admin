@@ -1,62 +1,32 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { redirectToSignIn } from '@/lib/adminAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string;
 }
 
-export function ProtectedRoute({ children, requiredRole = 'admin' }: ProtectedRouteProps) {
-  const router = useRouter();
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const pathname = usePathname();
-  // const searchParams = useSearchParams();
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated, isLoading } = useAdminAuth();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const response = await fetch('/api/admin/auth/verify', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+    if (isLoading) return;
 
-        if (!response.ok) {
-          throw new Error('Not authenticated');
-        }
+    if (!isAuthenticated) {
+      redirectToSignIn(pathname);
+      return;
+    }
 
-        const data = await response.json();
+    setReady(true);
+  }, [isAuthenticated, isLoading, pathname]);
 
-        if (data.user?.role !== requiredRole) {
-          throw new Error('Unauthorized');
-        }
-
-        setIsAuthorized(true);
-      } catch (error) {
-        console.error('Authentication error:', error);
-        setIsAuthorized(false);
-
-        // Only redirect if we're not already on the login page
-        if (pathname !== '/command-center/sign-in') {
-          const from = pathname || '/';
-          router.push(`/command-center/sign-in?from=${encodeURIComponent(from)}`);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    verifyToken();
-  }, [pathname, requiredRole, router]);
-
-  // If we're still loading, show a loading spinner
-  if (isLoading || isAuthorized === null) {
+  if (isLoading || !ready) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
@@ -67,16 +37,5 @@ export function ProtectedRoute({ children, requiredRole = 'admin' }: ProtectedRo
     );
   }
 
-  // If not authorized and not on login page, we've already handled the redirect in the effect
-  if (!isAuthorized && pathname !== '/command-center/sign-in') {
-    return null; // Let the redirect happen
-  }
-
-  // If we're on the login page and not authorized, show the login page
-  if (pathname === '/command-center/sign-in' && !isAuthorized) {
-    return <>{children}</>;
-  }
-
-  // If we're authorized, show the protected content
   return <>{children}</>;
 }

@@ -18,10 +18,11 @@ export type AdminTransaction = {
   reference: string;
   user_id: string;
   user_name: string;
-  type: 'electricity' | 'airtime' | 'data' | 'cable' | 'deposit';
+  type: 'electricity' | 'airtime' | 'data' | 'cable' | 'deposit' | 'refund' | 'cashback';
   service: string;
   provider: string;
   amount: number;
+  amount_purchased?: number | null;
   total_amount: number;
   service_charge: number;
   vat: number;
@@ -34,6 +35,7 @@ export type AdminTransaction = {
     next_purchase: string;
   };
   suspicious: boolean;
+  is_blocked?: boolean;
   fraud_reason?: string;
   avatar: string;
   // Service-specific (mock)
@@ -48,6 +50,15 @@ export type AdminTransaction = {
   address?: string;
   payment_method?: string;
   order_id?: string;
+  requery_recommended?: boolean;
+  requery_reason?: string | null;
+  is_refund?: boolean;
+  is_cashback?: boolean;
+  original_transaction_id?: string | null;
+  refund_reason?: string | null;
+  cashback_source_type?: string | null;
+  cashback_rate?: string | null;
+  cashback_description?: string | null;
 };
 
 export type UserSession = {
@@ -177,8 +188,8 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 100,
     vat: 250,
     status: 'completed',
-    created_at: '2025-06-03T09:12:00',
-    completed_at: '2025-06-03T09:12:45',
+    created_at: '2025-06-03T09:12:00Z',
+    completed_at: '2025-06-03T09:12:45Z',
     suspicious: false,
     avatar: '/Profile.png',
     meter_number: '12345678901',
@@ -202,7 +213,7 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 100,
     vat: 0,
     status: 'pending',
-    created_at: '2025-06-03T08:45:00',
+    created_at: '2025-06-03T08:45:00Z',
     completed_at: null,
     suspicious: false,
     avatar: '/Profile.png',
@@ -224,8 +235,8 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 50,
     vat: 0,
     status: 'completed',
-    created_at: '2025-06-01T11:00:00',
-    completed_at: '2025-06-01T11:00:12',
+    created_at: '2025-06-01T11:00:00Z',
+    completed_at: '2025-06-01T11:00:12Z',
     suspicious: false,
     avatar: '/Profile.png',
     phone_number: '08012345678',
@@ -244,8 +255,8 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 200,
     vat: 0,
     status: 'completed',
-    created_at: '2025-05-28T14:00:00',
-    completed_at: '2025-05-28T14:01:00',
+    created_at: '2025-05-28T14:00:00Z',
+    completed_at: '2025-05-28T14:01:00Z',
     suspicious: true,
     fraud_reason: 'Unusual amount vs. user history',
     avatar: '/Profile.png',
@@ -267,9 +278,10 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 0,
     vat: 0,
     status: 'completed',
-    created_at: '2025-05-20T10:00:00',
-    completed_at: '2025-05-20T10:05:00',
+    created_at: '2025-05-20T10:00:00Z',
+    completed_at: '2025-05-20T10:05:00Z',
     suspicious: true,
+    is_blocked: true,
     fraud_reason: 'Multiple rapid top-ups from new device',
     avatar: '/Profile.png',
     payment_method: 'Bank transfer',
@@ -287,7 +299,7 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 180,
     vat: 300,
     status: 'failed',
-    created_at: '2025-05-15T16:30:00',
+    created_at: '2025-05-15T16:30:00Z',
     completed_at: null,
     suspicious: false,
     avatar: '/Profile.png',
@@ -309,12 +321,12 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 100,
     vat: 460,
     status: 'scheduled',
-    created_at: '2025-06-01T10:00:00',
+    created_at: '2025-06-01T10:00:00Z',
     completed_at: null,
     is_scheduled: true,
     scheduled_info: {
       frequency: 'monthly',
-      next_purchase: '2025-07-01T08:00:00',
+      next_purchase: '2025-07-01T08:00:00Z',
     },
     suspicious: false,
     avatar: '/Profile.png',
@@ -337,12 +349,12 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 50,
     vat: 0,
     status: 'scheduled',
-    created_at: '2025-05-25T12:00:00',
+    created_at: '2025-05-25T12:00:00Z',
     completed_at: null,
     is_scheduled: true,
     scheduled_info: {
       frequency: 'weekly',
-      next_purchase: '2025-06-10T06:00:00',
+      next_purchase: '2025-06-10T06:00:00Z',
     },
     suspicious: false,
     avatar: '/Profile.png',
@@ -363,12 +375,12 @@ const baseTransactions: AdminTransaction[] = [
     service_charge: 150,
     vat: 0,
     status: 'scheduled',
-    created_at: '2025-05-18T09:30:00',
+    created_at: '2025-05-18T09:30:00Z',
     completed_at: null,
     is_scheduled: true,
     scheduled_info: {
       frequency: 'monthly',
-      next_purchase: '2025-06-18T09:00:00',
+      next_purchase: '2025-06-18T09:00:00Z',
     },
     suspicious: false,
     avatar: '/Profile.png',
@@ -556,7 +568,20 @@ export function getUserDetail(userId: string): UserDetail | undefined {
   return userDetailsCache[userId];
 }
 
+function formatCashbackSourceLabel(source?: string | null): string {
+  if (!source) return '';
+  const key = source.toLowerCase();
+  if (key === 'airtime') return 'Airtime';
+  if (key === 'data') return 'Data';
+  return source.charAt(0).toUpperCase() + source.slice(1);
+}
+
 export function getTransactionTitle(txn: AdminTransaction): string {
+  if (txn.is_refund || txn.type === 'refund') return 'Wallet refund';
+  if (txn.is_cashback || txn.type === 'cashback') {
+    const source = formatCashbackSourceLabel(txn.cashback_source_type);
+    return source ? `Cashback — ${source}` : 'Cashback';
+  }
   if (txn.type === 'deposit') return 'Wallet funding';
   if (txn.type === 'electricity') return `Electricity — ${getProviderDisplay(txn.provider)}`;
   if (txn.type === 'cable') return `Cable — ${txn.package_name || getProviderDisplay(txn.provider)}`;

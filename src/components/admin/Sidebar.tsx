@@ -2,68 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  FaHome,
-  FaUsers,
-  FaExchangeAlt,
-  FaTachometerAlt,
-  FaCog,
-  FaWallet,
-  FaServer,
-  FaUserShield,
-  FaBell,
-  FaEnvelope,
-} from 'react-icons/fa';
-
-type NavItem = {
-  name: string;
-  href: string;
-  icon: React.ReactNode;
-};
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { ADMIN_NAV_ITEMS } from '@/constants/adminNavPermissions';
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { canAccess } = useAdminAuth();
 
-  const navigation: NavItem[] = [
-    { name: 'Home', href: '/command-center', icon: <FaHome className="w-5 h-5" /> },
-    { name: 'Users', href: '/command-center/users', icon: <FaUsers className="w-5 h-5" /> },
-    {
-      name: 'Transactions',
-      href: '/command-center/transactions',
-      icon: <FaExchangeAlt className="w-5 h-5" />,
-    },
-    {
-      name: 'Check Meter',
-      href: '/command-center/check-meter',
-      icon: <FaTachometerAlt className="w-5 h-5" />,
-    },
-    {
-      name: 'Wallet',
-      href: '/command-center/wallet',
-      icon: <FaWallet className="w-5 h-5" />,
-    },
-    {
-      name: 'Service Availability',
-      href: '/command-center/service-availability',
-      icon: <FaServer className="w-5 h-5" />,
-    },
-    {
-      name: 'Admin Management',
-      href: '/command-center/admins',
-      icon: <FaUserShield className="w-5 h-5" />,
-    },
-    {
-      name: 'Notifications',
-      href: '/command-center/notifications',
-      icon: <FaBell className="w-5 h-5" />,
-    },
-    {
-      name: 'Messages',
-      href: '/command-center/messages',
-      icon: <FaEnvelope className="w-5 h-5" />,
-    },
-    { name: 'Settings', href: '/command-center/settings', icon: <FaCog className="w-5 h-5" /> },
-  ];
+  const navigation = ADMIN_NAV_ITEMS.filter(
+    (item) => !item.permission || canAccess(item.permission)
+  );
 
   const isNavActive = (href: string) => {
     if (href === '/command-center') {

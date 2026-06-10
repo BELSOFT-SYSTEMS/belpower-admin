@@ -1,46 +1,43 @@
 'use client';
 
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
 import '@/styles/adminCheckMeter.css';
 import '@/styles/adminShared.css';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
-import { DISCO_NAMES } from '@/constants/discoNames';
+import { useElectricityDiscos } from '@/hooks/useElectricityDiscos';
 import { verifyMeter } from '@/lib/meterVerification';
-import type { MeterVerificationResult } from '@/types/meterVerification';
+import type { MeterVerifyResult } from '@/types/meterVerification';
 import { MeterVerificationResultView } from '@/components/admin/meter/MeterVerificationResult';
-
-const DISCO_OPTIONS = Object.keys(DISCO_NAMES)
-  .map((code) => ({ code, name: DISCO_NAMES[code] }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+import { useAdminAuth } from '@/context/AdminAuthContext';
 
 function CheckMeterPageContent() {
   const searchParams = useSearchParams();
+  const { canAccess } = useAdminAuth();
+  const { discos, dropdownOptions, isLoading: discosLoading, error: discosError } =
+    useElectricityDiscos();
   const initialMeter = searchParams.get('meter') ?? '';
   const initialDisco = (searchParams.get('disco') ?? '').toUpperCase();
   const initialType = (searchParams.get('type') ?? 'prepaid').toUpperCase();
 
   const [meterNumber, setMeterNumber] = useState(initialMeter);
-  const [disco, setDisco] = useState(
-    DISCO_OPTIONS.some((d) => d.code === initialDisco) ? initialDisco : ''
-  );
+  const [disco, setDisco] = useState('');
   const [vendType, setVendType] = useState<'PREPAID' | 'POSTPAID'>(
     initialType === 'POSTPAID' ? 'POSTPAID' : 'PREPAID'
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<MeterVerificationResult | null>(null);
+  const [result, setResult] = useState<MeterVerifyResult | null>(null);
 
-  const discoOptions = useMemo(() => DISCO_OPTIONS, []);
+  const canVerify = canAccess('meters.verify');
 
-  const discoDropdownOptions = useMemo(
-    () => [
-      { value: '', label: 'Select disco' },
-      ...discoOptions.map((d) => ({ value: d.code, label: d.name })),
-    ],
-    [discoOptions]
-  );
+  useEffect(() => {
+    if (!initialDisco || discos.length === 0) return;
+    if (discos.some((item) => item.code === initialDisco)) {
+      setDisco(initialDisco);
+    }
+  }, [initialDisco, discos]);
 
   const meterTypeOptions = useMemo(
     () => [
@@ -53,6 +50,8 @@ function CheckMeterPageContent() {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      if (!canVerify) return;
+
       setError(null);
       setResult(null);
       setLoading(true);
@@ -69,7 +68,7 @@ function CheckMeterPageContent() {
         setLoading(false);
       }
     },
-    [meterNumber, disco, vendType]
+    [meterNumber, disco, vendType, canVerify]
   );
 
   const handleReset = () => {
@@ -80,12 +79,20 @@ function CheckMeterPageContent() {
     setResult(null);
   };
 
+  if (!canVerify) {
+    return (
+      <div className="check_meter_page">
+        <h1>Check Meter</h1>
+        <p className="empty_fallback">You do not have permission to verify meters.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="check_meter_page">
       <h1>Check Meter</h1>
       <p className="check_meter_subtitle">
-        Verify a customer meter before support or admin actions. Mock data matches the production
-        verify API shape — swap in <code>verifyMeterFromApi</code> when ready.
+        Verify a customer meter before support or admin actions.
       </p>
 
       <form className="check_meter_form_card" onSubmit={handleSubmit}>
@@ -98,11 +105,12 @@ function CheckMeterPageContent() {
               id="meter_number"
               type="text"
               className="check_meter_input check_meter_input_mono"
-              placeholder="e.g. 45022530096"
+              placeholder="Enter meter number"
               value={meterNumber}
               onChange={(e) => setMeterNumber(e.target.value.replace(/\D/g, ''))}
               inputMode="numeric"
               autoComplete="off"
+              required
             />
           </div>
           <div>
@@ -113,9 +121,15 @@ function CheckMeterPageContent() {
               id="disco"
               value={disco}
               onChange={setDisco}
-              options={discoDropdownOptions}
-              placeholder="Select disco"
+              options={dropdownOptions}
+              placeholder={discosLoading ? 'Loading discos…' : 'Select disco'}
+              disabled={discosLoading || dropdownOptions.length <= 1}
             />
+            {discosError && (
+              <p className="check_meter_subtitle" style={{ marginTop: '0.35rem', color: '#b45309' }}>
+                {discosError} Showing fallback disco list.
+              </p>
+            )}
           </div>
           <div>
             <label className="check_meter_label" htmlFor="vend_type">
@@ -130,7 +144,11 @@ function CheckMeterPageContent() {
           </div>
         </div>
         <div className="check_meter_form_actions">
-          <button type="submit" className="check_meter_submit" disabled={loading}>
+          <button
+            type="submit"
+            className="check_meter_submit"
+            disabled={loading || !meterNumber || !disco}
+          >
             <FaSearch style={{ marginRight: 6 }} />
             {loading ? 'Verifying…' : 'Verify'}
           </button>
@@ -142,12 +160,6 @@ function CheckMeterPageContent() {
       </form>
 
       {result && <MeterVerificationResultView result={result} />}
-
-      {!result && !loading && !error && (
-        <p className="check_meter_subtitle" style={{ marginTop: 0 }}>
-          Try sample meter <strong>45022530096</strong> with disco <strong>ABUJA</strong> (prepaid).
-        </p>
-      )}
     </div>
   );
 }

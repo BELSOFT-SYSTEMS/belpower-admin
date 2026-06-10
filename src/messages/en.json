@@ -317,6 +317,7 @@
   },
   "profileDropdown": {
     "account": "Account",
+    "Settings": "Settings",
     "logout": "Logout"
   },
   "notification": {
