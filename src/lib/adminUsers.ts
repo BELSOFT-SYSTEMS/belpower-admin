@@ -32,6 +32,26 @@ function getErrorMessage(body: ApiEnvelope<unknown>, fallback: string): string {
   return body.message ?? fallback;
 }
 
+async function parseApiResponse<T>(res: Response): Promise<ApiEnvelope<T>> {
+  const contentType = res.headers.get('content-type') ?? '';
+
+  if (contentType.includes('application/json')) {
+    return res.json() as Promise<ApiEnvelope<T>>;
+  }
+
+  const text = (await res.text()).trim();
+  const fallback =
+    res.status === 429
+      ? 'Too many requests. Please wait a moment and try again.'
+      : text || `Request failed (${res.status})`;
+
+  return {
+    success: false,
+    message: text || fallback,
+    error: res.status === 429 ? 'RATE_LIMIT_EXCEEDED' : 'REQUEST_FAILED',
+  };
+}
+
 export function buildUsersListQuery(params: UsersListParams): URLSearchParams {
   const query = new URLSearchParams({
     page: String(params.page ?? 1),
@@ -45,6 +65,8 @@ export function buildUsersListQuery(params: UsersListParams): URLSearchParams {
 
   if (params.suspicious) {
     query.set('suspicious', 'true');
+  } else if (params.hasWalletBalance) {
+    query.set('hasWalletBalance', 'true');
   } else if (params.status) {
     query.set('status', params.status);
   }
@@ -75,7 +97,7 @@ export async function getUsersList(params: UsersListParams): Promise<UsersListDa
     );
   }
 
-  const body = (await res.json()) as ApiEnvelope<Record<string, unknown>>;
+  const body = await parseApiResponse<Record<string, unknown>>(res);
 
   if (res.status === 401) {
     clearAdminSession();
@@ -87,6 +109,13 @@ export async function getUsersList(params: UsersListParams): Promise<UsersListDa
     throw new AuthApiError(
       getErrorMessage(body, 'You do not have access to users'),
       'FORBIDDEN'
+    );
+  }
+
+  if (res.status === 429) {
+    throw new AuthApiError(
+      getErrorMessage(body, 'Too many requests. Please wait a moment and try again.'),
+      'RATE_LIMIT_EXCEEDED'
     );
   }
 
@@ -117,7 +146,7 @@ async function postUserAction<T = unknown>(
     );
   }
 
-  const body = (await res.json()) as ApiEnvelope<T>;
+  const body = await parseApiResponse<T>(res);
 
   if (res.status === 401) {
     clearAdminSession();
@@ -129,6 +158,13 @@ async function postUserAction<T = unknown>(
     throw new AuthApiError(
       getErrorMessage(body, 'You do not have permission for this action'),
       'FORBIDDEN'
+    );
+  }
+
+  if (res.status === 429) {
+    throw new AuthApiError(
+      getErrorMessage(body, 'Too many requests. Please wait a moment and try again.'),
+      'RATE_LIMIT_EXCEEDED'
     );
   }
 
@@ -188,7 +224,7 @@ export async function getUserDetail(userId: string): Promise<AdminUserDetail> {
     );
   }
 
-  const body = (await res.json()) as ApiEnvelope<Record<string, unknown>>;
+  const body = await parseApiResponse<Record<string, unknown>>(res);
 
   if (res.status === 401) {
     clearAdminSession();
@@ -205,6 +241,13 @@ export async function getUserDetail(userId: string): Promise<AdminUserDetail> {
 
   if (res.status === 404) {
     throw new AuthApiError(getErrorMessage(body, 'User not found'), 'NOT_FOUND');
+  }
+
+  if (res.status === 429) {
+    throw new AuthApiError(
+      getErrorMessage(body, 'Too many requests. Please wait a moment and try again.'),
+      'RATE_LIMIT_EXCEEDED'
+    );
   }
 
   if (!res.ok || body.success === false || !body.data) {

@@ -28,6 +28,7 @@ export type UsersListFilters = {
   canViewInternalTestUsers: boolean;
   appliedStatus: string | null;
   includeDeleted: boolean;
+  appliedHasWalletBalance?: boolean;
 };
 
 export type ApiUser = {
@@ -74,6 +75,7 @@ export type UsersListParams = {
   search?: string;
   status?: string;
   suspicious?: boolean;
+  hasWalletBalance?: boolean;
   sort?: string;
   includeStats?: boolean;
   includeDeleted?: boolean;

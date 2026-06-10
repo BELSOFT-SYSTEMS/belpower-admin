@@ -6,6 +6,8 @@ import { Loader2 } from 'lucide-react';
 import '@/styles/adminTransactions.css';
 import '@/styles/adminShared.css';
 import { AdminTransactionsListView } from '@/components/admin/transactions/AdminTransactionsListView';
+import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
+import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
 import { TRANSACTION_FILTER_ALL } from '@/constants/adminTransactionFilters';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminTransactionsList } from '@/hooks/useAdminTransactionsList';
@@ -66,6 +68,10 @@ export default function TransactionsPage() {
 
   const statCardSkeletonCount = getTransactionStatCardCount(resolvedCanViewMoneyStats);
 
+  const flaggedCount = stats?.flagged?.count ?? 0;
+  const blockedCount = transactions.filter((tx) => tx.isBlocked).length;
+  const flaggedSeverity = resolveCriticalSeverity(flaggedCount, blockedCount);
+
   if (!canAccess('transactions.list')) {
     return (
       <div className="transactions_page">
@@ -109,6 +115,18 @@ export default function TransactionsPage() {
               </div>
             ))}
       </section>
+
+      {flaggedSeverity && (
+        <AdminCriticalAlert
+          severity={flaggedSeverity}
+          title={`${flaggedCount} flagged transaction${flaggedCount === 1 ? '' : 's'}`}
+          message={
+            blockedCount > 0
+              ? `${blockedCount} blocked on this page need immediate review. Filter by Flagged to investigate all suspicious activity.`
+              : 'Suspicious or under-review transactions need attention. Filter by Flagged to investigate.'
+          }
+        />
+      )}
 
       <AdminTransactionsListView
         searchTerm={searchTerm}

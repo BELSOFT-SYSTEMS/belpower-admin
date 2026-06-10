@@ -29,5 +29,6 @@ export function buildUsersStatusFilterOptions(filters?: UsersListFilters | null)
       label: STATUS_LABELS[status] ?? status,
     })),
     { value: 'suspicious', label: 'Suspicious only' },
+    { value: 'has_wallet_balance', label: 'Has wallet balance' },
   ];
 }

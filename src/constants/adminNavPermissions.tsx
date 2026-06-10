@@ -49,7 +49,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     name: 'Wallet',
     href: '/command-center/wallet',
     icon: <FaWallet className="w-5 h-5" />,
-    permission: 'wallet.view',
+    permission: 'transactions.list',
   },
   {
     name: 'Service Availability',

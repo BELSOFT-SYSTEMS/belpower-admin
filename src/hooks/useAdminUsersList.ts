@@ -45,8 +45,11 @@ export function useAdminUsersList({
       limit,
       search: debouncedSearch,
       suspicious: statusFilter === 'suspicious',
+      hasWalletBalance: statusFilter === 'has_wallet_balance',
       status:
-        statusFilter !== '__all__' && statusFilter !== 'suspicious'
+        statusFilter !== '__all__' &&
+        statusFilter !== 'suspicious' &&
+        statusFilter !== 'has_wallet_balance'
           ? statusFilter
           : undefined,
       sort: 'lastActiveAt:desc' as const,

@@ -60,6 +60,14 @@ export function buildTransactionsListQuery(params: TransactionsListParams): URLS
     query.set('userId', params.userId.trim());
   }
 
+  if (params.paymentMethod?.trim()) {
+    query.set('paymentMethod', params.paymentMethod.trim());
+  }
+
+  if (params.walletActivity) {
+    query.set('walletActivity', 'true');
+  }
+
   if (params.includeStats === false) {
     query.set('includeStats', 'false');
   }

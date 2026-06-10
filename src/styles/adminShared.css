@@ -313,8 +313,39 @@
 
 .admin_alert_danger {
   background: #fef2f2;
-  border: 1px solid #fecaca;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
+.admin_alert_critical {
+  background: #7f1d1d;
+  border: 1px solid #450a0a;
+  color: #ffffff;
+}
+
+.admin_alert_critical strong {
+  color: #ffffff;
+}
+
+.admin_flagged_alert {
+  margin-bottom: 1.25rem;
+}
+
+.admin_flagged_alert p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+}
+
+.admin_alert_warning p {
+  color: #78350f;
+}
+
+.admin_alert_danger p {
   color: #991b1b;
+}
+
+.admin_alert_critical p {
+  color: #fecaca;
 }
 
 /* —— Receipt detail (frontend historyDetails pattern) —— */

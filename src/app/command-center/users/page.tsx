@@ -19,6 +19,8 @@ import { toast } from 'sonner';
 import '@/styles/adminUsers.css';
 import '@/styles/adminShared.css';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
+import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
+import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
 import {
   UserQuickActionModal,
   type UserQuickActionType,
@@ -167,6 +169,12 @@ export default function UsersPage() {
 
   const statusFilterOptions = buildUsersStatusFilterOptions(filters);
 
+  const flaggedUsersCount = stats?.flaggedUsers?.count ?? 0;
+  const highRiskOnPage = users.filter(
+    (user) => user.riskScore >= 70 || user.displayStatus === 'blocked'
+  ).length;
+  const flaggedSeverity = resolveCriticalSeverity(flaggedUsersCount, highRiskOnPage);
+
   const totalPages = pagination?.totalPages ?? pagination?.total_pages ?? 1;
   const isRowBusy = (userId: string) => actingUserId === userId;
 
@@ -189,6 +197,18 @@ export default function UsersPage() {
             </div>
           ))}
         </section>
+      )}
+
+      {flaggedSeverity && (
+        <AdminCriticalAlert
+          severity={flaggedSeverity}
+          title={`${flaggedUsersCount} flagged user${flaggedUsersCount === 1 ? '' : 's'}`}
+          message={
+            highRiskOnPage > 0
+              ? `${highRiskOnPage} high-risk or blocked account${highRiskOnPage === 1 ? '' : 's'} on this page. Filter by Suspicious to review all flagged users.`
+              : 'Accounts with suspicious activity need review. Filter by Suspicious to investigate.'
+          }
+        />
       )}
 
       <section>
