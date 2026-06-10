@@ -31,10 +31,26 @@ export type SentNotification = {
   sent_by: string;
 };
 
+export type NotificationProviderOption = {
+  code: string;
+  label: string;
+  category: 'electricity' | 'airtime' | 'data' | 'cable';
+};
+
+export type NotificationStats = {
+  scope: 'mine' | 'all';
+  can_view_all: boolean;
+  sent_today: number;
+  last_broadcast_reach: number | null;
+  total_sent: number;
+};
+
 export type SendNotificationPayload = {
   template_id: string;
   audience: NotificationAudience;
   states?: string[];
+  /** @deprecated use providers */
   discos?: string[];
+  providers?: string[];
   user_id?: string;
 };

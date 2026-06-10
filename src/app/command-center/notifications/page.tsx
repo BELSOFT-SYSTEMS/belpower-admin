@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
 import '@/styles/adminNotifications.css';
 import '@/styles/adminShared.css';
@@ -8,115 +8,194 @@ import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { AdminMultiSelect } from '@/components/admin/ui/AdminMultiSelect';
 import { NotificationUserSearch } from '@/components/admin/notifications/NotificationUserSearch';
-import { MOCK_USERS_LIST } from '@/data/adminMockData';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import {
-  DISCO_OPTIONS,
-  NIGERIAN_STATES,
-  getNotificationTemplates,
-  getSentNotifications,
-  getTemplateById,
-  resolveAudienceRecipients,
-  sendNotification,
-} from '@/data/adminNotificationsMock';
+  buildProviderDropdownOptions,
+  type NotificationUserOption,
+} from '@/lib/adminNotifications';
 import type { NotificationAudience } from '@/types/adminNotifications';
 import {
   getNotificationKindPillClass,
   NOTIFICATION_KIND_LABELS,
 } from '@/utils/notificationDisplay';
+import {
+  canSendNotifications,
+  canViewNotificationHistory,
+} from '@/utils/adminNotificationAccess';
 
-const AUDIENCE_OPTIONS: {
-  id: NotificationAudience;
-  label: string;
-  hint: string;
-}[] = [
-  { id: 'all_users', label: 'All users', hint: 'Broadcast to every registered user' },
-  { id: 'specific_state', label: 'Users in a state', hint: 'Target by Nigerian state' },
-  { id: 'specific_disco', label: 'Users on a DISCO', hint: 'Target by electricity distribution company' },
-  { id: 'active_users', label: 'Active users', hint: 'Users active in the last 30 days' },
-  { id: 'dormant_users', label: 'Dormant users', hint: 'Users inactive for 60+ days' },
-  { id: 'single_user', label: 'Single user', hint: 'Send to one specific user' },
-];
+const AUDIENCE_HINTS: Record<NotificationAudience, string> = {
+  all_users: 'Broadcast to every registered user',
+  specific_state: 'Target by Nigerian state (primary meter address)',
+  specific_disco: 'Target by electricity DISCO or other provider',
+  active_users: 'Users active in the last 30 days',
+  dormant_users: 'Users inactive for 60+ days',
+  single_user: 'Send to one specific user',
+};
 
 export default function NotificationsPage() {
-  const templates = useMemo(() => getNotificationTemplates(), []);
+  const { admin } = useAdminAuth();
+  const canViewHistory = canViewNotificationHistory(admin);
+  const canSend = canSendNotifications(admin);
+  const [historyScope, setHistoryScope] = useState<'mine' | 'all'>('mine');
+  const {
+    templates,
+    states,
+    providers,
+    history,
+    stats,
+    isLoading,
+    isEstimating,
+    isSending,
+    error,
+    estimateAudience,
+    sendCampaign,
+    searchUsers,
+  } = useAdminNotifications({ canViewHistory, historyScope });
+
   const [activeTab, setActiveTab] = useState('send');
-  const [history, setHistory] = useState(() => getSentNotifications());
   const [templateId, setTemplateId] = useState('');
   const [audience, setAudience] = useState<NotificationAudience>('all_users');
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
-  const [selectedDiscos, setSelectedDiscos] = useState<string[]>([]);
+  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [userId, setUserId] = useState('');
+  const [userOptions, setUserOptions] = useState<NotificationUserOption[]>([]);
+  const [isSearchingUsers, setIsSearchingUsers] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
+  const [recipientPreview, setRecipientPreview] = useState({ count: 0, label: 'No audience selected' });
 
-  const tabs = [
-    { id: 'send', label: 'Send' },
-    { id: 'history', label: 'History', badge: history.length },
-    // { id: 'templates', label: 'Templates', badge: templates.length },
-  ];
+  const tabs = useMemo(() => {
+    const items = [{ id: 'send', label: 'Send' }];
+    if (canViewHistory) {
+      items.push({ id: 'history', label: 'History', badge: history.length });
+    }
+    return items;
+  }, [canViewHistory, history.length]);
 
-  const selectedTemplate = templateId ? getTemplateById(templateId) : undefined;
-  const selectedAudience = AUDIENCE_OPTIONS.find((opt) => opt.id === audience);
+  const selectedTemplate = useMemo(
+    () => templates.find((template) => template.id === templateId),
+    [templates, templateId]
+  );
 
   const templateOptions = useMemo(
     () => [
       { value: '', label: 'Choose a template…' },
-      ...templates.map((t) => ({ value: t.id, label: t.title })),
+      ...templates.map((template) => ({ value: template.id, label: template.title })),
     ],
     [templates]
   );
 
   const audienceOptions = useMemo(
-    () => AUDIENCE_OPTIONS.map((opt) => ({ value: opt.id, label: opt.label })),
+    () =>
+      (Object.keys(AUDIENCE_HINTS) as NotificationAudience[]).map((id) => ({
+        value: id,
+        label:
+          id === 'all_users'
+            ? 'All users'
+            : id === 'specific_state'
+              ? 'Users in a state'
+              : id === 'specific_disco'
+                ? 'Users on a provider'
+                : id === 'active_users'
+                  ? 'Active users'
+                  : id === 'dormant_users'
+                    ? 'Dormant users'
+                    : 'Single user',
+      })),
     []
   );
 
   const stateOptions = useMemo(
-    () => NIGERIAN_STATES.map((s) => ({ value: s, label: s })),
-    []
+    () => states.map((state) => ({ value: state, label: state })),
+    [states]
   );
 
-  const discoOptions = useMemo(
-    () => DISCO_OPTIONS.map((d) => ({ value: d.code, label: d.label })),
-    []
+  const providerOptions = useMemo(
+    () => buildProviderDropdownOptions(providers),
+    [providers]
   );
 
-  const recipientPreview = useMemo(
-    () =>
-      resolveAudienceRecipients({
-        template_id: templateId,
-        audience,
-        states: audience === 'specific_state' ? selectedStates : undefined,
-        discos: audience === 'specific_disco' ? selectedDiscos : undefined,
-        user_id: audience === 'single_user' ? userId : undefined,
-      }),
-    [templateId, audience, selectedStates, selectedDiscos, userId]
+  const estimatePayload = useMemo(
+    () => ({
+      template_id: templateId,
+      audience,
+      states: audience === 'specific_state' ? selectedStates : undefined,
+      providers: audience === 'specific_disco' ? selectedProviders : undefined,
+      user_id: audience === 'single_user' ? userId : undefined,
+    }),
+    [templateId, audience, selectedStates, selectedProviders, userId]
   );
 
-  const canSend =
+  useEffect(() => {
+    if (!templateId || !canSend) {
+      setRecipientPreview({ count: 0, label: 'No audience selected' });
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      try {
+        const preview = await estimateAudience(estimatePayload);
+        if (!cancelled) setRecipientPreview(preview);
+      } catch {
+        if (!cancelled) {
+          setRecipientPreview({ count: 0, label: 'Unable to estimate recipients' });
+        }
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [templateId, estimatePayload, estimateAudience, canSend]);
+
+  const handleUserSearch = useCallback(
+    async (query: string) => {
+      setIsSearchingUsers(true);
+      try {
+        const users = await searchUsers(query);
+        setUserOptions(users);
+      } finally {
+        setIsSearchingUsers(false);
+      }
+    },
+    [searchUsers]
+  );
+
+  const canSubmit =
+    canSend &&
     !!templateId &&
     recipientPreview.count > 0 &&
     (audience !== 'single_user' || !!userId) &&
     (audience !== 'specific_state' || selectedStates.length > 0) &&
-    (audience !== 'specific_disco' || selectedDiscos.length > 0);
+    (audience !== 'specific_disco' || selectedProviders.length > 0);
 
-  const handleSend = () => {
-    if (!canSend) return;
-    setSending(true);
-    const entry = sendNotification({
-      template_id: templateId,
-      audience,
-      states: audience === 'specific_state' ? selectedStates : undefined,
-      discos: audience === 'specific_disco' ? selectedDiscos : undefined,
-      user_id: audience === 'single_user' ? userId : undefined,
-    });
-    setHistory(getSentNotifications());
-    setBanner(
-      `"${entry.template_title}" sent to ${entry.recipient_count.toLocaleString()} recipient(s) successfully.`
-    );
-    setSending(false);
-    setActiveTab('history');
+  const handleSend = async () => {
+    if (!canSubmit) return;
+    setBanner(null);
+
+    try {
+      const result = await sendCampaign(estimatePayload);
+      setBanner(
+        `"${result.broadcast.template_title}" sent to ${result.notifications_sent.toLocaleString()} recipient(s) successfully.`
+      );
+      if (canViewHistory) {
+        setActiveTab('history');
+      }
+    } catch {
+      // error surfaced via hook state
+    }
   };
+
+  if (!canSend) {
+    return (
+      <div className="notifications_page">
+        <h1>Notifications</h1>
+        <p className="page_subtitle">You do not have permission to send notifications.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="notifications_page">
@@ -133,26 +212,28 @@ export default function NotificationsPage() {
         </div>
       )}
 
-      <section className="stats_section">
-        {/* <div className="stats_card border-blue-200">
-          <p>Templates</p>
-          <h2>{templates.length}</h2>
-        </div> */}
-        <div className="stats_card border-green-200">
-          <p>Sent today</p>
-          <h2>
-            {
-              history.filter(
-                (h) => h.sent_at.includes('Just now') || h.sent_at.includes('Jun 3')
-              ).length
-            }
-          </h2>
+      {error && (
+        <div className="settings_banner settings_banner_error" role="alert">
+          <span>{error}</span>
         </div>
-        <div className="stats_card border-purple-200">
-          <p>Last broadcast reach</p>
-          <h2>{history[0]?.recipient_count.toLocaleString() ?? '—'}</h2>
-        </div>
-      </section>
+      )}
+
+      {canViewHistory && stats && (
+        <section className="stats_section">
+          <div className="stats_card border-green-200">
+            <p>Sent today</p>
+            <h2>{stats.sent_today.toLocaleString()}</h2>
+          </div>
+          <div className="stats_card border-purple-200">
+            <p>Last broadcast reach</p>
+            <h2>
+              {stats.last_broadcast_reach !== null
+                ? stats.last_broadcast_reach.toLocaleString()
+                : '—'}
+            </h2>
+          </div>
+        </section>
+      )}
 
       <div className="admin_panel_card tabs_container">
         <AdminTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
@@ -162,130 +243,147 @@ export default function NotificationsPage() {
             <p className="tab_hint">
               Select a template and define who should receive the notification.
             </p>
-            <div className="notif_form">
-              <div className="notif_form_primary">
-                <div className="notif_field">
-                  <label htmlFor="notif-template">Notification template</label>
-                  <AdminDropdown
-                    id="notif-template"
-                    value={templateId}
-                    onChange={setTemplateId}
-                    options={templateOptions}
-                    placeholder="Choose a template…"
-                  />
+
+            {isLoading ? (
+              <p className="tab_hint">Loading templates and audience options…</p>
+            ) : (
+              <div className="notif_form">
+                <div className="notif_form_primary">
+                  <div className="notif_field">
+                    <label htmlFor="notif-template">Notification template</label>
+                    <AdminDropdown
+                      id="notif-template"
+                      value={templateId}
+                      onChange={setTemplateId}
+                      options={templateOptions}
+                      placeholder="Choose a template…"
+                    />
+                  </div>
+
+                  <div className="notif_field">
+                    <label htmlFor="notif-audience">Audience</label>
+                    <AdminDropdown
+                      id="notif-audience"
+                      value={audience}
+                      onChange={(value) => {
+                        setAudience(value as NotificationAudience);
+                        if (value !== 'single_user') setUserId('');
+                        if (value !== 'specific_state') setSelectedStates([]);
+                        if (value !== 'specific_disco') setSelectedProviders([]);
+                      }}
+                      options={audienceOptions}
+                      placeholder="Choose audience…"
+                    />
+                    <p className="notif_field_hint">{AUDIENCE_HINTS[audience]}</p>
+                  </div>
                 </div>
 
-                <div className="notif_field">
-                  <label htmlFor="notif-audience">Audience</label>
-                  <AdminDropdown
-                    id="notif-audience"
-                    value={audience}
-                    onChange={(value) => {
-                      setAudience(value as NotificationAudience);
-                      if (value !== 'single_user') setUserId('');
-                      if (value !== 'specific_state') setSelectedStates([]);
-                      if (value !== 'specific_disco') setSelectedDiscos([]);
-                    }}
-                    options={audienceOptions}
-                    placeholder="Choose audience…"
-                  />
-                  {selectedAudience && (
-                    <p className="notif_field_hint">{selectedAudience.hint}</p>
-                  )}
+                {selectedTemplate && (
+                  <div className="notif_preview">
+                    <div className="notif_preview_badge">
+                      <span
+                        className={`pill ${getNotificationKindPillClass(selectedTemplate.kind)}`}
+                      >
+                        {NOTIFICATION_KIND_LABELS[selectedTemplate.kind]}
+                      </span>
+                    </div>
+                    <h3>{selectedTemplate.title}</h3>
+                    <p>{selectedTemplate.body}</p>
+                  </div>
+                )}
+
+                {(audience === 'specific_state' ||
+                  audience === 'specific_disco' ||
+                  audience === 'single_user') && (
+                  <div className="notif_target_section">
+                    <h3 className="notif_target_title">Targeting</h3>
+
+                    {audience === 'specific_state' && (
+                      <div className="notif_field">
+                        <label htmlFor="notif-state">States</label>
+                        <AdminMultiSelect
+                          id="notif-state"
+                          values={selectedStates}
+                          onChange={setSelectedStates}
+                          options={stateOptions}
+                          placeholder="Select one or more states"
+                          aria-label="Select states"
+                        />
+                      </div>
+                    )}
+
+                    {audience === 'specific_disco' && (
+                      <div className="notif_field">
+                        <label htmlFor="notif-provider">Providers</label>
+                        <AdminMultiSelect
+                          id="notif-provider"
+                          values={selectedProviders}
+                          onChange={setSelectedProviders}
+                          options={providerOptions}
+                          placeholder="Select one or more providers"
+                          aria-label="Select providers"
+                        />
+                      </div>
+                    )}
+
+                    {audience === 'single_user' && (
+                      <div className="notif_field">
+                        <label htmlFor="notif-user-search">User</label>
+                        <NotificationUserSearch
+                          users={userOptions}
+                          selectedUserId={userId}
+                          onSelect={setUserId}
+                          onClear={() => setUserId('')}
+                          onSearch={handleUserSearch}
+                          isSearching={isSearchingUsers}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="notif_form_footer">
+                  <div className="recipient_estimate">
+                    <div className="recipient_estimate_copy">
+                      <span className="recipient_estimate_label">Estimated recipients</span>
+                      <strong>{recipientPreview.label}</strong>
+                    </div>
+                    <strong className="recipient_estimate_count">
+                      {isEstimating ? '…' : recipientPreview.count.toLocaleString()}
+                    </strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn_send_notif"
+                    disabled={!canSubmit || isSending}
+                    onClick={handleSend}
+                  >
+                    <FaPaperPlane /> Send notification
+                  </button>
                 </div>
               </div>
-
-              {selectedTemplate && (
-                <div className="notif_preview">
-                  <div className="notif_preview_badge">
-                    <span
-                      className={`pill ${getNotificationKindPillClass(selectedTemplate.kind)}`}
-                    >
-                      {NOTIFICATION_KIND_LABELS[selectedTemplate.kind]}
-                    </span>
-                  </div>
-                  <h3>{selectedTemplate.title}</h3>
-                  <p>{selectedTemplate.body}</p>
-                </div>
-              )}
-
-              {(audience === 'specific_state' ||
-                audience === 'specific_disco' ||
-                audience === 'single_user') && (
-                <div className="notif_target_section">
-                  <h3 className="notif_target_title">Targeting</h3>
-
-                  {audience === 'specific_state' && (
-                    <div className="notif_field">
-                      <label htmlFor="notif-state">States</label>
-                      <AdminMultiSelect
-                        id="notif-state"
-                        values={selectedStates}
-                        onChange={setSelectedStates}
-                        options={stateOptions}
-                        placeholder="Select one or more states"
-                        aria-label="Select states"
-                      />
-                    </div>
-                  )}
-
-                  {audience === 'specific_disco' && (
-                    <div className="notif_field">
-                      <label htmlFor="notif-disco">DISCOs</label>
-                      <AdminMultiSelect
-                        id="notif-disco"
-                        values={selectedDiscos}
-                        onChange={setSelectedDiscos}
-                        options={discoOptions}
-                        placeholder="Select one or more DISCOs"
-                        aria-label="Select DISCOs"
-                      />
-                    </div>
-                  )}
-
-                  {audience === 'single_user' && (
-                    <div className="notif_field">
-                      <label htmlFor="notif-user-search">User</label>
-                      <NotificationUserSearch
-                        users={MOCK_USERS_LIST}
-                        selectedUserId={userId}
-                        onSelect={setUserId}
-                        onClear={() => setUserId('')}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="notif_form_footer">
-                <div className="recipient_estimate">
-                  <div className="recipient_estimate_copy">
-                    <span className="recipient_estimate_label">Estimated recipients</span>
-                    <strong>{recipientPreview.label}</strong>
-                  </div>
-                  <strong className="recipient_estimate_count">
-                    {recipientPreview.count.toLocaleString()}
-                  </strong>
-                </div>
-
-                <button
-                  type="button"
-                  className="btn_send_notif"
-                  disabled={!canSend || sending}
-                  onClick={handleSend}
-                >
-                  <FaPaperPlane /> Send notification
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
-        {activeTab === 'history' && (
+        {activeTab === 'history' && canViewHistory && (
           <div className="tab_panel">
-            <p className="tab_hint">
-              Notifications delivered from Command Center (mock).
-            </p>
+            <div className="notif_history_header">
+              <p className="tab_hint">Notifications delivered from Command Center.</p>
+              {stats?.can_view_all && (
+                <AdminDropdown
+                  id="notif-history-scope"
+                  value={historyScope}
+                  onChange={(value) => setHistoryScope(value as 'mine' | 'all')}
+                  options={[
+                    { value: 'mine', label: 'My sends' },
+                    { value: 'all', label: 'All admins' },
+                  ]}
+                  placeholder="Scope"
+                />
+              )}
+            </div>
             <div className="history_table_wrap">
               <table className="admin_data_table">
                 <thead>
@@ -299,56 +397,31 @@ export default function NotificationsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.template_title}</td>
-                      <td>
-                        <span className={`pill ${getNotificationKindPillClass(row.kind)}`}>
-                          {NOTIFICATION_KIND_LABELS[row.kind]}
-                        </span>
-                      </td>
-                      <td>{row.audience_label}</td>
-                      <td>{row.recipient_count.toLocaleString()}</td>
-                      <td>{row.sent_by}</td>
-                      <td>{row.sent_at}</td>
+                  {history.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>No notifications sent yet.</td>
                     </tr>
-                  ))}
+                  ) : (
+                    history.map((row) => (
+                      <tr key={row.id}>
+                        <td>{row.template_title}</td>
+                        <td>
+                          <span className={`pill ${getNotificationKindPillClass(row.kind)}`}>
+                            {NOTIFICATION_KIND_LABELS[row.kind]}
+                          </span>
+                        </td>
+                        <td>{row.audience_label}</td>
+                        <td>{row.recipient_count.toLocaleString()}</td>
+                        <td>{row.sent_by}</td>
+                        <td>{row.sent_at}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         )}
-
-        {/* {activeTab === 'templates' && (
-          <div className="tab_panel">
-            <p className="tab_hint">
-              Pre-built notification templates. Select one on the Send tab to deliver.
-            </p>
-            <div className="templates_grid">
-              {templates.map((t) => (
-                <article key={t.id} className="template_card">
-                  <div className="template_card_top">
-                    <h3>{t.title}</h3>
-                    <span className={`pill ${getNotificationKindPillClass(t.kind)}`}>
-                      {NOTIFICATION_KIND_LABELS[t.kind]}
-                    </span>
-                  </div>
-                  <p>{t.body}</p>
-                  <button
-                    type="button"
-                    className="template_use_btn"
-                    onClick={() => {
-                      setTemplateId(t.id);
-                      setActiveTab('send');
-                    }}
-                  >
-                    Use template
-                  </button>
-                </article>
-              ))}
-            </div>
-          </div>
-        )} */}
       </div>
     </div>
   );

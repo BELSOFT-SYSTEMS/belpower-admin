@@ -242,6 +242,27 @@
   font-size: 0.875rem;
 }
 
+.notifications_page .settings_banner_error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.notifications_page .notif_history_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .notifications_page .settings_banner_success {
   background: #f0fdf4;
   border: 1px solid #86efac;

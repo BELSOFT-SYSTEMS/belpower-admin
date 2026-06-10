@@ -119,7 +119,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[] | null> = {
     'wallet.total_balance',
     '2fa.manage',
   ],
-  content_manager: ['profile.read', '2fa.manage'],
+  content_manager: ['profile.read', 'notifications.manage', '2fa.manage'],
 };
 
 export function groupPermissionsBySection(

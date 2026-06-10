@@ -67,7 +67,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     name: 'Notifications',
     href: '/command-center/notifications',
     icon: <FaBell className="w-5 h-5" />,
-    permission: 'notifications.send',
+    permission: 'notifications.manage',
   },
   {
     name: 'Messages',
