@@ -120,7 +120,7 @@ export async function patchMaintenanceState(
 ): Promise<MaintenanceState> {
   const res = await fetch(`${ADMIN_API_BASE}/system/maintenance`, {
     method: 'PATCH',
-    headers: adminHeaders({ 'Content-Type': 'application/json' }),
+    headers: adminHeaders(),
     body: JSON.stringify(patch),
   });
 

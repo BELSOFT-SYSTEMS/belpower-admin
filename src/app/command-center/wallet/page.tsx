@@ -14,8 +14,10 @@ import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminWallet } from '@/hooks/useAdminWallet';
 import { useAdminTransactionsListActions } from '@/hooks/useAdminTransactionsListActions';
 import { canViewWalletMoneyStats, canViewWalletPage } from '@/utils/adminWalletAccess';
+import type { WalletActivityFilter } from '@/types/adminWallet';
 
-const FILTER_ALL = '__all__';
+const FILTER_ALL = '__all__' as const;
+type WalletCategoryFilter = WalletActivityFilter | typeof FILTER_ALL;
 
 const WALLET_CATEGORY_FILTER_OPTIONS = [
   { value: FILTER_ALL, label: 'All wallet activity' },
@@ -39,8 +41,8 @@ export default function WalletPage() {
   const canViewMoney = canViewWalletMoneyStats(admin);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState(FILTER_ALL);
-  const [statusFilter, setStatusFilter] = useState(FILTER_ALL);
+  const [categoryFilter, setCategoryFilter] = useState<WalletCategoryFilter>(FILTER_ALL);
+  const [statusFilter, setStatusFilter] = useState<string>(FILTER_ALL);
   const [page, setPage] = useState(1);
 
   const {
@@ -199,7 +201,7 @@ export default function WalletPage() {
         isLoading={isLoading}
         error={error}
         onSearchChange={setSearchTerm}
-        onCategoryFilterChange={setCategoryFilter}
+        onCategoryFilterChange={(value) => setCategoryFilter(value as WalletCategoryFilter)}
         onStatusFilterChange={setStatusFilter}
         onPageChange={setPage}
         onReview={handleReview}
