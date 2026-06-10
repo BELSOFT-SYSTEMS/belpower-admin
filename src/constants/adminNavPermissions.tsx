@@ -79,7 +79,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     name: 'Settings',
     href: '/command-center/settings',
     icon: <FaCog className="w-5 h-5" />,
-    permission: 'settings.view',
+    permission: 'system.maintenance',
   },
 ];
 

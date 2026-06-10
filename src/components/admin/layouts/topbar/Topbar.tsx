@@ -11,11 +11,13 @@ import "@/components/admin/layouts/topbar/topbar.css";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 import { AdminAvatar } from "@/components/admin/AdminAvatar";
 import { useAdminAuth } from "@/context/AdminAuthContext";
+import { canManageMaintenance } from "@/utils/adminSettingsAccess";
 import { useAdminInboxNotifications } from "@/hooks/useAdminInboxNotifications";
 import { useAdminWebPush } from "@/hooks/useAdminWebPush";
 
 export default function AdminTopBar() {
   const { displayName, admin, isAuthenticated } = useAdminAuth();
+  const showMaintenanceSettings = canManageMaintenance(admin);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -124,13 +126,15 @@ export default function AdminTopBar() {
                         )}
                       </div>
                     </div>
-                    <Link
-                      href="/command-center/settings"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <IoMdSettings />
-                      {t("profileDropdown.Settings")}
-                    </Link>
+                    {showMaintenanceSettings && (
+                      <Link
+                        href="/command-center/settings"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <IoMdSettings />
+                        {t("profileDropdown.Settings")}
+                      </Link>
+                    )}
                     <LogoutButton />
                   </motion.div>
                 )}
@@ -170,13 +174,15 @@ export default function AdminTopBar() {
                       )}
                     </div>
                   </div>
-                  <Link
-                    href="/command-center/settings"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <IoMdSettings />
-                    {t("profileDropdown.Settings")}
-                  </Link>
+                  {showMaintenanceSettings && (
+                    <Link
+                      href="/command-center/settings"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <IoMdSettings />
+                      {t("profileDropdown.Settings")}
+                    </Link>
+                  )}
                   <LogoutButton />
                 </motion.div>
               )}

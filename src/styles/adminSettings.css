@@ -39,6 +39,12 @@
   color: #1d4ed8;
 }
 
+.settings_page .settings_banner_error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
 .settings_page .settings_banner_icon {
   flex-shrink: 0;
   font-size: 1.125rem;
@@ -69,6 +75,10 @@
 
 .settings_page .settings_banner_info .settings_banner_body p {
   color: #1e40af;
+}
+
+.settings_page .settings_banner_error .settings_banner_body p {
+  color: #991b1b;
 }
 
 .settings_page .settings_banner_dismiss {
