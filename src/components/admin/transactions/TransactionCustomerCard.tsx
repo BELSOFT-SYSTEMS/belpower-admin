@@ -31,7 +31,7 @@ export function TransactionCustomerCard({
         >
           {getInitialsFromDisplayName(transaction.user_name)}
         </span>
-        <div>
+        <div className="txn_overview_user_body">
           <span className="txn_overview_user_name">{transaction.user_name}</span>
           {userEmail && <span className="txn_overview_user_email">{userEmail}</span>}
           {isInternalTestAccount && (

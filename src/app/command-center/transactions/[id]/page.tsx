@@ -21,6 +21,7 @@ import { TransactionAmountBreakdown } from '@/components/admin/transactions/Tran
 import { TransactionServiceDetail } from '@/components/admin/transactions/TransactionServiceDetail';
 import { TransactionPaymentReferences } from '@/components/admin/transactions/TransactionPaymentReferences';
 import { TransactionFraudAudit } from '@/components/admin/transactions/TransactionFraudAudit';
+import { BreakableTransactionReference } from '@/components/admin/transactions/BreakableTransactionReference';
 import { TransactionCustomerCard } from '@/components/admin/transactions/TransactionCustomerCard';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import {
@@ -295,8 +296,18 @@ export default function TransactionDetailPage() {
             </div>
             <div>
               <h1>{getTransactionTitle(transaction)}</h1>
-              <p className="txn_meta">
-                {transaction.reference} · {detail.user.fullName}
+              <p
+                className="txn_meta"
+                title={`${transaction.reference} · ${detail.user.fullName}`}
+              >
+                <BreakableTransactionReference
+                  value={transaction.reference}
+                  className="txn_meta_ref"
+                />
+                <span className="txn_meta_user_part">
+                  {' · '}
+                  {detail.user.fullName}
+                </span>
               </p>
               <span className={`pill ${getTransactionStatusPillClass(transaction)}`}>
                 {getTransactionStatusLabel(transaction)}
@@ -450,8 +461,19 @@ export default function TransactionDetailPage() {
                   <span className="txn_overview_eyebrow">Service</span>
                   <h3>{getTransactionTitle(transaction)}</h3>
                   <p className="txn_overview_ref">
-                    {transaction.reference}
-                    {transaction.order_id ? ` · ${transaction.order_id}` : ''}
+                    <BreakableTransactionReference
+                      value={transaction.reference}
+                      className="txn_breakable_ref"
+                    />
+                    {transaction.order_id ? (
+                      <>
+                        <span className="txn_overview_ref_sep"> · </span>
+                        <BreakableTransactionReference
+                          value={transaction.order_id}
+                          className="txn_breakable_ref"
+                        />
+                      </>
+                    ) : null}
                   </p>
                   <span className={`pill ${getTransactionStatusPillClass(transaction)}`}>
                     {getTransactionStatusLabel(transaction)}
