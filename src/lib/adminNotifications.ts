@@ -115,7 +115,7 @@ export async function estimateNotificationAudience(
 ): Promise<AudienceEstimate> {
   const res = await fetch(`${ADMIN_API_BASE}/notifications/estimate`, {
     method: 'POST',
-    headers: adminHeaders({ 'Content-Type': 'application/json' }),
+    headers: adminHeaders(),
     body: JSON.stringify({
       audience: payload.audience,
       states: payload.states,
@@ -150,7 +150,7 @@ export async function sendNotificationCampaign(
 }> {
   const res = await fetch(`${ADMIN_API_BASE}/notifications/campaign`, {
     method: 'POST',
-    headers: adminHeaders({ 'Content-Type': 'application/json' }),
+    headers: adminHeaders(),
     body: JSON.stringify({
       template_id: payload.template_id,
       audience: payload.audience,

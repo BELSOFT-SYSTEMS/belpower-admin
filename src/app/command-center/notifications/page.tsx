@@ -65,7 +65,9 @@ export default function NotificationsPage() {
   const [recipientPreview, setRecipientPreview] = useState({ count: 0, label: 'No audience selected' });
 
   const tabs = useMemo(() => {
-    const items = [{ id: 'send', label: 'Send' }];
+    const items: { id: string; label: string; badge?: number }[] = [
+      { id: 'send', label: 'Send' },
+    ];
     if (canViewHistory) {
       items.push({ id: 'history', label: 'History', badge: history.length });
     }
