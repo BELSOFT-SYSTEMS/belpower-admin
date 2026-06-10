@@ -260,8 +260,13 @@ export async function searchNotificationUsers(
 }
 
 export function buildProviderDropdownOptions(providers: NotificationProviderOption[]) {
-  return providers.map((provider) => ({
-    value: provider.code,
-    label: provider.label,
-  }));
+  const seen = new Set<string>();
+
+  return providers.reduce<{ value: string; label: string }[]>((options, provider) => {
+    const code = provider.code.toUpperCase();
+    if (seen.has(code)) return options;
+    seen.add(code);
+    options.push({ value: code, label: provider.label });
+    return options;
+  }, []);
 }
