@@ -19,11 +19,12 @@ import {
 
 const HEALTH_ICONS = {
   healthy: FaCheckCircle,
+  watch: FaCircle,
   degraded: FaCircle,
   offline: FaTimesCircle,
 } as const;
 
-export default function ServiceReliabilityPage() {
+export default function ServiceAvailabilityPage() {
   const { canAccess } = useAdminAuth();
   const canViewPage = canAccess('services.availability');
   const [activeFilter, setActiveFilter] = useState<ReliabilityFilter>('ALL');
@@ -37,7 +38,13 @@ export default function ServiceReliabilityPage() {
     return filterReliabilityProviders(data.providers, activeFilter);
   }, [data, activeFilter]);
 
-  const summary = data?.summary ?? { healthy: 0, degraded: 0, offline: 0, total: 0 };
+  const summary = data?.summary ?? {
+    healthy: 0,
+    watch: 0,
+    degraded: 0,
+    offline: 0,
+    total: 0,
+  };
 
   const availabilityStats = [
     {
@@ -46,6 +53,13 @@ export default function ServiceReliabilityPage() {
       label: 'Healthy',
       value: String(summary.healthy),
       border: 'border-green-200',
+    },
+    {
+      key: 'watch',
+      icon: <FaCircle className="text-amber-500 text-xl" />,
+      label: 'Watch',
+      value: String(summary.watch),
+      border: 'border-amber-200',
     },
     {
       key: 'degraded',
@@ -66,8 +80,8 @@ export default function ServiceReliabilityPage() {
   if (!canViewPage) {
     return (
       <div className="service_availability_page">
-        <h1>Service Reliability</h1>
-        <p className="empty_fallback">You do not have access to service reliability.</p>
+        <h1>Service Availability</h1>
+        <p className="empty_fallback">You do not have access to service availability.</p>
       </div>
     );
   }
@@ -76,9 +90,9 @@ export default function ServiceReliabilityPage() {
     <div className="service_availability_page">
       <div className="service_page_header">
         <div>
-          <h1>Service Reliability</h1>
+          <h1>Service Availability</h1>
           <p className="page_subtitle">
-            Live BuyPower reliability for electricity, data, cable TV, and airtime providers.
+            Live BelPower provider reliability for electricity, data, cable TV, and airtime.
           </p>
         </div>
         <div className="service_page_actions">
@@ -105,7 +119,7 @@ export default function ServiceReliabilityPage() {
 
       <section className="stats_section">
         {isLoading && !data
-          ? Array.from({ length: 3 }).map((_, index) => (
+          ? Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="stats_card border-gray-200">
                 <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                 <h2>—</h2>

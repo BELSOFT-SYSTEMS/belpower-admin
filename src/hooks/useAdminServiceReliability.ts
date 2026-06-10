@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getServiceReliabilityIndex } from '@/lib/adminServiceReliability';
 import type { ServiceReliabilityData } from '@/types/adminServiceReliability';
 
-const AUTO_REFRESH_MS = 60_000;
+const AUTO_REFRESH_MS = 300_000;
 
 type UseAdminServiceReliabilityOptions = {
   enabled?: boolean;
@@ -36,7 +36,7 @@ export function useAdminServiceReliability({
         setData(result);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load service reliability');
+        setError(err instanceof Error ? err.message : 'Failed to load service availability');
         if (!silent) setData(null);
       } finally {
         if (silent) setIsRefreshing(false);

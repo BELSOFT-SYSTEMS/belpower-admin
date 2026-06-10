@@ -64,6 +64,13 @@ export function getReliabilityHealthConfig(health: ProviderHealth) {
         label: 'High failure rate',
         statusClass: 'health_unstable',
       };
+    case 'watch':
+      return {
+        badge: 'Watch',
+        badgeClass: 'status_watch',
+        label: 'Elevated failure rate',
+        statusClass: 'health_watch',
+      };
     default:
       return {
         badge: 'Healthy',

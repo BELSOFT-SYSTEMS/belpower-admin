@@ -7,7 +7,7 @@ const ADMIN_PAGE_TITLES: Record<string, string> = {
   '/command-center/transactions': 'Transactions',
   '/command-center/check-meter': 'Check Meter',
   '/command-center/wallet': 'Wallet',
-  '/command-center/service-availability': 'Service Reliability',
+  '/command-center/service-availability': 'Service Availability',
   '/command-center/admins': 'Admin Management',
   '/command-center/notifications': 'Notifications',
   '/command-center/messages': 'Messages',

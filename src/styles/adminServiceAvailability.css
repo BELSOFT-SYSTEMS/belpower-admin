@@ -105,7 +105,13 @@
 
 @media (min-width: 640px) {
   .service_availability_page .stats_section {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .service_availability_page .stats_section {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -231,6 +237,12 @@
   color: #c2410c;
 }
 
+.service_availability_page .service_avail_badge.status_watch {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #b45309;
+}
+
 .service_availability_page .service_identity {
   display: flex;
   align-items: center;
@@ -334,6 +346,17 @@
 
 .service_availability_page .health_unstable .service_health_icon {
   color: #ea580c;
+  font-size: 0.875rem;
+}
+
+.service_availability_page .health_watch {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #b45309;
+}
+
+.service_availability_page .health_watch .service_health_icon {
+  color: #d97706;
   font-size: 0.875rem;
 }
 

@@ -1,4 +1,4 @@
-export type ProviderHealth = 'healthy' | 'degraded' | 'offline';
+export type ProviderHealth = 'healthy' | 'watch' | 'degraded' | 'offline';
 
 export type ProviderVertical = 'ELECTRICITY' | 'DATA' | 'TV' | 'VTU' | string;
 
@@ -16,6 +16,7 @@ export type ReliabilityProvider = {
 
 export type ReliabilitySummary = {
   healthy: number;
+  watch: number;
   degraded: number;
   offline: number;
   total: number;

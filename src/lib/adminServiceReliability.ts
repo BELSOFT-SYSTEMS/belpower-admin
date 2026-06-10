@@ -48,10 +48,16 @@ function normalizeProvider(raw: Record<string, unknown>) {
   );
   const providerOnline = Boolean(raw.providerOnline ?? raw.provider_online);
 
-  let health = String(raw.health ?? '').toLowerCase();
-  if (health !== 'healthy' && health !== 'degraded' && health !== 'offline') {
+  let health = String(raw.health ?? raw.display_health ?? raw.displayHealth ?? '').toLowerCase();
+  if (
+    health !== 'healthy' &&
+    health !== 'watch' &&
+    health !== 'degraded' &&
+    health !== 'offline'
+  ) {
     if (!providerOnline) health = 'offline';
     else if (failurePercentage >= 20 || successPercentage < 80) health = 'degraded';
+    else if (failurePercentage >= 5 || successPercentage < 95) health = 'watch';
     else health = 'healthy';
   }
 
@@ -64,7 +70,7 @@ function normalizeProvider(raw: Record<string, unknown>) {
     pendingPercentage,
     failurePercentage,
     providerOnline,
-    health: health as 'healthy' | 'degraded' | 'offline',
+    health: health as 'healthy' | 'watch' | 'degraded' | 'offline',
   };
 }
 
@@ -82,6 +88,7 @@ function normalizeReliabilityData(raw: Record<string, unknown>): ServiceReliabil
   const summaryRaw = (raw.summary as Record<string, unknown> | undefined) ?? {};
   const summary = {
     healthy: toNumber(summaryRaw.healthy, providers.filter((p) => p.health === 'healthy').length),
+    watch: toNumber(summaryRaw.watch, providers.filter((p) => p.health === 'watch').length),
     degraded: toNumber(summaryRaw.degraded, providers.filter((p) => p.health === 'degraded').length),
     offline: toNumber(summaryRaw.offline, providers.filter((p) => p.health === 'offline').length),
     total: toNumber(summaryRaw.total, providers.length),
@@ -123,14 +130,14 @@ export async function getServiceReliabilityIndex(): Promise<ServiceReliabilityDa
 
   if (res.status === 403) {
     throw new AuthApiError(
-      getErrorMessage(body, 'You do not have permission to view service reliability'),
+      getErrorMessage(body, 'You do not have permission to view service availability'),
       'FORBIDDEN'
     );
   }
 
   if (!res.ok || body.success === false || !body.data) {
     throw new AuthApiError(
-      getErrorMessage(body, 'Failed to load service reliability'),
+      getErrorMessage(body, 'Failed to load service availability'),
       'REQUEST_FAILED'
     );
   }
