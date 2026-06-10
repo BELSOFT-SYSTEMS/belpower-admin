@@ -52,7 +52,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     permission: 'transactions.list',
   },
   {
-    name: 'Service Availability',
+    name: 'Service Reliability',
     href: '/command-center/service-availability',
     icon: <FaServer className="w-5 h-5" />,
     permission: 'services.availability',

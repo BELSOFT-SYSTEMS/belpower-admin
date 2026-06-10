@@ -15,7 +15,85 @@
 .service_availability_page .page_subtitle {
   color: #6b7280;
   font-size: 0.875rem;
+  margin: 0;
+}
+
+.service_availability_page .service_page_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-bottom: 1.5rem;
+}
+
+.service_availability_page .service_page_actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.service_availability_page .service_last_updated {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.service_availability_page .service_refresh_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.service_availability_page .service_refresh_btn:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.service_availability_page .service_refresh_btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.service_availability_page .service_loading_panel,
+.service_availability_page .service_error_panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.service_availability_page .reliability_bar {
+  display: flex;
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.service_availability_page .reliability_bar_success {
+  background: #22c55e;
+}
+
+.service_availability_page .reliability_bar_pending {
+  background: #f59e0b;
+}
+
+.service_availability_page .reliability_bar_failure {
+  background: #ef4444;
 }
 
 .service_availability_page .stats_section {

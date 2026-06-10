@@ -38,6 +38,7 @@ export const ADMIN_PERMISSION_CATALOG: AdminPermissionCatalogItem[] = [
   { key: 'dashboard.money_stats', label: 'View money stats on dashboard', group: 'Dashboard' },
   { key: 'reports.view', label: 'View reports', group: 'Reports' },
   { key: 'services.manage', label: 'Manage services', group: 'Services' },
+  { key: 'services.availability', label: 'View service reliability', group: 'Services' },
   { key: 'notifications.manage', label: 'Send notifications', group: 'Notifications' },
   { key: 'disco.manage', label: 'Disco / provider status', group: 'Operations' },
   { key: 'permissions.matrix', label: 'View permissions matrix', group: 'System' },
@@ -81,6 +82,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[] | null> = {
     'dashboard.view',
     'reports.view',
     'services.manage',
+    'services.availability',
     'notifications.manage',
     'disco.manage',
     'permissions.matrix',
@@ -98,6 +100,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[] | null> = {
     'sessions.users.view',
     'dashboard.view',
     'reports.view',
+    'services.availability',
     '2fa.manage',
   ],
   finance: [
@@ -117,9 +120,10 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[] | null> = {
     'dashboard.money_stats',
     'reports.view',
     'wallet.total_balance',
+    'services.availability',
     '2fa.manage',
   ],
-  content_manager: ['profile.read', 'notifications.manage', '2fa.manage'],
+  content_manager: ['profile.read', 'notifications.manage', 'services.availability', '2fa.manage'],
 };
 
 export function groupPermissionsBySection(
