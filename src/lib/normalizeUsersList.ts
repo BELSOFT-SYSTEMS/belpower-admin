@@ -1,3 +1,4 @@
+import { ADMIN_USER_MESSAGING_ENABLED } from '@/constants/adminFeatureFlags';
 import type {
   ApiUser,
   UserDisplayStatus,
@@ -145,7 +146,8 @@ export function normalizeUsersList(raw: RawRecord): UsersListData {
       block: pickBool(quickActionsRaw, 'block', 'block'),
       suspend: pickBool(quickActionsRaw, 'suspend', 'suspend'),
       activate: pickBool(quickActionsRaw, 'activate', 'activate'),
-      message: pickBool(quickActionsRaw, 'message', 'message'),
+      message:
+        ADMIN_USER_MESSAGING_ENABLED && pickBool(quickActionsRaw, 'message', 'message'),
     },
     users: users.map(normalizeUser),
     pagination: {

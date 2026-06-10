@@ -1,3 +1,4 @@
+import { ADMIN_USER_MESSAGING_ENABLED } from '@/constants/adminFeatureFlags';
 import type {
   AdminMeter,
   AdminUserDetail,
@@ -67,7 +68,7 @@ function normalizeQuickActions(raw: RawRecord | undefined): UserDetailQuickActio
     block: pickBool(source, 'block', 'block'),
     suspend: pickBool(source, 'suspend', 'suspend'),
     activate: pickBool(source, 'activate', 'activate'),
-    message: pickBool(source, 'message', 'message'),
+    message: ADMIN_USER_MESSAGING_ENABLED && pickBool(source, 'message', 'message'),
     clearSuspicion: pickBool(source, 'clearSuspicion', 'clear_suspicion'),
     delete: pickBool(source, 'delete', 'delete'),
   };

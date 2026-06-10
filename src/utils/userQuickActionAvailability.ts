@@ -1,3 +1,4 @@
+import { ADMIN_USER_MESSAGING_ENABLED } from '@/constants/adminFeatureFlags';
 import type { ApiUser, UserDisplayStatus } from '@/types/adminUsers';
 
 export type UserQuickActionAvailability = {
@@ -26,7 +27,7 @@ export function getUserQuickActionAvailability(user: ApiUser): UserQuickActionAv
   const isRestricted = RESTRICTED_STATUSES.includes(displayStatus);
 
   return {
-    canMessage: true,
+    canMessage: ADMIN_USER_MESSAGING_ENABLED,
     canBlock: !isBlocked,
     canSuspend: !isSuspended && !isBlocked,
     canActivate: isRestricted,
