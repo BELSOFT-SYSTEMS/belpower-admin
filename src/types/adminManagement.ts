@@ -5,7 +5,7 @@ export type AdminRole =
   | 'finance'
   | 'content_manager';
 
-export type AdminStatus = 'active' | 'suspended';
+export type AdminStatus = 'active' | 'suspended' | 'pending' | 'inactive';
 
 export type AdminAccount = {
   id: string;
@@ -18,7 +18,14 @@ export type AdminAccount = {
   created_at: string;
   last_login: string;
   created_by?: string;
+  email_verified?: boolean;
+  all_access?: boolean;
+  permissions?: string[];
 };
+
+export type AdminLogStatus = 'success' | 'failed' | 'warning';
+
+export type AdminLogMetadata = Record<string, unknown>;
 
 export type AdminLog = {
   id: string;
@@ -27,6 +34,10 @@ export type AdminLog = {
   detail: string;
   timestamp: string;
   ip: string;
+  status?: AdminLogStatus;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  metadata?: AdminLogMetadata;
 };
 
 export type AdminFormValues = {

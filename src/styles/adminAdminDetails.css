@@ -88,6 +88,69 @@
   background: #fef2f2;
 }
 
+.admin_details_page .profile_actions .action_suspend {
+  color: #b45309;
+  border-color: #fdba74;
+}
+
+.admin_details_page .profile_actions .action_suspend:hover {
+  background: #fff7ed;
+}
+
+.admin_details_page .profile_actions .action_activate {
+  color: #15803d;
+  border-color: #86efac;
+}
+
+.admin_details_page .profile_actions .action_activate:hover {
+  background: #f0fdf4;
+}
+
+.admin_details_page .admin_log_row_clickable {
+  cursor: pointer;
+}
+
+.admin_details_page .admin_log_row_clickable:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+.admin_details_page .activity_log_hint {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.admin_details_page .activity_log_reason_preview {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.admin_details_page .settings_banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.admin_details_page .settings_banner_success {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #15803d;
+}
+
+.admin_details_page .settings_banner_error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
 .admin_details_page .overview_grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -138,7 +201,97 @@
 }
 
 .admin_details_page .tab_panel {
-  margin-top: 1rem;
+  margin-top: 0;
+}
+
+.admin_details_page .profile_main .admin_user_name_row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.15rem;
+}
+
+.admin_details_page .profile_main .admin_user_name_row h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin_details_page .overview_fields_grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .admin_details_page .overview_fields_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin_details_page .overview_fields_grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.admin_details_page .overview_field {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin_details_page .overview_label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin_details_page .overview_value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  word-break: break-word;
+}
+
+.admin_details_page .overview_section_title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: #111827;
+}
+
+.admin_details_page .admin_data_table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.admin_details_page .admin_data_table th,
+.admin_details_page .admin_data_table td {
+  text-align: left;
+  padding: 0.75rem 0.65rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+
+.admin_details_page .admin_data_table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.admin_details_page .admin_data_table tbody tr:hover {
+  background: #f9fafb;
 }
 
 .admin_details_page .empty_fallback {

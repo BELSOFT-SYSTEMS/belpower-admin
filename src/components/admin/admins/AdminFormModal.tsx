@@ -3,40 +3,54 @@
 import { useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
-import type { AdminFormValues, AdminRole, AdminStatus } from '@/types/adminManagement';
-import { ADMIN_ROLE_LABELS, ADMIN_ROLES } from '@/types/adminManagement';
+import type { AdminFormValues, AdminRole } from '@/types/adminManagement';
+import { ADMIN_ROLE_LABELS } from '@/types/adminManagement';
 
 type AdminFormModalProps = {
   open: boolean;
   mode: 'create' | 'edit';
   initial?: AdminFormValues;
+  roleOptions: AdminRole[];
   onClose: () => void;
   onSubmit: (values: AdminFormValues) => void;
 };
 
-const emptyForm: AdminFormValues = {
-  first_name: '',
-  last_name: '',
-  email: '',
-  phone: '',
-  role: 'admin',
-  status: 'active',
-};
+function buildEmptyForm(defaultRole: AdminRole): AdminFormValues {
+  return {
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    role: defaultRole,
+    status: 'active',
+  };
+}
 
 export function AdminFormModal({
   open,
   mode,
   initial,
+  roleOptions,
   onClose,
   onSubmit,
 }: AdminFormModalProps) {
-  const [form, setForm] = useState<AdminFormValues>(emptyForm);
+  const defaultRole = roleOptions[0] ?? 'support';
+  const [form, setForm] = useState<AdminFormValues>(() => buildEmptyForm(defaultRole));
 
   useEffect(() => {
     if (open) {
-      setForm(initial ?? emptyForm);
+      setForm(initial ?? buildEmptyForm(defaultRole));
     }
-  }, [open, initial]);
+  }, [open, initial, defaultRole]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   if (!open) return null;
 
@@ -52,8 +66,9 @@ export function AdminFormModal({
   return (
     <div className="admin_modal_overlay" role="presentation" onClick={onClose}>
       <div
-        className="admin_modal"
+        className="admin_modal admin_modal_form_dialog"
         role="dialog"
+        aria-modal="true"
         aria-labelledby="admin-form-title"
         onClick={(e) => e.stopPropagation()}
       >
@@ -66,6 +81,7 @@ export function AdminFormModal({
           </button>
         </div>
         <form onSubmit={handleSubmit} className="admin_modal_form">
+          <div className="admin_modal_body">
           <div className="admin_form_row">
             <label htmlFor="admin-first">First name</label>
             <input
@@ -103,35 +119,28 @@ export function AdminFormModal({
               placeholder="+234 ..."
             />
           </div>
-          <div className="admin_form_row">
-            <label htmlFor="admin-role">Role</label>
-            <AdminDropdown
-              id="admin-role"
-              value={form.role}
-              onChange={(value) => set('role', value as AdminRole)}
-              options={ADMIN_ROLES.map((role) => ({
-                value: role,
-                label: ADMIN_ROLE_LABELS[role],
-              }))}
-            />
-          </div>
-          <div className="admin_form_row">
-            <label htmlFor="admin-status">Status</label>
-            <AdminDropdown
-              id="admin-status"
-              value={form.status}
-              onChange={(value) => set('status', value as AdminStatus)}
-              options={[
-                { value: 'active', label: 'Active' },
-                { value: 'suspended', label: 'Suspended' },
-              ]}
-            />
-          </div>
+          {roleOptions.length > 0 && (
+            <div className="admin_form_row">
+              <label htmlFor="admin-role">Role</label>
+              <AdminDropdown
+                id="admin-role"
+                value={form.role}
+                onChange={(value) => set('role', value as AdminRole)}
+                options={roleOptions.map((role) => ({
+                  value: role,
+                  label: ADMIN_ROLE_LABELS[role],
+                }))}
+              />
+            </div>
+          )}
           {mode === 'create' && (
             <p className="admin_form_hint">
-              A temporary password will be emailed after the account is created (mock).
+              A setup email will be sent after the account is created. The admin completes
+              activation via the invite link.
             </p>
           )}
+          </div>
+          <div className="admin_modal_footer">
           <div className="admin_modal_actions">
             <button type="button" className="btn_secondary" onClick={onClose}>
               Cancel
@@ -139,6 +148,7 @@ export function AdminFormModal({
             <button type="submit" className="btn_primary">
               {mode === 'create' ? 'Create admin' : 'Save changes'}
             </button>
+          </div>
           </div>
         </form>
       </div>

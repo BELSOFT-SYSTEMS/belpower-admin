@@ -2,12 +2,18 @@
  * Mock admin accounts & activity logs — replace with API (GET/POST/PATCH/DELETE /admins)
  */
 
+import { DEFAULT_ROLE_PERMISSIONS } from '@/constants/adminPermissionCatalog';
 import type {
   AdminAccount,
   AdminFormValues,
   AdminLog,
   AdminRole,
 } from '@/types/adminManagement';
+
+function permissionsForRole(role: AdminRole): string[] | undefined {
+  const keys = DEFAULT_ROLE_PERMISSIONS[role];
+  return keys ?? undefined;
+}
 
 const INITIAL_ADMINS: AdminAccount[] = [
   {
@@ -21,6 +27,8 @@ const INITIAL_ADMINS: AdminAccount[] = [
     created_at: 'Jan 8, 2024',
     last_login: 'Today, 9:14 AM',
     created_by: 'System',
+    email_verified: true,
+    all_access: true,
   },
   {
     id: 'sarah-mendes',
@@ -33,6 +41,8 @@ const INITIAL_ADMINS: AdminAccount[] = [
     created_at: 'Mar 2, 2024',
     last_login: 'Today, 8:02 AM',
     created_by: 'James Okafor',
+    email_verified: true,
+    permissions: permissionsForRole('admin'),
   },
   {
     id: 'tunde-adeyemi',
@@ -45,6 +55,8 @@ const INITIAL_ADMINS: AdminAccount[] = [
     created_at: 'Jun 15, 2024',
     last_login: 'Yesterday, 6:45 PM',
     created_by: 'Sarah Mendes',
+    email_verified: true,
+    permissions: permissionsForRole('support'),
   },
   {
     id: 'chioma-eze',
@@ -57,6 +69,8 @@ const INITIAL_ADMINS: AdminAccount[] = [
     created_at: 'Aug 1, 2024',
     last_login: 'May 28, 2025',
     created_by: 'James Okafor',
+    email_verified: true,
+    permissions: permissionsForRole('finance'),
   },
   {
     id: 'david-okon',
@@ -69,6 +83,8 @@ const INITIAL_ADMINS: AdminAccount[] = [
     created_at: 'Nov 12, 2024',
     last_login: 'Jun 1, 2026, 11:30 AM',
     created_by: 'Sarah Mendes',
+    email_verified: true,
+    permissions: permissionsForRole('content_manager'),
   },
 ];
 
@@ -80,6 +96,8 @@ const INITIAL_LOGS: AdminLog[] = [
     detail: 'Signed in to Command Center',
     timestamp: 'Jun 3, 2026 — 9:14 AM',
     ip: '102.89.44.12',
+    status: 'success',
+    entity_type: 'session',
   },
   {
     id: 'log-2',
@@ -88,6 +106,19 @@ const INITIAL_LOGS: AdminLog[] = [
     detail: 'Blocked user chris-paul (fraud review)',
     timestamp: 'Jun 2, 2026 — 4:22 PM',
     ip: '102.89.44.12',
+    status: 'success',
+    entity_type: 'user',
+    entity_id: 'chris-paul',
+    metadata: {
+      reason:
+        'Multiple failed transactions and duplicate recipient patterns flagged during fraud review',
+      target_user_name: 'Chris Paul',
+      target_user_id: 'chris-paul',
+      target_email: 'chris.paul@example.com',
+      review_status: 'blocked',
+      fraud_flags: ['velocity', 'duplicate_recipient', 'high_value_wallet'],
+      notes: 'Blocked pending manual review by compliance team',
+    },
   },
   {
     id: 'log-3',
@@ -112,6 +143,14 @@ const INITIAL_LOGS: AdminLog[] = [
     detail: 'Marked TRX-789459 for fraud review',
     timestamp: 'Jun 1, 2026 — 2:18 PM',
     ip: '197.210.55.88',
+    entity_type: 'transaction',
+    entity_id: 'TRX-789459',
+    metadata: {
+      reason: 'Unusual payment velocity from new wallet',
+      transaction_reference: 'TRX-789459',
+      review_status: 'under_review',
+      message: 'Escalated to fraud queue for senior review',
+    },
   },
   {
     id: 'log-6',
@@ -120,6 +159,14 @@ const INITIAL_LOGS: AdminLog[] = [
     detail: 'Updated David Okon role to content manager',
     timestamp: 'Nov 12, 2024 — 3:40 PM',
     ip: '197.210.55.88',
+    entity_type: 'admin',
+    entity_id: 'david-okon',
+    metadata: {
+      previous_role: 'support',
+      new_role: 'content_manager',
+      updated_fields: ['role'],
+      notes: 'Moved to content team for service copy updates',
+    },
   },
   {
     id: 'log-7',
@@ -245,7 +292,11 @@ function appendLog(
   adminId: string,
   action: string,
   detail: string,
-  ip = '102.89.44.12'
+  ip = '102.89.44.12',
+  status: AdminLog['status'] = 'success',
+  entity_type?: string | null,
+  entity_id?: string | null,
+  metadata?: AdminLog['metadata']
 ) {
   const entry: AdminLog = {
     id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -254,6 +305,10 @@ function appendLog(
     detail,
     timestamp: 'Just now',
     ip,
+    status,
+    entity_type,
+    entity_id,
+    metadata,
   };
   logs = [entry, ...logs];
 }
@@ -273,6 +328,9 @@ export function createAdmin(
     }),
     last_login: 'Never',
     created_by: actorName,
+    email_verified: false,
+    all_access: values.role === 'super_admin',
+    permissions: permissionsForRole(values.role),
   };
   admins = [account, ...admins];
   appendLog(id, 'Account created', `Admin account created (${values.role})`);
@@ -284,8 +342,56 @@ export function updateAdmin(id: string, values: AdminFormValues): AdminAccount |
   const idx = admins.findIndex((a) => a.id === id);
   if (idx === -1) return null;
   const prev = admins[idx];
-  admins = admins.map((a) => (a.id === id ? { ...a, ...values } : a));
-  appendLog(id, 'Profile updated', `Updated ${prev.first_name} ${prev.last_name} account details`);
+  const next = { ...prev, ...values, status: values.status ?? prev.status };
+  admins = admins.map((a) => (a.id === id ? next : a));
+  const updatedFields = (['first_name', 'last_name', 'email', 'phone', 'role'] as const).filter(
+    (key) => values[key] !== prev[key]
+  );
+  appendLog(
+    id,
+    'Profile updated',
+    `Updated ${prev.first_name} ${prev.last_name} account details`,
+    '102.89.44.12',
+    'success',
+    'admin',
+    id,
+    {
+      updated_fields: updatedFields,
+      previous_role: prev.role !== next.role ? prev.role : undefined,
+      new_role: prev.role !== next.role ? next.role : undefined,
+    }
+  );
+  notify();
+  return admins.find((a) => a.id === id) ?? null;
+}
+
+export function setAdminStatus(
+  id: string,
+  status: 'active' | 'suspended'
+): AdminAccount | null {
+  const idx = admins.findIndex((a) => a.id === id);
+  if (idx === -1) return null;
+  const prev = admins[idx];
+  if (prev.status === status) return prev;
+  admins = admins.map((a) => (a.id === id ? { ...a, status } : a));
+  const action = status === 'suspended' ? 'Account suspended' : 'Account activated';
+  appendLog(
+    id,
+    action,
+    `${status === 'suspended' ? 'Suspended' : 'Activated'} ${prev.first_name} ${prev.last_name}`,
+    '102.89.44.12',
+    'success',
+    'admin',
+    id,
+    {
+      previous_status: prev.status,
+      new_status: status,
+      reason:
+        status === 'suspended'
+          ? 'Access revoked by admin — account suspended in Command Center'
+          : undefined,
+    }
+  );
   notify();
   return admins.find((a) => a.id === id) ?? null;
 }

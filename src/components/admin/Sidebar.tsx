@@ -4,14 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { ADMIN_NAV_ITEMS } from '@/constants/adminNavPermissions';
+import { canAccessAdminManagement } from '@/utils/adminManagementAccess';
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { canAccess } = useAdminAuth();
+  const { canAccess, admin } = useAdminAuth();
 
-  const navigation = ADMIN_NAV_ITEMS.filter(
-    (item) => !item.permission || canAccess(item.permission)
-  );
+  const navigation = ADMIN_NAV_ITEMS.filter((item) => {
+    if (item.href === '/command-center/admins') {
+      return canAccessAdminManagement(admin);
+    }
+    return !item.permission || canAccess(item.permission);
+  });
 
   const isNavActive = (href: string) => {
     if (href === '/command-center') {
