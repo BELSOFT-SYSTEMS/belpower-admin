@@ -42,8 +42,9 @@ export type TransactionsCountStat = {
  * GET /transactions stats (includeStats=true) and GET /transactions/overview.
  *
  * Backend contract:
- * - Always return count stats: totalTransactions, completedTransactions,
- *   pendingTransactions, refundTransactions, scheduled, flagged.
+ * - Always return count stats aligned with volume scope: totalTransactions
+ *   (same rows as totalVolume), completedTransactions, pendingTransactions,
+ *   refundTransactions, plus scheduled and flagged.
  * - Return money stats (totalVolume, completed, pending, refunds) only when
  *   the caller has dashboard.money_stats (super_admin, finance).
  * - Set filters.canViewMoneyStats to match whether money fields are present.
