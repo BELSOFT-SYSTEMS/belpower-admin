@@ -83,17 +83,22 @@ export default function WalletPage() {
     Boolean(buyPowerBalance?.canView && canViewMoney)
   );
 
-  const walletStats = useMemo(
-    () => [
-      {
+  const walletStats = useMemo(() => {
+    const cards = [];
+
+    if (canViewMoney) {
+      cards.push({
         key: 'totalUserBalance',
         icon: <FaWallet className="text-blue-500 text-xl" />,
         label: 'Total user wallet balance',
         value: totalBalanceDisplay.value,
         valueClassName: totalBalanceDisplay.isNegative ? 'wallet_balance_negative' : undefined,
-        sub: totalUserBalance?.canView && canViewMoney ? 'Across all users' : 'Restricted',
+        sub: 'Across all users',
         border: 'border-blue-200',
-      },
+      });
+    }
+
+    cards.push(
       {
         key: 'funding',
         icon: <FaArrowUp className="text-green-500 text-xl" />,
@@ -109,31 +114,27 @@ export default function WalletPage() {
         value: stats ? String(stats.debitCount.count.toLocaleString()) : '—',
         sub: 'Paid from wallet',
         border: 'border-orange-200',
-      },
-      {
+      }
+    );
+
+    if (canViewMoney) {
+      cards.push({
         key: 'buyPower',
         icon: <FaWallet className="text-purple-500 text-xl" />,
         label: 'BuyPower wallet balance',
         value: buyPowerDisplay.value,
         valueClassName: buyPowerDisplay.isNegative ? 'wallet_balance_negative' : undefined,
-        sub:
-          buyPowerBalance?.canView && canViewMoney
-            ? buyPowerBalance.lastUpdated
-              ? `Updated ${new Date(buyPowerBalance.lastUpdated).toLocaleString()}`
-              : 'Platform float'
-            : 'Restricted',
+        sub: buyPowerBalance?.lastUpdated
+          ? `Updated ${new Date(buyPowerBalance.lastUpdated).toLocaleString()}`
+          : 'Platform float',
         border: 'border-purple-200',
-      },
-    ],
-    [
-      stats,
-      canViewMoney,
-      totalBalanceDisplay,
-      buyPowerDisplay,
-      totalUserBalance,
-      buyPowerBalance,
-    ]
-  );
+      });
+    }
+
+    return cards;
+  }, [stats, canViewMoney, totalBalanceDisplay, buyPowerDisplay, buyPowerBalance]);
+
+  const statsCardCount = canViewMoney ? 4 : 2;
 
   if (!canAccessPage) {
     return (
@@ -154,7 +155,7 @@ export default function WalletPage() {
 
       <section className="stats_section">
         {isLoading && !stats
-          ? Array.from({ length: 4 }).map((_, index) => (
+          ? Array.from({ length: statsCardCount }).map((_, index) => (
               <div key={index} className="stats_card border-gray-200">
                 <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                 <div className="stats_bottom">

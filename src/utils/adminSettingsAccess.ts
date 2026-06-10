@@ -1,8 +1,8 @@
 import type { AdminProfile } from '@/types/adminAuth';
 
-/** Maintenance toggles: super_admin and admin only. */
+/** Maintenance toggles — requires system.maintenance (e.g. admin, not support). */
 export function canManageMaintenance(admin: AdminProfile | null): boolean {
   if (!admin) return false;
   if (admin.allAccess) return true;
-  return admin.role === 'super_admin' || admin.role === 'admin';
+  return admin.permissions.includes('system.maintenance');
 }
