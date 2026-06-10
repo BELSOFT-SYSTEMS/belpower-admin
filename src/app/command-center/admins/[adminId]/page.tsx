@@ -397,7 +397,7 @@ export default function AdminDetailPage() {
                               {log.entity_id ? ` · ${log.entity_id}` : ''}
                             </span>
                           )}
-                          {log.metadata?.reason && (
+                          {log.metadata?.reason != null && (
                             <span className="activity_log_reason_preview">
                               Reason: {String(log.metadata.reason)}
                             </span>
