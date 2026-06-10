@@ -2,6 +2,7 @@ const ADMIN_PAGE_TITLES: Record<string, string> = {
   '/command-center': 'Dashboard',
   '/command-center/sign-in': 'Sign In',
   '/command-center/setup-account': 'Complete Setup',
+  '/command-center/reset-password': 'Reset Password',
   '/command-center/users': 'Users',
   '/command-center/transactions': 'Transactions',
   '/command-center/check-meter': 'Check Meter',

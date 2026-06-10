@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import '@/styles/adminUserDetails.css';
 import '@/styles/adminTransactions.css';
 import '@/styles/adminShared.css';
+import '@/styles/adminAdmins.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { getDiscoDisplayName } from '@/constants/discoNames';
@@ -35,8 +36,8 @@ import {
   UserQuickActionModal,
   type UserQuickActionType,
 } from '@/components/admin/users/UserQuickActionModal';
+import { AdminConfirmModal } from '@/components/admin/admins/AdminConfirmModal';
 import { ClearSuspicionModal } from '@/components/admin/users/ClearSuspicionModal';
-import { DeleteUserModal } from '@/components/admin/users/DeleteUserModal';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminUserDetail } from '@/hooks/useAdminUserDetail';
 import {
@@ -418,7 +419,7 @@ function UserDetailContent({
         <button
           type="button"
           className="security_action_btn action_delete"
-          title="Permanently delete this user"
+          title="Delete this user"
           onClick={onOpenDeleteUser}
           disabled={isSubmitting}
         >
@@ -985,10 +986,12 @@ function UserDetailContent({
         onConfirm={onConfirmClearFlag}
       />
 
-      <DeleteUserModal
+      <AdminConfirmModal
         open={showDeleteUser}
-        userName={detail.fullName}
-        isSubmitting={isSubmitting}
+        title="Delete user"
+        message={`Remove ${detail.fullName}? Their account will be marked as deleted and they will lose access to BelPower.`}
+        confirmLabel="Delete user"
+        danger
         onClose={onCloseDeleteUser}
         onConfirm={onConfirmDeleteUser}
       />

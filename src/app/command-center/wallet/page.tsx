@@ -1,23 +1,27 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { FaSearch, FaWallet, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { FaWallet, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import '@/styles/adminWallet.css';
 import '@/styles/adminShared.css';
 import '@/styles/adminTransactions.css';
-import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
-import { AdminTransactionRow } from '@/components/admin/transactions/AdminTransactionRow';
+import { AdminTransactionsListView } from '@/components/admin/transactions/AdminTransactionsListView';
 import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
 import { formatPrice } from '@/utils/FormatPrice';
 import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
-import { mapApiTransactionListItem } from '@/utils/mapApiTransactionListItem';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminWallet } from '@/hooks/useAdminWallet';
 import { useAdminTransactionsListActions } from '@/hooks/useAdminTransactionsListActions';
 import { canViewWalletMoneyStats, canViewWalletPage } from '@/utils/adminWalletAccess';
 
 const FILTER_ALL = '__all__';
+
+const WALLET_CATEGORY_FILTER_OPTIONS = [
+  { value: FILTER_ALL, label: 'All wallet activity' },
+  { value: 'deposit', label: 'Wallet funding' },
+  { value: 'debit', label: 'Wallet debit' },
+];
 
 function formatBalanceValue(
   amount: number | null,
@@ -129,8 +133,6 @@ export default function WalletPage() {
     ]
   );
 
-  const totalPages = pagination?.totalPages ?? 1;
-
   if (!canAccessPage) {
     return (
       <div className="wallet_page">
@@ -181,111 +183,29 @@ export default function WalletPage() {
         />
       )}
 
-      <section className="wallet_list_section">
-        <div className="manage_header">
-          <h2>Recent wallet activity</h2>
-          <div className="search_container">
-            <input
-              type="text"
-              placeholder="Search ID, user, reference…"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <FaSearch />
-          </div>
-        </div>
-
-        <div className="admin_filter_row">
-          <AdminDropdown
-            variant="filter"
-            value={categoryFilter}
-            onChange={setCategoryFilter}
-            aria-label="Filter by activity type"
-            options={[
-              { value: FILTER_ALL, label: 'All wallet activity' },
-              { value: 'deposit', label: 'Wallet funding' },
-              { value: 'debit', label: 'Wallet debit' },
-            ]}
-          />
-          <AdminDropdown
-            variant="filter"
-            value={statusFilter}
-            onChange={setStatusFilter}
-            aria-label="Filter by status"
-            options={[
-              { value: FILTER_ALL, label: 'All status' },
-              { value: 'completed', label: 'Completed' },
-              { value: 'pending', label: 'Pending' },
-              { value: 'failed', label: 'Failed' },
-              { value: 'scheduled', label: 'Scheduled' },
-              { value: 'flagged', label: 'Flagged' },
-            ]}
-          />
-        </div>
-
-        {error && <p className="empty_fallback admin_txn_list_error">{error}</p>}
-
-        {isLoading ? (
-          <div className="admin_txn_list_loading">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-            <span>Loading wallet activity…</span>
-          </div>
-        ) : (
-          <>
-            <div className="admin_txn_list">
-              {transactions.length > 0 ? (
-                transactions.map((tx) => {
-                  const row = mapApiTransactionListItem(tx);
-                  return (
-                    <AdminTransactionRow
-                      key={tx.id}
-                      transaction={row}
-                      showQuickActions
-                      quickActions={quickActions}
-                      rowBusy={actingTxnId === tx.id}
-                      onReview={handleReview}
-                      onBlock={handleBlock}
-                      onUnblock={handleUnblock}
-                    />
-                  );
-                })
-              ) : (
-                <p className="empty_fallback" style={{ padding: '2rem' }}>
-                  No wallet activity matches your filters.
-                </p>
-              )}
-            </div>
-
-            {pagination && pagination.total > 0 && (
-              <div className="transactions_pagination_bar">
-                <p className="transactions_pagination_meta">
-                  Page {pagination.page} of {totalPages} ·{' '}
-                  {pagination.total.toLocaleString()} transactions
-                </p>
-                <div className="pagination_section">
-                  <button
-                    type="button"
-                    className="pagination_btn"
-                    disabled={page <= 1}
-                    onClick={() => setPage(Math.max(1, page - 1))}
-                  >
-                    Previous
-                  </button>
-                  <span className="current btn_active">{page}</span>
-                  <button
-                    type="button"
-                    className="pagination_btn"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </section>
+      <AdminTransactionsListView
+        listTitle="Recent wallet activity"
+        searchPlaceholder="Search ID, user, reference…"
+        categoryFilterOptions={WALLET_CATEGORY_FILTER_OPTIONS}
+        searchTerm={searchTerm}
+        categoryFilter={categoryFilter}
+        statusFilter={statusFilter}
+        page={page}
+        showQuickActions
+        actingTxnId={actingTxnId}
+        transactions={transactions}
+        quickActions={quickActions}
+        pagination={pagination}
+        isLoading={isLoading}
+        error={error}
+        onSearchChange={setSearchTerm}
+        onCategoryFilterChange={setCategoryFilter}
+        onStatusFilterChange={setStatusFilter}
+        onPageChange={setPage}
+        onReview={handleReview}
+        onBlock={handleBlock}
+        onUnblock={handleUnblock}
+      />
     </div>
   );
 }

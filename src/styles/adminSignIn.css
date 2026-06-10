@@ -105,11 +105,22 @@
   color: #374151;
 }
 
+.admin_sign_in_password_toggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+  flex-shrink: 0;
+}
+
 .admin_sign_in_row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 1rem 0 1.5rem;
+}
+
+.admin_sign_in_row_remember {
+  justify-content: flex-start;
 }
 
 .admin_sign_in_remember {

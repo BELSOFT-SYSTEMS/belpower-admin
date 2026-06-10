@@ -9,10 +9,16 @@ import type { AdminTransaction } from '@/data/adminMockData';
 import type { ApiTransactionListItem, TransactionsQuickActions } from '@/types/adminTransactions';
 import { mapApiTransactionListItem } from '@/utils/mapApiTransactionListItem';
 
+type TransactionFilterOption = {
+  value: string;
+  label: string;
+};
+
 type AdminTransactionsListViewProps = {
   listTitle?: string;
   searchPlaceholder?: string;
   className?: string;
+  categoryFilterOptions?: TransactionFilterOption[];
   searchTerm: string;
   categoryFilter: string;
   statusFilter: string;
@@ -41,10 +47,20 @@ type AdminTransactionsListViewProps = {
   onUnblock: (tx: AdminTransaction) => void;
 };
 
+const DEFAULT_CATEGORY_FILTER_OPTIONS: TransactionFilterOption[] = [
+  { value: TRANSACTION_FILTER_ALL, label: 'All services' },
+  { value: 'electricity', label: 'Electricity' },
+  { value: 'airtime', label: 'Airtime' },
+  { value: 'data', label: 'Data' },
+  { value: 'cable', label: 'Cable' },
+  { value: 'deposit', label: 'Wallet funding' },
+];
+
 export function AdminTransactionsListView({
   listTitle = 'All transactions',
   searchPlaceholder = 'Search ID, user, provider…',
   className = '',
+  categoryFilterOptions = DEFAULT_CATEGORY_FILTER_OPTIONS,
   searchTerm,
   categoryFilter,
   statusFilter,
@@ -91,14 +107,7 @@ export function AdminTransactionsListView({
           value={categoryFilter}
           onChange={onCategoryFilterChange}
           aria-label="Filter by service"
-          options={[
-            { value: TRANSACTION_FILTER_ALL, label: 'All services' },
-            { value: 'electricity', label: 'Electricity' },
-            { value: 'airtime', label: 'Airtime' },
-            { value: 'data', label: 'Data' },
-            { value: 'cable', label: 'Cable' },
-            { value: 'deposit', label: 'Wallet funding' },
-          ]}
+          options={categoryFilterOptions}
         />
         <AdminDropdown
           variant="filter"

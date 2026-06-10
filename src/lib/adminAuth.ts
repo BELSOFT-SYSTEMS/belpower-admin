@@ -11,6 +11,37 @@ export const ADMIN_API_BASE =
 
 export const ADMIN_TOKEN_KEY = 'adminToken';
 export const ADMIN_PROFILE_KEY = 'admin';
+export const ADMIN_REMEMBER_KEY = 'adminRememberMe';
+
+type SaveLoginOptions = {
+  remember?: boolean;
+};
+
+function getAuthStorage(remember: boolean): Storage {
+  return remember ? localStorage : sessionStorage;
+}
+
+function getActiveAuthStorage(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  if (sessionStorage.getItem(ADMIN_TOKEN_KEY)) return sessionStorage;
+  if (localStorage.getItem(ADMIN_TOKEN_KEY)) return localStorage;
+  return null;
+}
+
+export function getRememberMePreference(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const stored = localStorage.getItem(ADMIN_REMEMBER_KEY);
+  if (stored === 'true') return true;
+  if (stored === 'false') return false;
+
+  return !!localStorage.getItem(ADMIN_TOKEN_KEY);
+}
+
+export function setRememberMePreference(remember: boolean): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ADMIN_REMEMBER_KEY, remember ? 'true' : 'false');
+}
 
 export class AuthApiError extends Error {
   code?: string;
@@ -108,13 +139,15 @@ export function isValidAdminToken(token: string | null | undefined): token is st
 
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
-  const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+  const token =
+    sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? localStorage.getItem(ADMIN_TOKEN_KEY);
   return isValidAdminToken(token) ? token : null;
 }
 
 export function getStoredAdmin(): AdminProfile | null {
   if (typeof window === 'undefined') return null;
-  const raw = localStorage.getItem(ADMIN_PROFILE_KEY);
+  const raw =
+    sessionStorage.getItem(ADMIN_PROFILE_KEY) ?? localStorage.getItem(ADMIN_PROFILE_KEY);
   if (!raw) return null;
   try {
     return normalizeProfile(JSON.parse(raw) as AdminProfile);
@@ -123,19 +156,30 @@ export function getStoredAdmin(): AdminProfile | null {
   }
 }
 
-export function saveLoginResult(data: LoginSuccessData): AdminProfile {
+export function saveLoginResult(
+  data: LoginSuccessData,
+  options: SaveLoginOptions = {}
+): AdminProfile {
   if (!isValidAdminToken(data.token)) {
     throw new AuthApiError('Login response missing a valid token.');
   }
 
+  const remember = options.remember ?? true;
   const profile = normalizeProfile((data.user ?? data.admin)!);
-  localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-  localStorage.setItem(ADMIN_PROFILE_KEY, JSON.stringify(profile));
+
+  clearAdminSession();
+  setRememberMePreference(remember);
+
+  const storage = getAuthStorage(remember);
+  storage.setItem(ADMIN_TOKEN_KEY, data.token);
+  storage.setItem(ADMIN_PROFILE_KEY, JSON.stringify(profile));
   return profile;
 }
 
 export function clearAdminSession(): void {
   if (typeof window === 'undefined') return;
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  sessionStorage.removeItem(ADMIN_PROFILE_KEY);
   localStorage.removeItem(ADMIN_TOKEN_KEY);
   localStorage.removeItem(ADMIN_PROFILE_KEY);
 }
@@ -247,7 +291,11 @@ export async function adminLogin(email: string, password: string): Promise<Login
   return { step: 'done', token: body.data.token, profile };
 }
 
-export async function adminVerifyOtp(email: string, otp: string): Promise<AdminProfile> {
+export async function adminVerifyOtp(
+  email: string,
+  otp: string,
+  options: SaveLoginOptions = {}
+): Promise<AdminProfile> {
   const res = await adminRequest('/login/verify-otp', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -264,7 +312,7 @@ export async function adminVerifyOtp(email: string, otp: string): Promise<AdminP
     throw new AuthApiError('OTP verification response missing token.');
   }
 
-  return saveLoginResult(body.data);
+  return saveLoginResult(body.data, options);
 }
 
 export async function getAdminProfile(): Promise<AdminProfile> {
@@ -289,7 +337,8 @@ export async function getAdminProfile(): Promise<AdminProfile> {
 
   const raw = (body.data as { admin?: AdminProfile })?.admin ?? (body.data as AdminProfile);
   const profile = normalizeProfile(raw);
-  localStorage.setItem(ADMIN_PROFILE_KEY, JSON.stringify(profile));
+  const storage = getActiveAuthStorage() ?? getAuthStorage(getRememberMePreference());
+  storage.setItem(ADMIN_PROFILE_KEY, JSON.stringify(profile));
   return profile;
 }
 
@@ -331,6 +380,27 @@ export async function completeAccountSetup(payload: {
   if (!res.ok || body.success === false) {
     const err = getErrorPayload(body);
     throw new AuthApiError(err.message ?? 'Account setup failed', err.code);
+  }
+
+  return body.data?.email ?? '';
+}
+
+export async function resetAdminPassword(payload: {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}): Promise<string> {
+  const res = await adminRequest('/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const body = await parseJsonResponse<{ email?: string }>(res);
+
+  if (!res.ok || body.success === false) {
+    const err = getErrorPayload(body);
+    throw new AuthApiError(err.message ?? 'Password reset failed', err.code);
   }
 
   return body.data?.email ?? '';

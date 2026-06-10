@@ -86,4 +86,5 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
 export const PUBLIC_ADMIN_PATHS = [
   '/command-center/sign-in',
   '/command-center/setup-account',
+  '/command-center/reset-password',
 ] as const;

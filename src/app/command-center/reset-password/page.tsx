@@ -11,11 +11,11 @@ import { Loader2 } from 'lucide-react';
 import { PasswordVisibilityToggle } from '@/components/admin/auth/PasswordVisibilityToggle';
 import '@/styles/adminSignIn.css';
 import { ADMIN_SITE_TITLE } from '@/utils/adminPageTitle';
-import { completeAccountSetup } from '@/lib/adminAuth';
+import { resetAdminPassword } from '@/lib/adminAuth';
 
-const setupSchema = z
+const resetSchema = z
   .object({
-    password: z
+    newPassword: z
       .string()
       .min(8, 'Password must be at least 8 characters')
       .regex(/[A-Z]/, 'Include an uppercase letter')
@@ -23,19 +23,17 @@ const setupSchema = z
       .regex(/[0-9]/, 'Include a number'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   });
 
-type SetupFormData = z.infer<typeof setupSchema>;
+type ResetFormData = z.infer<typeof resetSchema>;
 
-export default function SetupAccountPage() {
+export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams() || new URLSearchParams();
   const token = searchParams.get('token') ?? '';
-  const setupRequired = searchParams.get('setup') === 'required';
-  const emailHint = searchParams.get('email') ?? '';
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,50 +42,49 @@ export default function SetupAccountPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SetupFormData>({
-    resolver: zodResolver(setupSchema),
+  } = useForm<ResetFormData>({
+    resolver: zodResolver(resetSchema),
   });
 
   useEffect(() => {
-    document.title = `Complete Setup · ${ADMIN_SITE_TITLE}`;
+    document.title = `Reset Password · ${ADMIN_SITE_TITLE}`;
   }, []);
 
-  const onSubmit = async (data: SetupFormData) => {
+  const onSubmit = async (data: ResetFormData) => {
     if (!token) {
-      toast.error('Invalid or missing setup link. Check your invite email.');
+      toast.error('Invalid or missing reset link. Request a new link from your administrator.');
       return;
     }
 
     try {
       setIsLoading(true);
-      const email = await completeAccountSetup({
+      const email = await resetAdminPassword({
         token,
-        password: data.password,
+        newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
       });
       toast.success(
         email
-          ? `Account setup complete for ${email}. You can now sign in.`
-          : 'Account setup complete. You can now sign in.'
+          ? `Password updated for ${email}. You can now sign in.`
+          : 'Password updated. You can now sign in.'
       );
       router.push('/command-center/sign-in');
     } catch (error) {
-      console.error('Setup error:', error);
-      toast.error(error instanceof Error ? error.message : 'Account setup failed.');
+      console.error('Reset password error:', error);
+      toast.error(error instanceof Error ? error.message : 'Password reset failed.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (setupRequired && !token) {
+  if (!token) {
     return (
       <div className="admin_sign_in_page">
         <div className="admin_sign_in_card">
-          <h2 className="admin_sign_in_title">Complete your account setup</h2>
+          <h2 className="admin_sign_in_title">Reset your password</h2>
           <p className="admin_sign_in_subtitle">
-            {emailHint
-              ? `An invite link was sent to ${emailHint}. Open that email to finish setup.`
-              : 'Please use the invite link sent to your email to complete account setup.'}
+            This reset link is invalid or has expired. Ask your super admin to send a new password
+            reset link.
           </p>
           <button
             type="button"
@@ -122,33 +119,33 @@ export default function SetupAccountPage() {
               priority
             />
           </div>
-          <h2 className="admin_sign_in_title">Complete your account</h2>
+          <h2 className="admin_sign_in_title">Set a new password</h2>
           <p className="admin_sign_in_subtitle">
-            Create a password to activate your Command Center access
+            Choose a new password for your Command Center account
           </p>
         </div>
 
         <form className="admin_sign_in_form" onSubmit={handleSubmit(onSubmit)}>
           <div className="admin_sign_in_field">
-            <label htmlFor="password" className="admin_sign_in_label">
-              Password
+            <label htmlFor="newPassword" className="admin_sign_in_label">
+              New password
             </label>
             <div className="admin_sign_in_password_wrap">
               <input
-                id="password"
+                id="newPassword"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
-                className={`admin_sign_in_input${errors.password ? ' admin_sign_in_input_error' : ''}`}
+                className={`admin_sign_in_input${errors.newPassword ? ' admin_sign_in_input_error' : ''}`}
                 style={{ paddingRight: '2.5rem' }}
-                {...register('password')}
+                {...register('newPassword')}
               />
               <PasswordVisibilityToggle
                 visible={showPassword}
                 onToggle={() => setShowPassword((current) => !current)}
               />
             </div>
-            {errors.password && (
-              <p className="admin_sign_in_error">{errors.password.message}</p>
+            {errors.newPassword && (
+              <p className="admin_sign_in_error">{errors.newPassword.message}</p>
             )}
           </div>
 
@@ -176,7 +173,7 @@ export default function SetupAccountPage() {
           </div>
 
           <button type="submit" className="admin_sign_in_submit">
-            Activate account
+            Set new password
           </button>
         </form>
       </div>
