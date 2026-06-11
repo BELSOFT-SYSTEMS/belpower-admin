@@ -71,13 +71,17 @@ async function proxyRequest(
   }
 
   try {
-    const res = await fetch(targetUrl, init);
+    const res = await fetch(targetUrl, {
+      ...init,
+      cache: 'no-store',
+    });
     const body = await res.text();
 
     return new NextResponse(body, {
       status: res.status,
       headers: {
         'Content-Type': res.headers.get('Content-Type') ?? 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
       },
     });
   } catch (error) {
@@ -94,6 +98,8 @@ async function proxyRequest(
     );
   }
 }
+
+export const dynamic = 'force-dynamic';
 
 export const GET = proxyRequest;
 export const POST = proxyRequest;
