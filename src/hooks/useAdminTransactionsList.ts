@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
+import { getMockTransactionsList } from '@/data/adminListPagesMock';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { getTransactionsList } from '@/lib/adminTransactions';
 import type {
@@ -82,7 +84,9 @@ export function useAdminTransactionsList({
     setError(null);
 
     try {
-      const result = await getTransactionsList(queryParams);
+      const result = getAdminDemoMode()
+        ? getMockTransactionsList(admin, queryParams)
+        : await getTransactionsList(queryParams);
       setData(result);
       if (result.stats) {
         setCachedStats(result.stats);
@@ -93,7 +97,7 @@ export function useAdminTransactionsList({
     } finally {
       setIsLoading(false);
     }
-  }, [enabled, queryParams]);
+  }, [admin, enabled, queryParams]);
 
   useEffect(() => {
     if (!enabled) {

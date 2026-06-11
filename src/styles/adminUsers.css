@@ -43,6 +43,10 @@
   color: #000;
 }
 
+.users_page .admin_user_row:has(.admin_user_row_link_static):hover {
+  background-color: transparent;
+}
+
 .users_page .admin_user_row:hover {
   background: transparent;
 }

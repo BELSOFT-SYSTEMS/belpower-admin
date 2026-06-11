@@ -41,6 +41,7 @@ import {
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { resolveCanViewInternalTest } from '@/utils/adminInternalTestAccess';
 import { useAdminTransactionDetail } from '@/hooks/useAdminTransactionDetail';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import {
   blockTransaction,
   clearTransactionReview,
@@ -113,6 +114,10 @@ export default function TransactionDetailPage() {
 
   const handleBlock = async () => {
     if (!transaction || !quickActionAvailability?.canBlock) return;
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: block action simulated for ${transaction.reference}.`);
+      return;
+    }
     setIsActing(true);
     try {
       await blockTransaction(transaction.id);
@@ -127,6 +132,10 @@ export default function TransactionDetailPage() {
 
   const handleUnblock = async () => {
     if (!transaction || !quickActionAvailability?.canUnblock) return;
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: unblock action simulated for ${transaction.reference}.`);
+      return;
+    }
     setIsActing(true);
     try {
       await unblockTransaction(transaction.id);
@@ -141,6 +150,10 @@ export default function TransactionDetailPage() {
 
   const handleClearReview = async () => {
     if (!transaction || !quickActionAvailability?.canClearReview) return;
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: review clear simulated for ${transaction.reference}.`);
+      return;
+    }
     setIsActing(true);
     try {
       await clearTransactionReview(transaction.id);
@@ -155,6 +168,10 @@ export default function TransactionDetailPage() {
 
   const handleRequery = async () => {
     if (!transaction || !detail?.requery.eligible) return;
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: requery simulated for ${transaction.reference}.`);
+      return;
+    }
     setIsActing(true);
     try {
       await requeryTransaction(transaction.id);

@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { FaHome, FaUsers, FaClipboardList, FaClock, FaExpand } from 'react-icons/fa';
+import { AdminDemoToggle } from '@/components/admin/ui/AdminDemoToggle';
+import { useIsAdminDemoMode } from '@/context/AdminDemoContext';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { Loader2 } from 'lucide-react';
 import '@/styles/adminHome.css';
 import '@/styles/adminShared.css';
@@ -50,9 +53,12 @@ function DashboardHome() {
   const { displayName, admin } = useAdminAuth();
   const { data, isLoading, error, refresh } = useDashboardOverview({ userId: userIdFilter });
   const [expandedChart, setExpandedChart] = useState<string | null>(null);
+  const demoMode = useIsAdminDemoMode();
   const skipPathRefreshRef = useRef(true);
 
   useEffect(() => {
+    if (getAdminDemoMode()) return;
+
     if (skipPathRefreshRef.current) {
       skipPathRefreshRef.current = false;
       return;
@@ -160,14 +166,17 @@ function DashboardHome() {
 
   return (
     <div className="admin_homePage">
-      <div className="admin_home_welcome">
-        <h1>Welcome, {displayName}</h1>
-        {admin?.role ? (
-          <span className={getRolePillClass(admin.role)}>{formatAdminRole(admin.role)}</span>
-        ) : null}
+      <div className="admin_home_welcome_row">
+        <div className="admin_home_welcome">
+          <h1>Welcome, {displayName}</h1>
+          {admin?.role ? (
+            <span className={getRolePillClass(admin.role)}>{formatAdminRole(admin.role)}</span>
+          ) : null}
+        </div>
+        <AdminDemoToggle />
       </div>
 
-      {appliedUserId && (
+      {appliedUserId && !demoMode && (
         <p className="dashboard_user_filter_note">
           Recent transactions filtered to user <code>{appliedUserId}</code>. Stats and charts remain
           global.

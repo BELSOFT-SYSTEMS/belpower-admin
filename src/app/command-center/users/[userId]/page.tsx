@@ -40,6 +40,7 @@ import { AdminConfirmModal } from '@/components/admin/admins/AdminConfirmModal';
 import { ClearSuspicionModal } from '@/components/admin/users/ClearSuspicionModal';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminUserDetail } from '@/hooks/useAdminUserDetail';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import {
   activateUser,
   blockUser,
@@ -104,6 +105,12 @@ export default function UserDetailPage() {
   const handleConfirmAction = async (payload: { reason?: string; days?: number }) => {
     if (!detail || !pendingAction) return;
 
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: ${detail.fullName} ${pendingAction} action simulated.`);
+      setPendingAction(null);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (pendingAction === 'block') {
@@ -129,6 +136,11 @@ export default function UserDetailPage() {
   const handleDeleteUser = async () => {
     if (!detail) return;
 
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: ${detail.fullName} delete action simulated.`);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await deleteUser(detail.id);
@@ -143,6 +155,12 @@ export default function UserDetailPage() {
 
   const handleClearSuspicion = async (reason?: string) => {
     if (!detail) return;
+
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: suspicion flag clear simulated for ${detail.fullName}.`);
+      setShowClearFlag(false);
+      return;
+    }
 
     setIsSubmitting(true);
     try {

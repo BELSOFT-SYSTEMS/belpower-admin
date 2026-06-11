@@ -6,6 +6,7 @@ import {
   registerAdminWebPush,
 } from '@/lib/adminInboxNotifications';
 import { getStoredAdmin } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 
 const SW_PATH = '/admin-push-sw.js';
 const DEVICE_ID_KEY = 'admin_web_push_device_id';
@@ -33,6 +34,7 @@ function getOrCreateDeviceId(adminId: string): string {
 async function subscribeAdminWebPush(): Promise<void> {
   if (
     typeof window === 'undefined' ||
+    getAdminDemoMode() ||
     !('serviceWorker' in navigator) ||
     !('PushManager' in window) ||
     !('Notification' in window)

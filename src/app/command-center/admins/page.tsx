@@ -31,6 +31,7 @@ import {
   updateAdminProfile,
 } from '@/lib/adminAdmins';
 import { AuthApiError } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import type { AdminAccount, AdminFormValues, AdminRole } from '@/types/adminManagement';
 import { ADMIN_ROLE_LABELS } from '@/types/adminManagement';
 import { getAvatarBackground, getUserInitials } from '@/utils/userAvatar';
@@ -145,6 +146,18 @@ export default function AdminsPage() {
   };
 
   const handleFormSubmit = async (values: AdminFormValues) => {
+    if (getAdminDemoMode()) {
+      const name = `${values.first_name} ${values.last_name}`;
+      setBanner(
+        formMode === 'create'
+          ? `Demo: ${name} create action simulated.`
+          : `Demo: ${name} update action simulated.`
+      );
+      setFormOpen(false);
+      setEditingAdmin(null);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
@@ -173,10 +186,17 @@ export default function AdminsPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    const name = `${deleteTarget.first_name} ${deleteTarget.last_name}`;
+
+    if (getAdminDemoMode()) {
+      setBanner(`Demo: ${name} delete action simulated.`);
+      setDeleteTarget(null);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
-      const name = `${deleteTarget.first_name} ${deleteTarget.last_name}`;
       await deleteAdminAccount(deleteTarget.id);
       setBanner(`${name} was deleted successfully.`);
       setDeleteTarget(null);
@@ -190,12 +210,19 @@ export default function AdminsPage() {
 
   const handleSuspendToggle = async () => {
     if (!suspendTarget) return;
+    const { admin, nextStatus } = suspendTarget;
+    const verb = nextStatus === 'suspended' ? 'suspended' : 'activated';
+
+    if (getAdminDemoMode()) {
+      setBanner(`Demo: ${admin.first_name} ${admin.last_name} ${verb} action simulated.`);
+      setSuspendTarget(null);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
-      const { admin, nextStatus } = suspendTarget;
       await setAdminAccountStatus(admin.id, nextStatus);
-      const verb = nextStatus === 'suspended' ? 'suspended' : 'activated';
       setBanner(`${admin.first_name} ${admin.last_name} was ${verb} successfully.`);
       setSuspendTarget(null);
       await refresh();

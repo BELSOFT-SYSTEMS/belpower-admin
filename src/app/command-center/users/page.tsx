@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import '@/styles/adminUsers.css';
 import '@/styles/adminShared.css';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
 import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
 import {
@@ -80,6 +81,12 @@ export default function UsersPage() {
     if (!pendingAction) return;
 
     const { type, user } = pendingAction;
+
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: ${user.fullName} ${type} action simulated.`);
+      setPendingAction(null);
+      return;
+    }
     setIsSubmitting(true);
     setActingUserId(user.id);
 

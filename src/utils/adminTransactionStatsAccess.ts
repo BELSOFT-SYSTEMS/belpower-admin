@@ -1,3 +1,4 @@
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import type { AdminProfile } from '@/types/adminAuth';
 
 type MoneyStatsFilters = {
@@ -8,6 +9,7 @@ export function canViewTransactionMoneyStats(
   admin: AdminProfile | null | undefined,
   filters?: MoneyStatsFilters
 ): boolean {
+  if (getAdminDemoMode()) return true;
   if (filters && typeof filters.canViewMoneyStats === 'boolean') {
     return filters.canViewMoneyStats;
   }

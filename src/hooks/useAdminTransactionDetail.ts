@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getMockTransactionDetail } from '@/data/adminDetailMocks';
 import { AuthApiError } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getTransactionDetail } from '@/lib/adminTransactions';
 import type { TransactionDetailData } from '@/types/adminTransactions';
 
@@ -25,6 +27,18 @@ export function useAdminTransactionDetail(transactionId: string) {
     setErrorCode(null);
 
     try {
+      if (getAdminDemoMode()) {
+        const mock = getMockTransactionDetail(transactionId);
+        if (!mock) {
+          setDetail(null);
+          setError('Transaction not found');
+          setErrorCode('NOT_FOUND');
+          return;
+        }
+        setDetail(mock);
+        return;
+      }
+
       const result = await getTransactionDetail(transactionId);
       setDetail(result);
     } catch (err) {

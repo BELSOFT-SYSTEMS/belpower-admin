@@ -4,6 +4,7 @@ import { ReactNode, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Sidebar } from '@/components/admin/Sidebar';
+import { AdminDemoBanner } from '@/components/admin/ui/AdminDemoBanner';
 import AdminTopBar from '@/components/admin/layouts/topbar/Topbar';
 import { formatAdminDocumentTitle } from '@/utils/adminPageTitle';
 import { useAdminAuth } from '@/context/AdminAuthContext';
@@ -63,7 +64,10 @@ export default function AdminDashboardLayout({ children }: AdminDashboardProps) 
       <div className="flex h-screen overflow-hidden" style={{ paddingTop: '4rem' }}>
         <Sidebar />
         <div className="flex-1 overflow-auto focus:outline-none">
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6">
+            <AdminDemoBanner message="Demo mode is active for team review. All figures and records are sample data and actions do not call the live backend." />
+            {children}
+          </main>
         </div>
       </div>
     </div>

@@ -33,6 +33,7 @@ type AdminTransactionRowProps = {
   quickActions?: TransactionsQuickActions;
   isInternalTestAccount?: boolean;
   rowBusy?: boolean;
+  disableDetailLinks?: boolean;
   onReview?: (transaction: AdminTransaction) => void;
   onBlock?: (transaction: AdminTransaction) => void;
   onUnblock?: (transaction: AdminTransaction) => void;
@@ -45,6 +46,7 @@ export function AdminTransactionRow({
   quickActions,
   isInternalTestAccount = false,
   rowBusy = false,
+  disableDetailLinks = false,
   onReview,
   onBlock,
   onUnblock,
@@ -132,12 +134,15 @@ export function AdminTransactionRow({
     </>
   );
 
+  const rowClassName = `admin_txn_row${scheduled ? ' admin_txn_row_scheduled' : ''}`;
+
   if (!showQuickActions) {
+    if (disableDetailLinks) {
+      return <div className={`${rowClassName} admin_txn_row_static`}>{rowContent}</div>;
+    }
+
     return (
-      <Link
-        href={`/command-center/transactions/${tx.id}`}
-        className={`admin_txn_row${scheduled ? ' admin_txn_row_scheduled' : ''}`}
-      >
+      <Link href={`/command-center/transactions/${tx.id}`} className={rowClassName}>
         {rowContent}
       </Link>
     );
@@ -145,9 +150,13 @@ export function AdminTransactionRow({
 
   return (
     <div className={`admin_txn_row_wrap${scheduled ? ' admin_txn_row_wrap_scheduled' : ''}`}>
-      <Link href={`/command-center/transactions/${tx.id}`} className="admin_txn_row_link">
-        {rowContent}
-      </Link>
+      {disableDetailLinks ? (
+        <div className="admin_txn_row_link admin_txn_row_static">{rowContent}</div>
+      ) : (
+        <Link href={`/command-center/transactions/${tx.id}`} className="admin_txn_row_link">
+          {rowContent}
+        </Link>
+      )}
       <div className="admin_txn_meta">
         {showActionBar && (
           <div
@@ -159,9 +168,13 @@ export function AdminTransactionRow({
               <button
                 type="button"
                 className="txn_quick_action action_review"
-                title={getTransactionQuickActionTitle('review', tx)}
+                title={
+                  disableDetailLinks
+                    ? 'Unavailable in demo mode'
+                    : getTransactionQuickActionTitle('review', tx)
+                }
                 aria-label="Review"
-                disabled={rowBusy || !canReview}
+                disabled={disableDetailLinks || rowBusy || !canReview}
                 onClick={() => {
                   if (rowBusy || !canReview) return;
                   onReview?.(tx);
@@ -174,9 +187,13 @@ export function AdminTransactionRow({
               <button
                 type="button"
                 className="txn_quick_action action_block"
-                title={getTransactionQuickActionTitle('block', tx)}
+                title={
+                  disableDetailLinks
+                    ? 'Unavailable in demo mode'
+                    : getTransactionQuickActionTitle('block', tx)
+                }
                 aria-label="Block"
-                disabled={rowBusy || !canBlock}
+                disabled={disableDetailLinks || rowBusy || !canBlock}
                 onClick={() => {
                   if (rowBusy || !canBlock) return;
                   onBlock?.(tx);
@@ -189,9 +206,13 @@ export function AdminTransactionRow({
               <button
                 type="button"
                 className="txn_quick_action action_unblock"
-                title={getTransactionQuickActionTitle('unblock', tx)}
+                title={
+                  disableDetailLinks
+                    ? 'Unavailable in demo mode'
+                    : getTransactionQuickActionTitle('unblock', tx)
+                }
                 aria-label="Unblock"
-                disabled={rowBusy || !canUnblock}
+                disabled={disableDetailLinks || rowBusy || !canUnblock}
                 onClick={() => {
                   if (rowBusy || !canUnblock) return;
                   onUnblock?.(tx);
@@ -202,23 +223,43 @@ export function AdminTransactionRow({
             )}
           </div>
         )}
-        <Link href={`/command-center/transactions/${tx.id}`} className="admin_txn_meta_link">
-          <div className="admin_txn_pills">
-            <span className={`pill ${getTransactionStatusPillClass(tx)}`}>
-              {getTransactionStatusLabel(tx)}
-            </span>
-            {tx.suspicious && <span className="pill pill_fraud">Flagged</span>}
-            {tx.is_blocked && <span className="pill pill_blocked">Blocked</span>}
-            {tx.requery_recommended && (
-              <span
-                className="pill pill_requery"
-                title={tx.requery_reason?.trim() || 'Manual requery recommended'}
-              >
-                Requery
+        {disableDetailLinks ? (
+          <div className="admin_txn_meta_link admin_txn_row_static">
+            <div className="admin_txn_pills">
+              <span className={`pill ${getTransactionStatusPillClass(tx)}`}>
+                {getTransactionStatusLabel(tx)}
               </span>
-            )}
+              {tx.suspicious && <span className="pill pill_fraud">Flagged</span>}
+              {tx.is_blocked && <span className="pill pill_blocked">Blocked</span>}
+              {tx.requery_recommended && (
+                <span
+                  className="pill pill_requery"
+                  title={tx.requery_reason?.trim() || 'Manual requery recommended'}
+                >
+                  Requery
+                </span>
+              )}
+            </div>
           </div>
-        </Link>
+        ) : (
+          <Link href={`/command-center/transactions/${tx.id}`} className="admin_txn_meta_link">
+            <div className="admin_txn_pills">
+              <span className={`pill ${getTransactionStatusPillClass(tx)}`}>
+                {getTransactionStatusLabel(tx)}
+              </span>
+              {tx.suspicious && <span className="pill pill_fraud">Flagged</span>}
+              {tx.is_blocked && <span className="pill pill_blocked">Blocked</span>}
+              {tx.requery_recommended && (
+                <span
+                  className="pill pill_requery"
+                  title={tx.requery_reason?.trim() || 'Manual requery recommended'}
+                >
+                  Requery
+                </span>
+              )}
+            </div>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import type { AdminProfile } from '@/types/adminAuth';
 import type { AdminAccount, AdminRole } from '@/types/adminManagement';
 
@@ -16,6 +17,7 @@ export const CREATABLE_ADMIN_ROLES: AdminRole[] = [
 ];
 
 export function canAccessAdminManagement(actor: AdminProfile | null): boolean {
+  if (getAdminDemoMode()) return true;
   if (!actor) return false;
   if (!ADMIN_MANAGEMENT_VIEWER_ROLES.includes(actor.role)) return false;
   return actor.allAccess || actor.permissions.includes('admins.list');

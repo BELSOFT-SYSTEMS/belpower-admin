@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
+import { getMockTransactionsList, getMockWalletOverview } from '@/data/adminListPagesMock';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 import { getWalletOverview } from '@/lib/adminWallet';
 import { getTransactionsList } from '@/lib/adminTransactions';
 import type { WalletActivityFilter, WalletOverviewStats } from '@/types/adminWallet';
@@ -62,6 +65,7 @@ export function useAdminWallet({
   limit = 20,
   enabled = true,
 }: UseAdminWalletOptions) {
+  const { admin } = useAdminAuth();
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [stats, setStats] = useState<WalletOverviewStats | null>(null);
   const [transactions, setTransactions] = useState<ApiTransactionListItem[]>([]);
@@ -99,10 +103,15 @@ export function useAdminWallet({
     setError(null);
 
     try {
-      const [overview, listResult] = await Promise.all([
-        page === 1 ? getWalletOverview() : Promise.resolve(null),
-        getTransactionsList(listParams),
-      ]);
+      const [overview, listResult] = getAdminDemoMode()
+        ? [
+            page === 1 ? getMockWalletOverview(admin) : null,
+            getMockTransactionsList(admin, listParams),
+          ]
+        : await Promise.all([
+            page === 1 ? getWalletOverview() : Promise.resolve(null),
+            getTransactionsList(listParams),
+          ]);
 
       if (overview) {
         setStats(overview);
@@ -126,7 +135,7 @@ export function useAdminWallet({
     } finally {
       setIsLoading(false);
     }
-  }, [enabled, listParams, page]);
+  }, [admin, enabled, listParams, page]);
 
   useEffect(() => {
     if (!enabled) {

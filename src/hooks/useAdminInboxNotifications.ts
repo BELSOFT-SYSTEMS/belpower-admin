@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getMockAdminInbox } from '@/data/adminDemoMocks';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import {
   getAdminInbox,
   markAdminInboxNotificationRead,
@@ -28,7 +30,9 @@ export function useAdminInboxNotifications(enabled: boolean) {
     setIsLoading(true);
 
     try {
-      const { data, apiAvailable } = await getAdminInbox({ page: 1, limit: 50 });
+      const { data, apiAvailable } = getAdminDemoMode()
+        ? getMockAdminInbox()
+        : await getAdminInbox({ page: 1, limit: 50 });
       if (!mountedRef.current) return;
 
       setInboxUnavailable(!apiAvailable);
@@ -60,7 +64,7 @@ export function useAdminInboxNotifications(enabled: boolean) {
   }, [enabled, refresh]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || getAdminDemoMode()) return;
 
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
@@ -93,7 +97,9 @@ export function useAdminInboxNotifications(enabled: boolean) {
       setUnreadCount((count) => Math.max(0, count - 1));
 
       try {
-        await markAdminInboxNotificationRead(key);
+        if (!getAdminDemoMode()) {
+          await markAdminInboxNotificationRead(key);
+        }
       } catch {
         await refresh();
       }
@@ -106,7 +112,9 @@ export function useAdminInboxNotifications(enabled: boolean) {
     setUnreadCount(0);
 
     try {
-      await markAllAdminInboxNotificationsRead();
+      if (!getAdminDemoMode()) {
+        await markAllAdminInboxNotificationsRead();
+      }
     } catch {
       await refresh();
     }

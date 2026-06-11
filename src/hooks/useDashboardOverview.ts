@@ -1,7 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
+import { getMockDashboardOverview } from '@/data/adminDashboardMock';
 import { getDashboardOverview } from '@/lib/adminDashboard';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 import type { DashboardOverview, DashboardOverviewParams } from '@/types/adminDashboard';
 
 const POLL_MS = 60_000;
@@ -17,6 +20,7 @@ type UseDashboardOverviewResult = {
 export function useDashboardOverview(
   params: DashboardOverviewParams = {}
 ): UseDashboardOverviewResult {
+  const { admin } = useAdminAuth();
   const { months = 6, recentLimit = 5, userId } = params;
   const [data, setData] = useState<DashboardOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +39,9 @@ export function useDashboardOverview(
       }
 
       try {
-        const overview = await getDashboardOverview({ months, recentLimit, userId });
+        const overview = getAdminDemoMode()
+          ? getMockDashboardOverview(admin, { months, recentLimit, userId })
+          : await getDashboardOverview({ months, recentLimit, userId });
         if (!mountedRef.current) return;
         setData(overview);
         setError(null);
@@ -49,7 +55,7 @@ export function useDashboardOverview(
         else setIsLoading(false);
       }
     },
-    [months, recentLimit, userId]
+    [admin, months, recentLimit, userId]
   );
 
   useEffect(() => {
@@ -64,6 +70,8 @@ export function useDashboardOverview(
   }, [refresh]);
 
   useEffect(() => {
+    if (getAdminDemoMode()) return;
+
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
         refresh({ silent: true });

@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getMockAdminsList } from '@/data/adminDemoMocks';
 import { AuthApiError } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getAdminsList, type AdminsListParams } from '@/lib/adminAdmins';
 import type { AdminAccount } from '@/types/adminManagement';
 
@@ -18,6 +20,13 @@ export function useAdminAdminsList(params: AdminsListParams = {}) {
     setErrorCode(null);
 
     try {
+      if (getAdminDemoMode()) {
+        const result = getMockAdminsList(params);
+        setAdmins(result.admins);
+        setTotal(result.total);
+        return;
+      }
+
       const result = await getAdminsList(params);
       setAdmins(result.admins);
       setTotal(result.total);

@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getMockUserDetail } from '@/data/adminDetailMocks';
 import { AuthApiError } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getUserDetail } from '@/lib/adminUsers';
 import type { AdminUserDetail } from '@/types/adminUserDetail';
 
@@ -25,6 +27,18 @@ export function useAdminUserDetail(userId: string) {
     setErrorCode(null);
 
     try {
+      if (getAdminDemoMode()) {
+        const mock = getMockUserDetail(userId);
+        if (!mock) {
+          setDetail(null);
+          setError('User not found');
+          setErrorCode('NOT_FOUND');
+          return;
+        }
+        setDetail(mock);
+        return;
+      }
+
       const result = await getUserDetail(userId);
       setDetail(result);
     } catch (err) {

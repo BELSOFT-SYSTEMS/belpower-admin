@@ -7,6 +7,8 @@ import '@/styles/adminCheckMeter.css';
 import '@/styles/adminShared.css';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { useElectricityDiscos } from '@/hooks/useElectricityDiscos';
+import { getMockMeterVerification } from '@/data/adminDemoMocks';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { verifyMeter } from '@/lib/meterVerification';
 import type { MeterVerifyResult } from '@/types/meterVerification';
 import { MeterVerificationResultView } from '@/components/admin/meter/MeterVerificationResult';
@@ -56,6 +58,11 @@ function CheckMeterPageContent() {
       setResult(null);
       setLoading(true);
       try {
+        if (getAdminDemoMode()) {
+          setResult(getMockMeterVerification());
+          return;
+        }
+
         const response = await verifyMeter({
           meter: meterNumber,
           disco,

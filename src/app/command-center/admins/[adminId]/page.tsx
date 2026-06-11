@@ -32,6 +32,7 @@ import {
   updateAdminProfile,
 } from '@/lib/adminAdmins';
 import { AuthApiError } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import type { AdminFormValues, AdminLog, AdminLogStatus } from '@/types/adminManagement';
 import { ADMIN_ROLE_LABELS } from '@/types/adminManagement';
 import { getAvatarBackground, getUserInitials } from '@/utils/userAvatar';
@@ -147,6 +148,12 @@ export default function AdminDetailPage() {
   }
 
   const handleUpdate = async (values: AdminFormValues) => {
+    if (getAdminDemoMode()) {
+      setBanner(`Demo: ${values.first_name} ${values.last_name} update action simulated.`);
+      setFormOpen(false);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
@@ -170,6 +177,11 @@ export default function AdminDetailPage() {
   };
 
   const handleDelete = async () => {
+    if (getAdminDemoMode()) {
+      setBanner(`Demo: ${admin.first_name} ${admin.last_name} delete action simulated.`);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
@@ -182,6 +194,12 @@ export default function AdminDetailPage() {
   };
 
   const handleResetPassword = async () => {
+    if (getAdminDemoMode()) {
+      setBanner(`Demo: password reset email simulated for ${admin.email}.`);
+      setResetOpen(false);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
@@ -196,12 +214,19 @@ export default function AdminDetailPage() {
   };
 
   const handleSuspendToggle = async () => {
+    const nextStatus = isSuspended ? 'active' : 'suspended';
+    const verb = nextStatus === 'suspended' ? 'suspended' : 'activated';
+
+    if (getAdminDemoMode()) {
+      setBanner(`Demo: ${admin.first_name} ${admin.last_name} ${verb} action simulated.`);
+      setSuspendOpen(false);
+      return;
+    }
+
     setIsSubmitting(true);
     setActionError(null);
     try {
-      const nextStatus = isSuspended ? 'active' : 'suspended';
       await setAdminAccountStatus(admin.id, nextStatus);
-      const verb = nextStatus === 'suspended' ? 'suspended' : 'activated';
       setBanner(`${admin.first_name} ${admin.last_name} was ${verb} successfully.`);
       setSuspendOpen(false);
       await refresh();

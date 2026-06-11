@@ -18,6 +18,7 @@ import {
   getStoredToken,
   redirectToSignIn,
 } from '@/lib/adminAuth';
+import { subscribeAdminDemoMode } from '@/lib/adminDemoMode';
 import { getAdminDisplayName, getAdminInitials } from '@/utils/adminDisplay';
 
 type AdminAuthContextValue = {
@@ -37,6 +38,9 @@ const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<AdminProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [demoMode, setDemoMode] = useState(false);
+
+  useEffect(() => subscribeAdminDemoMode(setDemoMode), []);
 
   const refreshProfile = useCallback(async () => {
     const token = getStoredToken();
@@ -102,12 +106,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       initials: getAdminInitials(admin),
       isAuthenticated: !!admin && !!getStoredToken(),
       isLoading,
-      canAccess: (permissionKey: string) => canAccess(admin, permissionKey),
+      canAccess: (permissionKey: string) =>
+        demoMode ? true : canAccess(admin, permissionKey),
       refreshProfile,
       logout,
       setAdmin,
     }),
-    [admin, isLoading, refreshProfile, logout]
+    [admin, demoMode, isLoading, refreshProfile, logout]
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

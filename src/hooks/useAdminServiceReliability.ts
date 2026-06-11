@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getMockServiceReliability } from '@/data/adminDemoMocks';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getServiceReliabilityIndex } from '@/lib/adminServiceReliability';
 import type { ServiceReliabilityData } from '@/types/adminServiceReliability';
 
@@ -32,7 +34,9 @@ export function useAdminServiceReliability({
       }
 
       try {
-        const result = await getServiceReliabilityIndex();
+        const result = getAdminDemoMode()
+          ? getMockServiceReliability()
+          : await getServiceReliabilityIndex();
         setData(result);
         setError(null);
       } catch (err) {
@@ -56,7 +60,7 @@ export function useAdminServiceReliability({
   }, [enabled, refresh]);
 
   useEffect(() => {
-    if (!enabled || !autoRefresh) return;
+    if (!enabled || !autoRefresh || getAdminDemoMode()) return;
 
     const timer = window.setInterval(() => {
       refresh({ silent: true });

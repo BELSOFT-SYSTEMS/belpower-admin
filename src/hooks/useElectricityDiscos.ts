@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import {
   fallbackElectricityDiscos,
   fetchElectricityDiscos,
@@ -27,6 +28,11 @@ export function useElectricityDiscos(
     setIsLoading(true);
     setError(null);
     try {
+      if (getAdminDemoMode()) {
+        setDiscos(fallbackElectricityDiscos());
+        return;
+      }
+
       const nextDiscos = await fetchElectricityDiscos();
       setDiscos(nextDiscos);
     } catch (err) {

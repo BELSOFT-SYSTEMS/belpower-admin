@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getMockAdminActivityLogs, getMockAdminDetail } from '@/data/adminDemoMocks';
 import { AuthApiError } from '@/lib/adminAuth';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getAdminActivityLogs, getAdminDetail } from '@/lib/adminAdmins';
 import type { AdminAccount, AdminLog } from '@/types/adminManagement';
 
@@ -27,6 +29,20 @@ export function useAdminDetail(adminId: string) {
     setErrorCode(null);
 
     try {
+      if (getAdminDemoMode()) {
+        const detail = getMockAdminDetail(adminId);
+        if (!detail) {
+          setAdmin(null);
+          setLogs([]);
+          setError('Admin not found');
+          setErrorCode('NOT_FOUND');
+          return;
+        }
+        setAdmin(detail);
+        setLogs(getMockAdminActivityLogs(adminId).logs);
+        return;
+      }
+
       const [detail, activity] = await Promise.all([
         getAdminDetail(adminId),
         getAdminActivityLogs({ adminId, limit: 100 }),

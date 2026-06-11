@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getMockMaintenanceFlags, getMockMaintenanceState } from '@/data/adminDemoMocks';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import {
   buildMaintenancePatch,
   getMaintenanceState,
@@ -26,6 +28,11 @@ export function useAdminMaintenance(enabled: boolean) {
     setError(null);
 
     try {
+      if (getAdminDemoMode()) {
+        setFlags(getMockMaintenanceFlags());
+        return;
+      }
+
       const state = await getMaintenanceState();
       setFlags(maintenanceStateToFlags(state));
     } catch (err) {
@@ -50,6 +57,12 @@ export function useAdminMaintenance(enabled: boolean) {
       setFlags((current) => (current ? { ...current, [key]: enabled } : current));
 
       try {
+        if (getAdminDemoMode()) {
+          const nextFlags = { ...(previous ?? getMockMaintenanceFlags()), [key]: enabled };
+          setFlags(nextFlags);
+          return nextFlags;
+        }
+
         const state = await patchMaintenanceState(buildMaintenancePatch(key, enabled));
         const nextFlags = maintenanceStateToFlags(state);
         setFlags(nextFlags);

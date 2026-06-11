@@ -2,6 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+  getMockAudienceOptions,
+  getMockNotificationHistory,
+  getMockNotificationStats,
+  getMockNotificationTemplates,
+  getMockNotificationUsers,
+} from '@/data/adminDemoMocks';
+import { getAdminDemoMode } from '@/lib/adminDemoMode';
+import {
   estimateNotificationAudience,
   getAudienceOptions,
   getNotificationHistory,
@@ -44,6 +52,16 @@ export function useAdminNotifications({
     setError(null);
 
     try {
+      if (getAdminDemoMode()) {
+        const audienceData = getMockAudienceOptions();
+        setTemplates(getMockNotificationTemplates());
+        setStates(audienceData.states);
+        setProviders(audienceData.providers);
+        setHistory(canViewHistory ? getMockNotificationHistory() : []);
+        setStats(canViewHistory ? getMockNotificationStats(historyScope) : null);
+        return;
+      }
+
       const [templateData, audienceData] = await Promise.all([
         getNotificationTemplates(),
         getAudienceOptions(),
@@ -78,6 +96,12 @@ export function useAdminNotifications({
   const refreshHistory = useCallback(async () => {
     if (!canViewHistory) return;
 
+    if (getAdminDemoMode()) {
+      setHistory(getMockNotificationHistory());
+      setStats(getMockNotificationStats(historyScope));
+      return;
+    }
+
     const [historyData, statsData] = await Promise.all([
       getNotificationHistory({ scope: historyScope }),
       getNotificationStats(historyScope),
@@ -89,6 +113,9 @@ export function useAdminNotifications({
   const estimateAudience = useCallback(async (payload: SendNotificationPayload) => {
     setIsEstimating(true);
     try {
+      if (getAdminDemoMode()) {
+        return { count: 1840, label: 'Estimated demo audience' };
+      }
       return await estimateNotificationAudience(payload);
     } finally {
       setIsEstimating(false);
@@ -100,6 +127,31 @@ export function useAdminNotifications({
       setIsSending(true);
       setError(null);
       try {
+        if (getAdminDemoMode()) {
+          const template = getMockNotificationTemplates().find(
+            (item) => item.id === payload.template_id
+          );
+          return {
+            broadcast: {
+              id: `demo-send-${Date.now()}`,
+              template_title: template?.title ?? 'Demo notification',
+              kind: template?.kind ?? 'promotional',
+              audience_label: 'Demo audience',
+              recipient_count: 1840,
+              sent_at: new Date().toISOString(),
+              sent_by: 'Demo admin',
+            },
+            notifications_sent: 1840,
+            push: {
+              attempted: 1200,
+              delivered: 1180,
+              skipped_no_tokens: 20,
+              failed: 0,
+            },
+            message: 'Demo notification sent successfully.',
+          };
+        }
+
         const result = await sendNotificationCampaign(payload);
         if (canViewHistory) {
           await refreshHistory();
@@ -117,6 +169,9 @@ export function useAdminNotifications({
   );
 
   const searchUsers = useCallback(async (query: string): Promise<NotificationUserOption[]> => {
+    if (getAdminDemoMode()) {
+      return getMockNotificationUsers(query);
+    }
     return searchNotificationUsers(query);
   }, []);
 
