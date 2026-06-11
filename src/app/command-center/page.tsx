@@ -151,7 +151,7 @@ function DashboardHome() {
     return (
       <div className="admin_homePage admin_home_loading">
         <p className="admin_home_error">{error}</p>
-        <button type="button" className="admin_home_retry" onClick={refresh}>
+        <button type="button" className="admin_home_retry" onClick={() => refresh()}>
           Try again
         </button>
       </div>
