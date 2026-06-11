@@ -27,6 +27,7 @@ Authorization: Bearer <token>
 | **Login** | 2FA OTP creates `AdminSession`; `last_login` fixed. |
 | **Sessions** | `/sessions/admins` vs `/sessions/users` (staff vs customers). |
 | **Disco** | Manual check calls `checkDiscoStatus()`. |
+| **Demo mode** | **Frontend ready** — needs `GET/PATCH /system/demo-mode` (see `BACKEND_DEMO_MODE.md`). |
 | **Schema tool** | `node scripts/check-admin-schema.js` |
 
 ---
@@ -604,6 +605,19 @@ Requires `DATABASE_URL` in `.env`.
 | GET | `/sessions/admins` | Bearer (`super_admin`, `admin`) |
 | DELETE | `/sessions/admins/:sessionId` | Bearer (`super_admin`) |
 | GET | `/sessions/users` | Bearer (`super_admin`, `admin`, `support`) |
+
+---
+
+## 9. System — demo mode
+
+Persisted flag for admin panel review sessions. Implemented in **belpower-back** (`routes/admin/systemRoutes.js`). Full spec: **`BACKEND_DEMO_MODE.md`**.
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| GET | `/system/demo-mode` | Bearer (any admin on `/system`) | Read `data.demoMode.{ enabled, updatedAt, updatedBy }` |
+| PATCH | `/system/demo-mode` | Bearer (`super_admin`) | Set `{ enabled: boolean }` → `data.state` |
+
+Stored in `system_maintenance_settings` under key `admin.demo_mode`. Frontend uses the backend first; local Next.js route is fallback only if the endpoint returns 404.
 
 ---
 

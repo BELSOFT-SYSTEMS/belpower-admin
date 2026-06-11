@@ -61,23 +61,31 @@ Action buttons on these pages show demo feedback instead of calling the API.
 
 ## How it works technically
 
-- State is stored server-side via `GET` / `POST` `/api/admin/demo-mode`.
-- Only super admin JWTs can change the flag (`POST`).
-- All signed-in sessions poll the endpoint every ~15 seconds so demo mode stays in sync across admins.
+- **Primary storage:** backend `GET` / `PATCH` `/system/demo-mode` (see **[BACKEND_DEMO_MODE.md](./BACKEND_DEMO_MODE.md)**).
+- **Fallback:** local Next.js route `/api/admin/demo-mode` only when the backend endpoint is not deployed yet.
+- Only **super admins** can change the flag (`PATCH`, super_admin JWT).
+- All signed-in sessions poll every ~15 seconds so demo mode stays in sync across admins.
 - Toggling on or off triggers a full page reload so every hook picks up the new mode.
 
 Relevant code:
 
 - Toggle UI: `src/components/admin/ui/AdminDemoToggle.tsx`
 - Context & sync: `src/context/AdminDemoContext.tsx`, `src/lib/adminDemoMode.ts`
-- API route: `src/app/api/admin/demo-mode/route.ts`
+- Backend client: `src/lib/adminDemoModeApi.ts`
+- Local fallback: `src/lib/adminDemoModeLocal.ts`, `src/app/api/admin/demo-mode/route.ts`
 - Mock data: `src/data/adminDashboardMock.ts`, `adminListPagesMock.ts`, `adminDetailMocks.ts`, `adminDemoMocks.ts`
+
+## Why demo mode was turning off by itself
+
+On Vercel, the local fallback stores state in `/tmp` and per-instance memory. Serverless instances cold-start frequently, so the flag could reset to **off**.
+
+**Fix:** `GET/PATCH /system/demo-mode` in **belpower-back** (stored in `system_maintenance_settings`). The frontend already calls it first — deploy the backend API for demo mode to stay on until a super admin turns it off.
 
 ## Deployment notes
 
-- Demo mode defaults to **off** unless `ADMIN_DEMO_MODE_DEFAULT=true` is set in the environment.
-- On serverless hosts (e.g. Vercel), the toggle state is persisted under the instance temp directory and mirrored in memory. It should work for review sessions; if an instance cold-starts, clients resync from `GET /api/admin/demo-mode`.
+- Demo mode defaults to **off** unless the backend record or `ADMIN_DEMO_MODE_DEFAULT=true` says otherwise.
 - **Turn demo mode off before normal production use** so the panel returns to live data.
+- Share `BACKEND_DEMO_MODE.md` with the API team if demo mode still resets — the backend endpoint is required for reliable review sessions.
 
 ## Quick checklist for reviewers
 

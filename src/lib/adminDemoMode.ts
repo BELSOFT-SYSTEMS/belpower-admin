@@ -1,12 +1,20 @@
-/** Runtime demo mode — toggled by super admin, synced across all sessions via API. */
+/** Runtime demo mode — persisted on the backend; local route is a temporary fallback. */
 
-const DEMO_MODE_API = '/api/admin/demo-mode';
+import {
+  getBackendDemoModeState,
+  hasDemoModeAuthToken,
+  isDemoModeBackendMissing,
+  patchBackendDemoModeState,
+} from '@/lib/adminDemoModeApi';
+import { getLocalDemoModeState, setLocalDemoModeState } from '@/lib/adminDemoModeLocal';
+
 const POLL_MS = 15_000;
 
 type DemoModeListener = (enabled: boolean) => void;
 
 let enabled = false;
 let initialized = false;
+let usingBackend = true;
 let pollTimer: number | null = null;
 const listeners = new Set<DemoModeListener>();
 
@@ -14,8 +22,54 @@ function notify() {
   listeners.forEach((listener) => listener(enabled));
 }
 
+async function loadDemoModeState(): Promise<boolean> {
+  if (hasDemoModeAuthToken()) {
+    try {
+      const state = await getBackendDemoModeState();
+      usingBackend = true;
+      return state.enabled;
+    } catch (error) {
+      if (!isDemoModeBackendMissing(error)) {
+        console.warn('Demo mode backend read failed; keeping current state.', error);
+        return enabled;
+      }
+      usingBackend = false;
+    }
+  }
+
+  try {
+    const state = await getLocalDemoModeState();
+    return state.enabled;
+  } catch (error) {
+    console.warn('Demo mode local fallback read failed; keeping current state.', error);
+    return enabled;
+  }
+}
+
+async function saveDemoModeState(next: boolean): Promise<boolean> {
+  if (hasDemoModeAuthToken()) {
+    try {
+      const state = await patchBackendDemoModeState(next);
+      usingBackend = true;
+      return state.enabled;
+    } catch (error) {
+      if (!isDemoModeBackendMissing(error)) {
+        throw error;
+      }
+      usingBackend = false;
+    }
+  }
+
+  const state = await setLocalDemoModeState(next);
+  return state.enabled;
+}
+
 export function getAdminDemoMode(): boolean {
   return enabled;
+}
+
+export function isAdminDemoModeUsingBackend(): boolean {
+  return usingBackend;
 }
 
 export function subscribeAdminDemoMode(listener: DemoModeListener): () => void {
@@ -25,18 +79,11 @@ export function subscribeAdminDemoMode(listener: DemoModeListener): () => void {
 }
 
 export async function fetchAdminDemoMode(): Promise<boolean> {
-  try {
-    const res = await fetch(DEMO_MODE_API, { cache: 'no-store' });
-    if (!res.ok) return enabled;
-    const body = (await res.json()) as { enabled?: boolean };
-    return Boolean(body.enabled);
-  } catch {
-    return enabled;
-  }
+  return loadDemoModeState();
 }
 
 export async function syncAdminDemoMode(): Promise<boolean> {
-  const next = await fetchAdminDemoMode();
+  const next = await loadDemoModeState();
   if (next !== enabled) {
     enabled = next;
     notify();
@@ -45,25 +92,8 @@ export async function syncAdminDemoMode(): Promise<boolean> {
 }
 
 export async function setAdminDemoMode(next: boolean): Promise<boolean> {
-  const token =
-    typeof window !== 'undefined' ? window.localStorage.getItem('adminToken') : null;
-
-  const res = await fetch(DEMO_MODE_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ enabled: next }),
-  });
-
-  if (!res.ok) {
-    const body = (await res.json().catch(() => ({}))) as { message?: string };
-    throw new Error(body.message ?? 'Failed to update demo mode');
-  }
-
-  const body = (await res.json()) as { enabled?: boolean };
-  enabled = Boolean(body.enabled);
+  const saved = await saveDemoModeState(next);
+  enabled = saved;
   notify();
   return enabled;
 }
