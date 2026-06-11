@@ -19,6 +19,8 @@ import {
   syncAdminDemoMode,
 } from '@/lib/adminDemoMode';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { usePathname } from 'next/navigation';
+import { isPublicAdminRoute } from '@/utils/adminPublicRoutes';
 
 type AdminDemoContextValue = {
   enabled: boolean;
@@ -31,14 +33,16 @@ type AdminDemoContextValue = {
 const AdminDemoContext = createContext<AdminDemoContextValue | null>(null);
 
 export function AdminDemoProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const { admin, isAuthenticated } = useAdminAuth();
   const [enabled, setEnabledState] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const canToggle = isSuperAdminProfile(admin);
+  const onPublicRoute = isPublicAdminRoute(pathname);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || onPublicRoute) return;
 
     startAdminDemoModePolling();
     const unsubscribe = subscribeAdminDemoMode(setEnabledState);
@@ -47,7 +51,7 @@ export function AdminDemoProvider({ children }: { children: ReactNode }) {
       unsubscribe();
       stopAdminDemoModePolling();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, onPublicRoute]);
 
   const setEnabled = useCallback(
     async (next: boolean) => {

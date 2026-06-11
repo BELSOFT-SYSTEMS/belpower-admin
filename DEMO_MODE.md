@@ -30,9 +30,16 @@ While demo mode is on, a **Demo data** banner appears at the top of the admin la
 | Buttons & actions | Simulated (toasts/banners); no writes to the backend |
 | Polling / refresh | Dashboard and other live refresh loops are skipped where applicable |
 
-## What stays real
+## What stays real (login is excluded)
 
-- **Sign-in and authentication** — admins still log in against the real auth API.
+Demo mode does **not** apply to authentication pages or APIs:
+
+- **Sign-in** (`/command-center/sign-in`)
+- **Account setup** (`/command-center/setup-account`)
+- **Password reset** (`/command-center/reset-password`)
+
+These routes always render immediately (no “Loading command center…” spinner) and always call the **live auth API**. Only after a successful login does demo mode affect the rest of the panel.
+
 - **Session / profile** — your logged-in admin identity is real; only operational data is faked.
 
 ## Pages covered

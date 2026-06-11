@@ -20,6 +20,7 @@ import {
 } from '@/lib/adminAuth';
 import { subscribeAdminDemoMode } from '@/lib/adminDemoMode';
 import { getAdminDisplayName, getAdminInitials } from '@/utils/adminDisplay';
+import { isPublicAdminRoute } from '@/utils/adminPublicRoutes';
 
 type AdminAuthContextValue = {
   admin: AdminProfile | null;
@@ -68,12 +69,20 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       if (cached) setAdmin(cached);
 
       const token = getStoredToken();
+      const onPublicRoute =
+        typeof window !== 'undefined' && isPublicAdminRoute(window.location.pathname);
+
       if (!token) {
         if (!cancelled) {
           setAdmin(null);
           setIsLoading(false);
         }
         return;
+      }
+
+      // Never block sign-in / setup / reset-password while validating an existing session.
+      if (onPublicRoute && !cancelled) {
+        setIsLoading(false);
       }
 
       try {
@@ -83,7 +92,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         clearAdminSession();
         if (!cancelled) setAdmin(null);
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled && !onPublicRoute) {
+          setIsLoading(false);
+        }
       }
     };
 

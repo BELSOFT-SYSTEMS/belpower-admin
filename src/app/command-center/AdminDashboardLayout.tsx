@@ -8,8 +8,8 @@ import { AdminDemoBanner } from '@/components/admin/ui/AdminDemoBanner';
 import AdminTopBar from '@/components/admin/layouts/topbar/Topbar';
 import { formatAdminDocumentTitle } from '@/utils/adminPageTitle';
 import { useAdminAuth } from '@/context/AdminAuthContext';
-import { PUBLIC_ADMIN_PATHS } from '@/constants/adminNavPermissions';
 import { redirectToSignIn } from '@/lib/adminAuth';
+import { isPublicAdminRoute } from '@/utils/adminPublicRoutes';
 
 type AdminDashboardProps = {
   children: ReactNode;
@@ -18,7 +18,7 @@ type AdminDashboardProps = {
 export default function AdminDashboardLayout({ children }: AdminDashboardProps) {
   const pathname = usePathname();
   const { isAuthenticated, isLoading } = useAdminAuth();
-  const isPublicRoute = PUBLIC_ADMIN_PATHS.some((path) => pathname === path);
+  const isPublicRoute = isPublicAdminRoute(pathname);
 
   useEffect(() => {
     document.title = formatAdminDocumentTitle(pathname);
@@ -39,6 +39,10 @@ export default function AdminDashboardLayout({ children }: AdminDashboardProps) 
     }
   }, [isLoading, isAuthenticated, isPublicRoute, pathname]);
 
+  if (isPublicRoute) {
+    return <>{children}</>;
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -48,10 +52,6 @@ export default function AdminDashboardLayout({ children }: AdminDashboardProps) 
         </div>
       </div>
     );
-  }
-
-  if (isPublicRoute) {
-    return <>{children}</>;
   }
 
   if (!isAuthenticated) {
