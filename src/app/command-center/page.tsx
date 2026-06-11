@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { FaHome, FaUsers, FaClipboardList, FaClock, FaExpand } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import '@/styles/adminHome.css';
@@ -33,7 +33,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type StatCard = {
   key: string;
@@ -44,11 +44,24 @@ type StatCard = {
 };
 
 function DashboardHome() {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const userIdFilter = searchParams.get('userId') ?? undefined;
   const { displayName, admin } = useAdminAuth();
   const { data, isLoading, error, refresh } = useDashboardOverview({ userId: userIdFilter });
   const [expandedChart, setExpandedChart] = useState<string | null>(null);
+  const skipPathRefreshRef = useRef(true);
+
+  useEffect(() => {
+    if (skipPathRefreshRef.current) {
+      skipPathRefreshRef.current = false;
+      return;
+    }
+
+    if (pathname === '/command-center') {
+      refresh({ silent: true });
+    }
+  }, [pathname, refresh]);
 
   const showInternalTestBadge = Boolean(data?.filters?.canViewInternalTestUsers);
   const appliedUserId = data?.filters?.appliedUserId ?? userIdFilter ?? null;
@@ -125,7 +138,7 @@ function DashboardHome() {
     return cards;
   }, [data?.stats, showPayments]);
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return (
       <div className="admin_homePage admin_home_loading">
         <Loader2 className="h-10 w-10 animate-spin text-blue-500" />

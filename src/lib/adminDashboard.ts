@@ -44,6 +44,7 @@ export async function getDashboardOverview(
   try {
     res = await fetch(`${ADMIN_API_BASE}/dashboard/overview?${query}`, {
       headers: adminHeaders(),
+      cache: 'no-store',
     });
   } catch {
     throw new AuthApiError(
