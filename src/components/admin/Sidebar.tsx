@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminShell } from '@/context/AdminShellContext';
 import { ADMIN_NAV_ITEMS } from '@/constants/adminNavPermissions';
@@ -80,21 +80,20 @@ export function Sidebar() {
   }, [mobileNavOpen]);
 
   const collapseLabel = sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
-  const CollapseIcon = sidebarCollapsed ? PanelLeftOpen : PanelLeftClose;
 
   return (
     <>
       {mobileNavOpen ? (
         <button
           type="button"
-          className="admin_nav_overlay md:hidden"
+          className="admin_nav_overlay"
           aria-label="Close navigation menu"
           onClick={() => setMobileNavOpen(false)}
         />
       ) : null}
 
       <aside
-        className={`admin_mobile_drawer md:hidden${mobileNavOpen ? ' is_open' : ''}`}
+        className={`admin_mobile_drawer${mobileNavOpen ? ' is_open' : ''}`}
         aria-hidden={!mobileNavOpen}
       >
         <div className="admin_sidebar_inner">
@@ -105,25 +104,31 @@ export function Sidebar() {
         </div>
       </aside>
 
-      <aside
-        className={`admin_sidebar hidden md:flex${sidebarCollapsed ? ' is_collapsed' : ''}`}
+      <div
+        className={`admin_sidebar_shell${sidebarCollapsed ? ' is_collapsed' : ''}`}
       >
-        <div className="admin_sidebar_inner">
-          <div className="admin_sidebar_header">
-            <h1 className="admin_sidebar_title">Command Center</h1>
-            <button
-              type="button"
-              className="admin_sidebar_toggle"
-              onClick={toggleSidebarCollapsed}
-              aria-label={collapseLabel}
-              title={collapseLabel}
-            >
-              <CollapseIcon size={18} aria-hidden />
-            </button>
+        <aside className="admin_sidebar">
+          <div className="admin_sidebar_inner">
+            <div className="admin_sidebar_header">
+              <h1 className="admin_sidebar_title">Command Center</h1>
+            </div>
+            <SidebarNav collapsed={sidebarCollapsed} />
           </div>
-          <SidebarNav collapsed={sidebarCollapsed} />
-        </div>
-      </aside>
+        </aside>
+        <button
+          type="button"
+          className="admin_sidebar_edge_toggle"
+          onClick={toggleSidebarCollapsed}
+          aria-label={collapseLabel}
+          title={collapseLabel}
+        >
+          {sidebarCollapsed ? (
+            <ChevronRight size={14} aria-hidden />
+          ) : (
+            <ChevronLeft size={14} aria-hidden />
+          )}
+        </button>
+      </div>
     </>
   );
 }

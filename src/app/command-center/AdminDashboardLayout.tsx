@@ -62,9 +62,9 @@ export default function AdminDashboardLayout({ children }: AdminDashboardProps) 
 
   return (
     <AdminShellProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50" style={{ paddingTop: '4rem' }}>
         <AdminTopBar />
-        <div className="flex h-screen overflow-hidden" style={{ paddingTop: '4rem' }}>
+        <div className="admin_shell_row">
           <Sidebar />
           <div className="admin_shell_main focus:outline-none">
             <main className="flex-1 p-4 md:p-6">

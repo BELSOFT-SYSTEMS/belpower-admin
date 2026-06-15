@@ -151,7 +151,7 @@ export default function AdminTopBar() {
           <div className="admin_mobile_topbar_left">
             <button
               type="button"
-              className="admin_topbar_menu_btn md:hidden"
+              className="admin_topbar_menu_btn"
               onClick={toggleMobileNav}
               aria-label="Open navigation menu"
               title="Menu"
