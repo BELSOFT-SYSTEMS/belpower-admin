@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { FaWallet, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { FaWallet, FaArrowUp, FaArrowDown, FaChartLine } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import '@/styles/adminWallet.css';
 import '@/styles/adminShared.css';
@@ -82,6 +82,10 @@ export default function WalletPage() {
     buyPowerBalance?.amount ?? null,
     Boolean(buyPowerBalance?.canView && canViewMoney)
   );
+  const profitDisplay = formatBalanceValue(
+    stats?.profit?.amount ?? null,
+    Boolean(stats?.profit?.canView && canViewMoney)
+  );
 
   const walletStats = useMemo(() => {
     const cards = [];
@@ -118,23 +122,33 @@ export default function WalletPage() {
     );
 
     if (canViewMoney) {
-      cards.push({
-        key: 'buyPower',
-        icon: <FaWallet className="text-purple-500 text-xl" />,
-        label: 'BuyPower wallet balance',
-        value: buyPowerDisplay.value,
-        valueClassName: buyPowerDisplay.isNegative ? 'wallet_balance_negative' : undefined,
-        sub: buyPowerBalance?.lastUpdated
-          ? `Updated ${new Date(buyPowerBalance.lastUpdated).toLocaleString()}`
-          : 'Platform float',
-        border: 'border-purple-200',
-      });
+      cards.push(
+        {
+          key: 'profit',
+          icon: <FaChartLine className="text-emerald-500 text-xl" />,
+          label: 'Profit',
+          value: profitDisplay.value,
+          sub: 'Service charges (NGN)',
+          border: 'border-emerald-200',
+        },
+        {
+          key: 'buyPower',
+          icon: <FaWallet className="text-purple-500 text-xl" />,
+          label: 'BuyPower wallet balance',
+          value: buyPowerDisplay.value,
+          valueClassName: buyPowerDisplay.isNegative ? 'wallet_balance_negative' : undefined,
+          sub: buyPowerBalance?.lastUpdated
+            ? `Updated ${new Date(buyPowerBalance.lastUpdated).toLocaleString()}`
+            : 'Platform float',
+          border: 'border-purple-200',
+        }
+      );
     }
 
     return cards;
-  }, [stats, canViewMoney, totalBalanceDisplay, buyPowerDisplay, buyPowerBalance]);
+  }, [stats, canViewMoney, totalBalanceDisplay, buyPowerDisplay, profitDisplay, buyPowerBalance]);
 
-  const statsCardCount = canViewMoney ? 4 : 2;
+  const statsCardCount = canViewMoney ? 5 : 2;
 
   if (!canAccessPage) {
     return (

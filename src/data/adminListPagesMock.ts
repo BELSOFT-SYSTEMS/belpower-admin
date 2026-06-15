@@ -683,6 +683,12 @@ export function getMockWalletOverview(admin: AdminProfile | null): WalletOvervie
       canView: canViewMoney,
       lastUpdated: new Date().toISOString(),
     },
+    profit: {
+      amount: canViewMoney ? 12_680_500 : null,
+      currency: 'NGN',
+      canView: canViewMoney,
+      definition: 'completed_service_charges',
+    },
     fundingCount: { count: 1842 },
     debitCount: { count: 6210 },
     flaggedCount: { count: 6 },

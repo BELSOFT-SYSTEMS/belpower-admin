@@ -48,6 +48,7 @@ async function handleAdminResponse<T>(
 function normalizeWalletOverviewStats(raw: Record<string, unknown> | undefined): WalletOverviewStats {
   const total = (raw?.totalUserBalance as Record<string, unknown> | undefined) ?? {};
   const buyPower = (raw?.buyPowerBalance as Record<string, unknown> | undefined) ?? {};
+  const profit = (raw?.profit as Record<string, unknown> | undefined) ?? {};
   const funding = (raw?.fundingCount as Record<string, unknown> | undefined) ?? {};
   const debit = (raw?.debitCount as Record<string, unknown> | undefined) ?? {};
   const flagged = (raw?.flaggedCount as Record<string, unknown> | undefined) ?? {};
@@ -68,6 +69,13 @@ function normalizeWalletOverviewStats(raw: Record<string, unknown> | undefined):
           : typeof buyPower.last_updated === 'string'
             ? buyPower.last_updated
             : null,
+    },
+    profit: {
+      amount: profit.amount == null ? null : Number(profit.amount),
+      currency: 'NGN',
+      canView: Boolean(profit.canView),
+      definition:
+        typeof profit.definition === 'string' ? profit.definition : undefined,
     },
     fundingCount: { count: Number(funding.count ?? 0) },
     debitCount: { count: Number(debit.count ?? 0) },
