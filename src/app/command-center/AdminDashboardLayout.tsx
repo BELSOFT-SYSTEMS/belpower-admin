@@ -6,10 +6,12 @@ import { Loader2 } from 'lucide-react';
 import { Sidebar } from '@/components/admin/Sidebar';
 import { AdminDemoBanner } from '@/components/admin/ui/AdminDemoBanner';
 import AdminTopBar from '@/components/admin/layouts/topbar/Topbar';
+import { AdminShellProvider } from '@/context/AdminShellContext';
 import { formatAdminDocumentTitle } from '@/utils/adminPageTitle';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { redirectToSignIn } from '@/lib/adminAuth';
 import { isPublicAdminRoute } from '@/utils/adminPublicRoutes';
+import '@/styles/adminShell.css';
 
 type AdminDashboardProps = {
   children: ReactNode;
@@ -59,17 +61,19 @@ export default function AdminDashboardLayout({ children }: AdminDashboardProps) 
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminTopBar />
-      <div className="flex h-screen overflow-hidden" style={{ paddingTop: '4rem' }}>
-        <Sidebar />
-        <div className="flex-1 overflow-auto focus:outline-none">
-          <main className="flex-1 p-6">
-            <AdminDemoBanner message="Demo mode is active for team review. All figures and records are sample data and actions do not call the live backend." />
-            {children}
-          </main>
+    <AdminShellProvider>
+      <div className="min-h-screen bg-gray-50">
+        <AdminTopBar />
+        <div className="flex h-screen overflow-hidden" style={{ paddingTop: '4rem' }}>
+          <Sidebar />
+          <div className="admin_shell_main focus:outline-none">
+            <main className="flex-1 p-4 md:p-6">
+              <AdminDemoBanner message="Demo mode is active for team review. All figures and records are sample data and actions do not call the live backend." />
+              {children}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </AdminShellProvider>
   );
 }

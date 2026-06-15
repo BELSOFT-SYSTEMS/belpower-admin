@@ -5,18 +5,22 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoMdNotifications } from "react-icons/io";
 import { IoMdSettings } from "react-icons/io";
+import { Menu } from "lucide-react";
 import { useAppTranslation } from "@/hooks/useAppTranslation";
 import NotificationModal from "@/components/NotificationsModal";
 import "@/components/admin/layouts/topbar/topbar.css";
+import "@/styles/adminShell.css";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 import { AdminAvatar } from "@/components/admin/AdminAvatar";
 import { useAdminAuth } from "@/context/AdminAuthContext";
+import { useAdminShell } from "@/context/AdminShellContext";
 import { canManageMaintenance } from "@/utils/adminSettingsAccess";
 import { useAdminInboxNotifications } from "@/hooks/useAdminInboxNotifications";
 import { useAdminWebPush } from "@/hooks/useAdminWebPush";
 
 export default function AdminTopBar() {
   const { displayName, admin, isAuthenticated } = useAdminAuth();
+  const { toggleMobileNav } = useAdminShell();
   const showMaintenanceSettings = canManageMaintenance(admin);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -144,6 +148,24 @@ export default function AdminTopBar() {
         </div>
 
         <div className="mobile_topbar">
+          <div className="admin_mobile_topbar_left">
+            <button
+              type="button"
+              className="admin_topbar_menu_btn md:hidden"
+              onClick={toggleMobileNav}
+              aria-label="Open navigation menu"
+              title="Menu"
+            >
+              <Menu size={22} aria-hidden />
+            </button>
+            <img
+              src="/belpower_full.png"
+              alt="BelPower"
+              className="admin_mobile_topbar_logo"
+            />
+          </div>
+
+          <div className="flex items-center gap-4">
           <div className="relative">
             <button
               type="button"
@@ -190,6 +212,7 @@ export default function AdminTopBar() {
           </div>
 
           {renderBell(30)}
+          </div>
         </div>
 
         <NotificationModal
