@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
-import '@/styles/adminAdmins.css';
 
 export type UserQuickActionType = 'block' | 'suspend' | 'activate';
 
@@ -73,7 +72,7 @@ export function UserQuickActionModal({
   return (
     <div className="admin_modal_overlay" role="presentation" onClick={onClose}>
       <div
-        className="admin_modal admin_modal_sm"
+        className={`admin_modal admin_modal_sm${copy.danger ? ' admin_modal_danger' : ''}`}
         role="dialog"
         aria-labelledby="user-action-title"
         onClick={(e) => e.stopPropagation()}
@@ -86,40 +85,42 @@ export function UserQuickActionModal({
         </div>
 
         <form className="admin_modal_form" onSubmit={handleSubmit}>
-          <p className="admin_confirm_message" style={{ padding: '0 0 1rem' }}>
-            {copy.message}
-            <br />
-            <strong>{userName}</strong>
-          </p>
+          <div className="admin_modal_body">
+            <p className="admin_confirm_message">
+              {copy.message}
+              <br />
+              <strong>{userName}</strong>
+            </p>
 
-          {(action === 'block' || action === 'suspend') && (
-            <div className="admin_form_row">
-              <label htmlFor="user-action-reason">Reason (optional)</label>
-              <textarea
-                id="user-action-reason"
-                className="user_action_textarea"
-                rows={3}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Add a note for the audit log"
-              />
-            </div>
-          )}
+            {(action === 'block' || action === 'suspend') && (
+              <div className="admin_form_row">
+                <label htmlFor="user-action-reason">Reason (optional)</label>
+                <textarea
+                  id="user-action-reason"
+                  className="user_action_textarea"
+                  rows={3}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Add a note for the audit log"
+                />
+              </div>
+            )}
 
-          {action === 'suspend' && (
-            <div className="admin_form_row">
-              <label htmlFor="user-action-days">Suspend for (days, optional)</label>
-              <input
-                id="user-action-days"
-                type="number"
-                min={1}
-                max={365}
-                value={days}
-                onChange={(e) => setDays(e.target.value)}
-                placeholder="e.g. 7"
-              />
-            </div>
-          )}
+            {action === 'suspend' && (
+              <div className="admin_form_row">
+                <label htmlFor="user-action-days">Suspend for (days, optional)</label>
+                <input
+                  id="user-action-days"
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={days}
+                  onChange={(e) => setDays(e.target.value)}
+                  placeholder="e.g. 7"
+                />
+              </div>
+            )}
+          </div>
 
           <div className="admin_modal_actions">
             <button type="button" className="btn_secondary" onClick={onClose} disabled={isSubmitting}>

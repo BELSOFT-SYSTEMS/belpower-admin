@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
-import '@/styles/adminAdmins.css';
+import '@/styles/adminUsers.css';
 
 type ClearSuspicionModalProps = {
   open: boolean;
@@ -36,7 +36,7 @@ export function ClearSuspicionModal({
   return (
     <div className="admin_modal_overlay" role="presentation" onClick={onClose}>
       <div
-        className="admin_modal"
+        className="admin_modal admin_modal_sm"
         role="dialog"
         aria-labelledby="clear-suspicion-title"
         onClick={(e) => e.stopPropagation()}
@@ -54,31 +54,35 @@ export function ClearSuspicionModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <p className="admin_modal_message">
-            This will clear the suspicious activity flag on <strong>{userName}</strong>.
-            Individual transactions may still show as flagged.
-          </p>
+        <form className="admin_modal_form" onSubmit={handleSubmit}>
+          <div className="admin_modal_body">
+            <p className="admin_confirm_message">
+              This will clear the suspicious activity flag on <strong>{userName}</strong>.
+              Individual transactions may still show as flagged.
+            </p>
 
-          <label className="admin_modal_field">
-            <span>Reason (optional)</span>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Why is this flag being cleared?"
-              rows={3}
-              disabled={isSubmitting}
-            />
-          </label>
+            <div className="admin_form_row">
+              <label htmlFor="clear-suspicion-reason">Reason (optional)</label>
+              <textarea
+                id="clear-suspicion-reason"
+                className="user_action_textarea"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Why is this flag being cleared?"
+                rows={3}
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
 
           <div className="admin_modal_actions">
-            <button type="button" onClick={onClose} disabled={isSubmitting}>
+            <button type="button" className="btn_secondary" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </button>
-            <button type="submit" className="admin_modal_confirm" disabled={isSubmitting}>
+            <button type="submit" className="btn_primary" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin" size={16} /> Clearing…
+                  <Loader2 className="inline-spinner" style={{ width: 14, height: 14 }} /> Clearing…
                 </>
               ) : (
                 'Clear flag'

@@ -1,5 +1,6 @@
 @import "../app/globals.css";
 @import "./adminDropdown.css";
+@import "./adminModals.css";
 
 .admin_demo_banner {
   display: flex;
