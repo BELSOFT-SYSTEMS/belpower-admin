@@ -1,6 +1,8 @@
 import type {
   DashboardCharts,
   DashboardFilters,
+  DashboardFraudEvent,
+  DashboardFraudSummary,
   DashboardNewUser,
   DashboardOverview,
   DashboardRecentTransaction,
@@ -107,6 +109,38 @@ function normalizeCharts(raw: RawRecord | undefined): DashboardCharts {
   };
 }
 
+function normalizeFraudEvent(raw: RawRecord): DashboardFraudEvent {
+  return {
+    id: String(pick(raw, 'id', 'id') ?? ''),
+    userId: pickString(raw, 'userId', 'user_id'),
+    userEmail: pickString(raw, 'userEmail', 'user_email'),
+    userName: pickString(raw, 'userName', 'user_name'),
+    eventType: String(pick(raw, 'eventType', 'event_type') ?? ''),
+    code: String(pick(raw, 'code', 'code') ?? ''),
+    severity: String(pick(raw, 'severity', 'severity') ?? ''),
+    message: String(pick(raw, 'message', 'message') ?? ''),
+    amount: pickNumber(raw, 'amount', 'amount'),
+    actionTaken: String(pick(raw, 'actionTaken', 'action_taken') ?? ''),
+    isInternalTestAccount: pickBool(raw, 'isInternalTestAccount', 'is_internal_test_account'),
+    reviewStatus: String(pick(raw, 'reviewStatus', 'review_status') ?? ''),
+    createdAt: String(pick(raw, 'createdAt', 'created_at') ?? ''),
+  };
+}
+
+function normalizeFraudSummary(raw: RawRecord | undefined): DashboardFraudSummary {
+  const source = (raw ?? {}) as RawRecord;
+  const recentRaw = (pick<unknown[]>(source, 'recent', 'recent') ?? []) as RawRecord[];
+
+  return {
+    visible: pickBool(source, 'visible', 'visible'),
+    openCount: pickNumber(source, 'openCount', 'open_count'),
+    criticalOpen: pickNumber(source, 'criticalOpen', 'critical_open'),
+    last24h: pickNumber(source, 'last24h', 'last_24h'),
+    autoSuspended24h: pickNumber(source, 'autoSuspended24h', 'auto_suspended_24h'),
+    recent: recentRaw.map(normalizeFraudEvent),
+  };
+}
+
 function normalizeFilters(raw: RawRecord | undefined): DashboardFilters {
   const source = (raw ?? {}) as RawRecord;
 
@@ -132,6 +166,9 @@ export function normalizeDashboardOverview(raw: RawRecord): DashboardOverview {
     newUsers: newUsers.map(normalizeNewUser),
     charts: normalizeCharts(pick<RawRecord>(raw, 'charts', 'charts')),
     filters: normalizeFilters(pick<RawRecord>(raw, 'filters', 'filters')),
+    fraudSummary: normalizeFraudSummary(
+      pick<RawRecord>(raw, 'fraudSummary', 'fraud_summary')
+    ),
     generatedAt: String(pick(raw, 'generatedAt', 'generated_at') ?? ''),
   };
 }

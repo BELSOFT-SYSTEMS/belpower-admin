@@ -42,6 +42,31 @@ export type DashboardFilters = {
   appliedUserId: string | null;
 };
 
+export type DashboardFraudSummary = {
+  visible: boolean;
+  openCount?: number;
+  criticalOpen?: number;
+  last24h?: number;
+  autoSuspended24h?: number;
+  recent?: DashboardFraudEvent[];
+};
+
+export type DashboardFraudEvent = {
+  id: string;
+  userId: string | null;
+  userEmail: string | null;
+  userName: string | null;
+  eventType: string;
+  code: string;
+  severity: string;
+  message: string;
+  amount: number | null;
+  actionTaken: string;
+  isInternalTestAccount: boolean;
+  reviewStatus: string;
+  createdAt: string;
+};
+
 export type DashboardRevenuePoint = {
   month: string;
   amount: number;
@@ -67,6 +92,7 @@ export type DashboardOverview = {
   newUsers: DashboardNewUser[];
   charts: DashboardCharts;
   filters: DashboardFilters;
+  fraudSummary?: DashboardFraudSummary;
   generatedAt: string;
 };
 

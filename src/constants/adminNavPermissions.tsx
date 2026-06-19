@@ -10,6 +10,7 @@ import {
   FaUserShield,
   FaBell,
   FaEnvelope,
+  FaShieldAlt,
 } from 'react-icons/fa';
 
 export type AdminNavItem = {
@@ -56,6 +57,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     href: '/command-center/service-availability',
     icon: <FaServer className="w-5 h-5" />,
     permission: 'services.availability',
+  },
+  {
+    name: 'Fraud Events',
+    href: '/command-center/security/fraud-events',
+    icon: <FaShieldAlt className="w-5 h-5" />,
+    permission: 'fraud.view',
   },
   {
     name: 'Admin Management',

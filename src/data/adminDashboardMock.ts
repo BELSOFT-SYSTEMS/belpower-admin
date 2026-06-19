@@ -218,6 +218,32 @@ export function getMockDashboardOverview(
       canViewDeletedUsers: false,
       appliedUserId: params.userId?.trim() ? params.userId.trim() : null,
     },
+    fraudSummary: canAccess(admin, 'fraud.view')
+      ? {
+          visible: true,
+          openCount: 4,
+          criticalOpen: 1,
+          last24h: 3,
+          autoSuspended24h: 1,
+          recent: [
+            {
+              id: 'demo-fraud-001',
+              userId: 'demo-user-003',
+              userEmail: 'suspicious@example.com',
+              userName: 'Demo Suspicious',
+              eventType: 'NEGATIVE AMOUNT BLOCKED',
+              code: 'NEGATIVE_AMOUNT',
+              severity: 'critical',
+              message: 'Blocked non-positive amount',
+              amount: -900100,
+              actionTaken: 'blocked_and_suspended',
+              isInternalTestAccount: false,
+              reviewStatus: 'open',
+              createdAt: hoursAgo(2),
+            },
+          ],
+        }
+      : { visible: false },
     generatedAt: new Date().toISOString(),
   };
 }

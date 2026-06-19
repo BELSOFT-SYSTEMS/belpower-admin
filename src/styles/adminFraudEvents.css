@@ -1,0 +1,298 @@
+.fraud_events_page {
+  padding: 1.5rem;
+  max-width: 1400px;
+}
+
+.fraud_events_header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.fraud_events_header_actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.fraud_run_scan_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  cursor: pointer;
+}
+
+.fraud_run_scan_btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.fraud_run_scan_btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.fraud_scan_modal_error {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.fraud_scan_result_errors {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 0.5rem;
+}
+
+.fraud_scan_result_errors_title {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.fraud_scan_result_errors ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.8125rem;
+  color: #78350f;
+}
+
+.fraud_event_review_form textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.fraud_events_pagination button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #fff;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.fraud_events_pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fraud_events_subtitle {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.fraud_events_filter_note {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.fraud_events_filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.fraud_events_filters select {
+  min-width: 160px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.fraud_events_layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.fraud_events_list_panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.fraud_events_loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.fraud_events_list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fraud_event_row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.25rem;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fff;
+  cursor: pointer;
+}
+
+.fraud_event_row:hover,
+.fraud_event_row_active {
+  background: #f8fafc;
+}
+
+.fraud_event_row_main {
+  min-width: 0;
+}
+
+.fraud_event_row_title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.fraud_event_row_message {
+  margin: 0;
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.fraud_event_row_meta {
+  margin: 0.35rem 0 0;
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.fraud_event_row_side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.fraud_event_row_time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.fraud_events_pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.fraud_event_detail_panel {
+  padding: 1.25rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.fraud_event_detail_header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.fraud_event_detail_header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.fraud_event_detail_message {
+  color: #334155;
+  margin: 0 0 1rem;
+}
+
+.fraud_event_detail_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.fraud_detail_full {
+  grid-column: 1 / -1;
+}
+
+.fraud_detail_label {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+}
+
+.fraud_event_review_form {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fraud_event_review_form label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.fraud_event_review_form textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.fraud_event_review_actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.fraud_review_error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+}
+
+.fraud_event_review_notes {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: 960px) {
+  .fraud_events_layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fraud_event_detail_panel {
+    position: static;
+  }
+}

@@ -123,6 +123,36 @@ function buildUserDetail(user: (typeof DEMO_USERS)[number]): AdminUserDetail {
       latestIpScore: user.suspiciousActivity ? 72 : 18,
       maxIpScore: user.suspiciousActivity ? 72 : 18,
     },
+    fraudEvents: user.suspiciousActivity
+      ? [
+          {
+            id: 'demo-fraud-001',
+            userId: user.id,
+            userEmail: user.email,
+            userName: user.fullName,
+            eventType: 'DUPLICATE TRANSACTION BLOCKED',
+            code: 'DUPLICATE_TRANSACTION_COOLDOWN',
+            severity: 'high',
+            message: 'Duplicate transaction blocked during demo',
+            amount: 5000,
+            paymentFor: 'electricity',
+            paymentMethod: 'wallet',
+            ipAddress: '102.89.12.44',
+            userAgent: 'node',
+            requestPath: '/api/v1/electricity/purchase',
+            payload: null,
+            actionTaken: user.isInternalTestAccount ? 'flagged_only' : 'blocked_and_suspended',
+            isInternalTestAccount: user.isInternalTestAccount,
+            reviewStatus: 'open',
+            reviewedAt: null,
+            reviewedByAdminId: null,
+            reviewNotes: null,
+            createdAt: hoursAgo(3),
+            updatedAt: hoursAgo(3),
+          },
+        ]
+      : [],
+    fraudEventCount: user.suspiciousActivity ? 1 : 0,
     generatedAt: new Date().toISOString(),
   };
 }

@@ -479,7 +479,19 @@ function UserDetailContent({
             <strong>Suspicious user</strong>
             <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem' }}>
               This account has been flagged for review. {suspiciousTxnCount} suspicious
-              transaction(s) on record.
+              transaction(s) on record
+              {detail.fraudEventCount > 0
+                ? ` · ${detail.fraudEventCount} fraud event(s) logged`
+                : ''}
+              .
+              {detail.fraudEventCount > 0 && (
+                <>
+                  {' '}
+                  <Link href={`/command-center/security/fraud-events?userId=${detail.id}`}>
+                    View fraud events
+                  </Link>
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -976,6 +988,49 @@ function UserDetailContent({
                 </div>
               )}
             </section>
+
+            {detail.fraudEvents.length > 0 && (
+              <section className="detail_panel security_section">
+                <div className="security_section_title_row">
+                  <h3 className="security_section_title">Fraud events</h3>
+                  <Link
+                    href={`/command-center/security/fraud-events?userId=${detail.id}`}
+                    className="security_section_link"
+                  >
+                    View all
+                  </Link>
+                </div>
+                <div className="security_flagged_list">
+                  {detail.fraudEvents.slice(0, 5).map((event) => (
+                    <Link
+                      key={event.id}
+                      href={`/command-center/security/fraud-events?eventId=${event.id}`}
+                      className="security_flagged_row"
+                    >
+                      <div className="security_flagged_main">
+                        <span className={`pill pill_severity_${event.severity}`}>
+                          {event.severity}
+                        </span>
+                        <span className="security_flagged_ref">{event.eventType}</span>
+                        <span className="security_flagged_reason">{event.message}</span>
+                      </div>
+                      <div className="security_flagged_meta">
+                        <span className="security_flagged_amount">
+                          {event.actionTaken === 'flagged_only'
+                            ? 'Flagged (test account)'
+                            : event.actionTaken === 'detected'
+                              ? 'Detected — review'
+                              : event.actionTaken === 'blocked_and_suspended'
+                                ? 'Auto-suspended'
+                                : 'Blocked'}
+                        </span>
+                        <span>{formatAdminDateTime(event.createdAt)}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
             <section className="detail_panel security_section security_actions_section">
               <h3 className="security_section_title">Admin review</h3>

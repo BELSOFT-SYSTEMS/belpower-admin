@@ -186,3 +186,16 @@
 .btn_danger:hover {
   background: #b91c1c;
 }
+
+.inline-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.35rem;
+  animation: admin_modal_spin 0.8s linear infinite;
+}
+
+@keyframes admin_modal_spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

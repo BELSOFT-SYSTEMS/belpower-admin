@@ -1,5 +1,7 @@
 import type { UserDisplayStatus } from '@/types/adminUsers';
 
+import type { FraudEvent } from '@/types/adminFraud';
+
 export type UserDetailQuickActions = {
   block: boolean;
   suspend: boolean;
@@ -162,6 +164,9 @@ export type AdminUserDetail = {
   transactions: AdminUserTransaction[];
 
   security: AdminUserSecurity;
+
+  fraudEvents: FraudEvent[];
+  fraudEventCount: number;
 
   generatedAt: string;
 };

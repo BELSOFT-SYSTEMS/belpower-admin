@@ -8,6 +8,7 @@ import type {
   AdminUserTransaction,
   UserDetailQuickActions,
 } from '@/types/adminUserDetail';
+import { normalizeFraudEvent } from '@/lib/normalizeFraudEvents';
 import type { UserDisplayStatus } from '@/types/adminUsers';
 
 type RawRecord = Record<string, unknown>;
@@ -319,6 +320,11 @@ export function normalizeAdminUserDetail(raw: RawRecord): AdminUserDetail {
     transactions: pickArray(raw, 'transactions', 'transactions').map(normalizeTransaction),
 
     security,
+
+    fraudEvents: pickArray(raw, 'fraudEvents', 'fraud_events').map(normalizeFraudEvent),
+    fraudEventCount:
+      pickNumber(raw, 'fraudEventCount', 'fraud_event_count') ??
+      pickArray(raw, 'fraudEvents', 'fraud_events').length,
 
     generatedAt: String(
       pick(raw, 'generatedAt', 'generated_at') ?? new Date().toISOString()

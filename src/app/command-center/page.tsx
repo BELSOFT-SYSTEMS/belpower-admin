@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { FaHome, FaUsers, FaClipboardList, FaClock, FaExpand } from 'react-icons/fa';
+import { FaHome, FaUsers, FaClipboardList, FaClock, FaExpand, FaShieldAlt } from 'react-icons/fa';
 import { AdminDemoToggle } from '@/components/admin/ui/AdminDemoToggle';
 import { useIsAdminDemoMode } from '@/context/AdminDemoContext';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
@@ -50,7 +50,8 @@ function DashboardHome() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const userIdFilter = searchParams.get('userId') ?? undefined;
-  const { displayName, admin } = useAdminAuth();
+  const { displayName, admin, canAccess } = useAdminAuth();
+  const canViewFraud = canAccess('fraud.view');
   const { data, isLoading, error, refresh } = useDashboardOverview({ userId: userIdFilter });
   const [expandedChart, setExpandedChart] = useState<string | null>(null);
   const demoMode = useIsAdminDemoMode();
@@ -264,6 +265,63 @@ function DashboardHome() {
         </div>
 
         <div className="right_column">
+          {canViewFraud && data?.fraudSummary?.visible && (
+            <div className="card fraud_dashboard_card">
+              <div className="fraud_dashboard_card_header">
+                <h2>
+                  <FaShieldAlt style={{ marginRight: 8 }} />
+                  Fraud Alerts
+                </h2>
+                <Link href="/command-center/security/fraud-events" className="card_link">
+                  View all
+                </Link>
+              </div>
+              <div className="fraud_dashboard_stats">
+                <div>
+                  <strong>{data.fraudSummary.criticalOpen ?? 0}</strong>
+                  <span>Critical open</span>
+                </div>
+                <div>
+                  <strong>{data.fraudSummary.openCount ?? 0}</strong>
+                  <span>Open events</span>
+                </div>
+                <div>
+                  <strong>{data.fraudSummary.last24h ?? 0}</strong>
+                  <span>Last 24h</span>
+                </div>
+              </div>
+              <div className="card_list">
+                {data.fraudSummary.recent?.length ? (
+                  data.fraudSummary.recent.map((event) => (
+                    <Link
+                      key={event.id}
+                      href={`/command-center/security/fraud-events?eventId=${event.id}`}
+                      className="card_item card_item_link"
+                    >
+                      <div className="card_content">
+                        <p className="card_name">
+                          <span className={`pill pill_severity_${event.severity}`}>
+                            {event.severity}
+                          </span>
+                          {event.eventType}
+                        </p>
+                        <p className="card_amount">{event.message}</p>
+                      </div>
+                      <div className="card_meta">
+                        {event.isInternalTestAccount && (
+                          <span className="pill pill_internal_test">Internal test</span>
+                        )}
+                        <p className="card_time">{formatLastActive(event.createdAt)}</p>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="empty_fallback">No recent fraud events</p>
+                )}
+              </div>
+            </div>
+          )}
+
           {showRevenue && (
             <div className="chart_card">
               <h2>Revenue Overview</h2>

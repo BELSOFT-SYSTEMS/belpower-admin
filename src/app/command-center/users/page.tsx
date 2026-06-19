@@ -224,7 +224,7 @@ export default function UsersPage() {
           <div className="search_container">
             <input
               type="text"
-              placeholder="Search name or email"
+              placeholder="Search name, email, phone, or user ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
