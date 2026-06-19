@@ -17,6 +17,8 @@ import {
 import type { NotificationAudience } from '@/types/adminNotifications';
 import {
   getNotificationKindPillClass,
+  getNotificationChannelPillClass,
+  NOTIFICATION_CHANNEL_LABELS,
   NOTIFICATION_KIND_LABELS,
 } from '@/utils/notificationDisplay';
 import {
@@ -82,7 +84,10 @@ export default function NotificationsPage() {
   const templateOptions = useMemo(
     () => [
       { value: '', label: 'Choose a template…' },
-      ...templates.map((template) => ({ value: template.id, label: template.title })),
+      ...templates.map((template) => ({
+        value: template.id,
+        label: `${template.title} (${NOTIFICATION_CHANNEL_LABELS[template.channel]})`,
+      })),
     ],
     [templates]
   );
@@ -187,7 +192,13 @@ export default function NotificationsPage() {
             : result.push && result.push.failed > 0
               ? ` Push failed for ${result.push.failed.toLocaleString()} user(s) — check Firebase/VAPID config.`
               : '';
-      setBanner(`${result.message || `"${result.broadcast.template_title}" sent successfully.`}${pushNote}`);
+      const emailNote =
+        result.email && result.email.delivered > 0
+          ? ` Email delivered to ${result.email.delivered.toLocaleString()} user(s).`
+          : result.email && result.email.failed > 0
+            ? ` Email failed for ${result.email.failed.toLocaleString()} user(s).`
+            : '';
+      setBanner(`${result.message || `"${result.broadcast.template_title}" sent successfully.`}${pushNote}${emailNote}`);
       if (canViewHistory) {
         setActiveTab('history');
       }
@@ -209,8 +220,8 @@ export default function NotificationsPage() {
     <div className="notifications_page">
       <h1>Notifications</h1>
       <p className="page_subtitle">
-        Send push and in-app notifications to users. Pick a template, choose your
-        audience, and deliver in one step.
+        Send push, in-app, or email notifications to users. Pick a template, choose your audience,
+        and deliver in one step.
       </p>
 
       {banner && (
@@ -290,12 +301,24 @@ export default function NotificationsPage() {
                   <div className="notif_preview">
                     <div className="notif_preview_badge">
                       <span
+                        className={`pill ${getNotificationChannelPillClass(selectedTemplate.channel)}`}
+                      >
+                        {NOTIFICATION_CHANNEL_LABELS[selectedTemplate.channel]}
+                      </span>
+                      <span
                         className={`pill ${getNotificationKindPillClass(selectedTemplate.kind)}`}
                       >
                         {NOTIFICATION_KIND_LABELS[selectedTemplate.kind]}
                       </span>
                     </div>
-                    <h3>{selectedTemplate.title}</h3>
+                    {selectedTemplate.channel === 'email' && selectedTemplate.email_subject ? (
+                      <>
+                        <h3>{selectedTemplate.email_subject}</h3>
+                        <p className="notif_preview_label">Email preview</p>
+                      </>
+                    ) : (
+                      <h3>{selectedTemplate.title}</h3>
+                    )}
                     <p>{selectedTemplate.body}</p>
                   </div>
                 )}
@@ -367,7 +390,8 @@ export default function NotificationsPage() {
                     disabled={!canSubmit || isSending}
                     onClick={handleSend}
                   >
-                    <FaPaperPlane /> Send notification
+                    <FaPaperPlane />{' '}
+                    {selectedTemplate?.channel === 'email' ? 'Send email' : 'Send notification'}
                   </button>
                 </div>
               </div>

@@ -19,11 +19,15 @@ export type FraudEvent = {
   message: string;
   amount: number | null;
   paymentFor: string | null;
+  serviceLabel: string | null;
   paymentMethod: string | null;
   ipAddress: string | null;
   userAgent: string | null;
   requestPath: string | null;
   payload: Record<string, unknown> | null;
+  transactionId: string | null;
+  transactionReference: string | null;
+  transactionCreatedAt: string | null;
   actionTaken: FraudActionTaken;
   isInternalTestAccount: boolean;
   reviewStatus: FraudReviewStatus;
@@ -67,10 +71,31 @@ export type ReviewFraudEventPayload = {
   reviewNotes?: string;
 };
 
+export type BulkReviewFraudEventsPayload = {
+  eventIds: string[];
+  reviewStatus: 'reviewed' | 'dismissed';
+  reviewNotes?: string;
+};
+
+export type BulkReviewFraudEventsResult = {
+  updated: number;
+  updatedIds: string[];
+  failed: Array<{ id: string; reason: string }>;
+};
+
+export type FraudScanStepResult = {
+  checkId: string;
+  label: string;
+  found: number;
+  created: number;
+  skipped: number;
+};
+
 export type FraudScanResult = {
   startedAt: string;
   finishedAt: string;
   created: number;
   skipped: number;
   errors: Array<{ check: string; message: string }>;
+  checks?: Record<string, FraudScanStepResult>;
 };

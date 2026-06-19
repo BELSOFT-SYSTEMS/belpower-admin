@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
-  FaArrowLeft,
   FaPrint,
   FaBan,
   FaUnlock,
@@ -23,6 +22,7 @@ import { TransactionPaymentReferences } from '@/components/admin/transactions/Tr
 import { TransactionFraudAudit } from '@/components/admin/transactions/TransactionFraudAudit';
 import { BreakableTransactionReference } from '@/components/admin/transactions/BreakableTransactionReference';
 import { TransactionCustomerCard } from '@/components/admin/transactions/TransactionCustomerCard';
+import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import {
   getTransactionIcon,
@@ -60,6 +60,10 @@ import {
 } from '@/utils/transactionQuickActionState';
 import '@/styles/adminTransactionDetails.css';
 import '@/styles/adminShared.css';
+import {
+  buildTransactionDetailReturn,
+  buildTransactionsListReturn,
+} from '@/utils/adminReturnNavigation';
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -91,6 +95,16 @@ export default function TransactionDetailPage() {
   const transaction = useMemo(
     () => (detail ? mapApiTransactionDetail(detail) : null),
     [detail]
+  );
+
+  const transactionReturnContext = useMemo(
+    () =>
+      transaction
+        ? buildTransactionDetailReturn(transaction.id, transaction.reference, {
+            tab: activeTab !== 'overview' ? activeTab : undefined,
+          })
+        : buildTransactionsListReturn(),
+    [transaction, activeTab]
   );
 
   const quickActionContext = detail
@@ -220,13 +234,10 @@ export default function TransactionDetailPage() {
   if (isLoading) {
     return (
       <div className="receipt_page_wrap transaction_details_page">
-        <button
-          type="button"
-          className="receipt_back"
-          onClick={() => router.push('/command-center/transactions')}
-        >
-          <FaArrowLeft /> Back to transactions
-        </button>
+        <AdminBackButton
+          defaultHref="/command-center/transactions"
+          defaultLabel="Back to transactions"
+        />
         <div className="users_page_loading" style={{ padding: '4rem 0' }}>
           <Loader2 className="animate-spin" size={32} aria-hidden />
           <p>Loading transaction…</p>
@@ -238,13 +249,10 @@ export default function TransactionDetailPage() {
   if (error || !detail || !transaction) {
     return (
       <div className="receipt_page_wrap transaction_details_page">
-        <button
-          type="button"
-          className="receipt_back"
-          onClick={() => router.push('/command-center/transactions')}
-        >
-          <FaArrowLeft /> Back to transactions
-        </button>
+        <AdminBackButton
+          defaultHref="/command-center/transactions"
+          defaultLabel="Back to transactions"
+        />
         <div className="admin_panel_card">
           <p>{errorCode === 'NOT_FOUND' ? 'Transaction not found.' : error ?? 'Transaction not found.'}</p>
         </div>
@@ -275,13 +283,10 @@ export default function TransactionDetailPage() {
 
   return (
     <div className="receipt_page_wrap transaction_details_page">
-      <button
-        type="button"
-        className="receipt_back"
-        onClick={() => router.push('/command-center/transactions')}
-      >
-        <FaArrowLeft /> Back to transactions
-      </button>
+      <AdminBackButton
+        defaultHref="/command-center/transactions"
+        defaultLabel="Back to transactions"
+      />
 
       {transaction.suspicious && (
         <div className="admin_alert admin_alert_danger">
@@ -414,6 +419,7 @@ export default function TransactionDetailPage() {
               isInternalTestAccount={
                 showInternalTestBadge && detail.user.isInternalTestAccount
               }
+              returnContext={transactionReturnContext}
             />
           </div>
         </div>

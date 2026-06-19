@@ -10,9 +10,12 @@ import { getDiscoDisplayName } from '@/constants/discoNames';
 import { getDiscoIcon } from '@/utils/transactionIcons';
 import { formatPrice } from '@/utils/FormatPrice';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import type { AdminReturnContext } from '@/utils/adminReturnNavigation';
+import { withAdminReturn } from '@/utils/adminReturnNavigation';
 
 type Props = {
   result: MeterVerifyResult;
+  detailReturnContext?: AdminReturnContext;
 };
 
 function displayOrDash(value: string | null | undefined) {
@@ -98,15 +101,21 @@ function Field({
   );
 }
 
-function MeterPurchaseRow({ purchase }: { purchase: MeterElectricityPurchase }) {
+function MeterPurchaseRow({
+  purchase,
+  detailReturnContext,
+}: {
+  purchase: MeterElectricityPurchase;
+  detailReturnContext?: AdminReturnContext;
+}) {
   const userName = formatUserName(purchase.user?.firstName, purchase.user?.lastName);
   const userEmail = purchase.user?.email?.trim() || null;
+  const transactionHref = detailReturnContext
+    ? withAdminReturn(`/command-center/transactions/${purchase.id}`, detailReturnContext)
+    : `/command-center/transactions/${purchase.id}`;
 
   return (
-    <Link
-      href={`/command-center/transactions/${purchase.id}`}
-      className="admin_txn_row check_meter_purchase_row"
-    >
+    <Link href={transactionHref} className="admin_txn_row check_meter_purchase_row">
       <div className="admin_txn_icon_wrap">
         <Image src="/electricity.png" alt="" width={24} height={24} />
       </div>
@@ -145,7 +154,7 @@ function MeterPurchaseRow({ purchase }: { purchase: MeterElectricityPurchase }) 
   );
 }
 
-export function MeterVerificationResultView({ result }: Props) {
+export function MeterVerificationResultView({ result, detailReturnContext }: Props) {
   const [activeTab, setActiveTab] = useState('overview');
   const m = result.payload;
   const vendLabel = m.vend_type?.toLowerCase() === 'postpaid' ? 'Postpaid' : 'Prepaid';
@@ -361,7 +370,11 @@ export function MeterVerificationResultView({ result }: Props) {
               <div className="check_meter_purchases_list">
                 <div className="admin_txn_list">
                   {result.electricityPurchases.map((purchase) => (
-                    <MeterPurchaseRow key={purchase.id} purchase={purchase} />
+                    <MeterPurchaseRow
+                      key={purchase.id}
+                      purchase={purchase}
+                      detailReturnContext={detailReturnContext}
+                    />
                   ))}
                 </div>
               </div>

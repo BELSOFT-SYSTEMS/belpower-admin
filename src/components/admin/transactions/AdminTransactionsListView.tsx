@@ -3,11 +3,16 @@
 import { FaSearch } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
+import {
+  AdminBulkSelectToolbar,
+  type AdminBulkAction,
+} from '@/components/admin/ui/AdminBulkSelectToolbar';
 import { AdminTransactionRow } from '@/components/admin/transactions/AdminTransactionRow';
 import { TRANSACTION_FILTER_ALL } from '@/constants/adminTransactionFilters';
 import type { AdminTransaction } from '@/data/adminMockData';
 import type { ApiTransactionListItem, TransactionsQuickActions } from '@/types/adminTransactions';
 import { mapApiTransactionListItem } from '@/utils/mapApiTransactionListItem';
+import type { AdminReturnContext } from '@/utils/adminReturnNavigation';
 
 type TransactionFilterOption = {
   value: string;
@@ -27,6 +32,7 @@ type AdminTransactionsListViewProps = {
   showQuickActions?: boolean;
   showInternalTestBadge?: boolean;
   isInternalTestAccount?: boolean;
+  detailReturnContext?: AdminReturnContext;
   actingTxnId: string | null;
   transactions: ApiTransactionListItem[];
   quickActions: TransactionsQuickActions;
@@ -45,6 +51,16 @@ type AdminTransactionsListViewProps = {
   onReview: (tx: AdminTransaction) => void;
   onBlock: (tx: AdminTransaction) => void;
   onUnblock: (tx: AdminTransaction) => void;
+  onClearReview?: (tx: AdminTransaction) => void;
+  bulkSelect?: {
+    selectionMode: boolean;
+    selectedCount: number;
+    isBusy?: boolean;
+    actions: AdminBulkAction[];
+    onToggleSelectionMode: () => void;
+    isSelected: (id: string) => boolean;
+    onToggleItem: (id: string) => void;
+  };
 };
 
 const DEFAULT_CATEGORY_FILTER_OPTIONS: TransactionFilterOption[] = [
@@ -58,7 +74,7 @@ const DEFAULT_CATEGORY_FILTER_OPTIONS: TransactionFilterOption[] = [
 
 export function AdminTransactionsListView({
   listTitle = 'All transactions',
-  searchPlaceholder = 'Search ID, user, provider…',
+  searchPlaceholder = 'Search transaction ID, reference, session ID, user ID, provider, order ID…',
   className = '',
   categoryFilterOptions = DEFAULT_CATEGORY_FILTER_OPTIONS,
   searchTerm,
@@ -69,6 +85,7 @@ export function AdminTransactionsListView({
   showQuickActions = false,
   showInternalTestBadge = false,
   isInternalTestAccount = false,
+  detailReturnContext,
   actingTxnId,
   transactions,
   quickActions,
@@ -82,6 +99,8 @@ export function AdminTransactionsListView({
   onReview,
   onBlock,
   onUnblock,
+  onClearReview,
+  bulkSelect,
 }: AdminTransactionsListViewProps) {
   const totalPages = pagination?.totalPages ?? pagination?.total_pages ?? 1;
   const panelClassName = ['admin_txn_list_panel', className].filter(Boolean).join(' ');
@@ -95,35 +114,45 @@ export function AdminTransactionsListView({
             type="text"
             placeholder={searchPlaceholder}
             value={searchTerm}
+            maxLength={128}
             onChange={(e) => onSearchChange(e.target.value)}
           />
           <FaSearch />
         </div>
       </div>
 
-      <div className="admin_filter_row">
-        <AdminDropdown
-          variant="filter"
-          value={categoryFilter}
-          onChange={onCategoryFilterChange}
-          aria-label="Filter by service"
-          options={categoryFilterOptions}
-        />
-        <AdminDropdown
-          variant="filter"
-          value={statusFilter}
-          onChange={onStatusFilterChange}
-          aria-label="Filter by status"
-          options={[
-            { value: TRANSACTION_FILTER_ALL, label: 'All status' },
-            { value: 'completed', label: 'Completed' },
-            { value: 'pending', label: 'Pending' },
-            { value: 'failed', label: 'Failed' },
-            { value: 'scheduled', label: 'Scheduled' },
-            { value: 'flagged', label: 'Flagged' },
-          ]}
-        />
-      </div>
+      <AdminBulkSelectToolbar
+        selectionMode={Boolean(bulkSelect?.selectionMode)}
+        selectedCount={bulkSelect?.selectedCount ?? 0}
+        isBusy={bulkSelect?.isBusy}
+        actions={bulkSelect?.actions ?? []}
+        onToggleSelectionMode={bulkSelect?.onToggleSelectionMode ?? (() => undefined)}
+        filters={
+          <>
+            <AdminDropdown
+              variant="filter"
+              value={categoryFilter}
+              onChange={onCategoryFilterChange}
+              aria-label="Filter by service"
+              options={categoryFilterOptions}
+            />
+            <AdminDropdown
+              variant="filter"
+              value={statusFilter}
+              onChange={onStatusFilterChange}
+              aria-label="Filter by status"
+              options={[
+                { value: TRANSACTION_FILTER_ALL, label: 'All status' },
+                { value: 'completed', label: 'Completed' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'failed', label: 'Failed' },
+                { value: 'scheduled', label: 'Scheduled' },
+                { value: 'flagged', label: 'Flagged' },
+              ]}
+            />
+          </>
+        }
+      />
 
       {error && <p className="empty_fallback admin_txn_list_error">{error}</p>}
 
@@ -150,9 +179,14 @@ export function AdminTransactionsListView({
                       (tx.isInternalTestAccount ?? isInternalTestAccount)
                     }
                     rowBusy={actingTxnId === tx.id}
+                    detailReturnContext={detailReturnContext}
+                    selectionMode={bulkSelect?.selectionMode}
+                    selected={bulkSelect?.isSelected(tx.id)}
+                    onToggleSelect={() => bulkSelect?.onToggleItem(tx.id)}
                     onReview={onReview}
                     onBlock={onBlock}
                     onUnblock={onUnblock}
+                    onClearReview={onClearReview}
                   />
                 );
               })

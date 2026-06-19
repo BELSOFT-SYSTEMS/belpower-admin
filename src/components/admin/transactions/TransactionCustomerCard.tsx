@@ -4,23 +4,29 @@ import Link from 'next/link';
 import { AdminTransaction } from '@/data/adminMockData';
 import { getAvatarBackground, getInitialsFromDisplayName } from '@/utils/userAvatar';
 
+import type { AdminReturnContext } from '@/utils/adminReturnNavigation';
+import { withAdminReturn } from '@/utils/adminReturnNavigation';
+
 type Props = {
   transaction: AdminTransaction;
   userEmail?: string | null;
   isInternalTestAccount?: boolean;
+  returnContext?: AdminReturnContext;
 };
 
 export function TransactionCustomerCard({
   transaction,
   userEmail,
   isInternalTestAccount,
+  returnContext,
 }: Props) {
+  const userHref = returnContext
+    ? withAdminReturn(`/command-center/users/${transaction.user_id}`, returnContext)
+    : `/command-center/users/${transaction.user_id}`;
+
   return (
     <section className="txn_overview_section txn_overview_user_card txn_detail_customer_card">
-      <Link
-        href={`/command-center/users/${transaction.user_id}`}
-        className="txn_overview_user_link"
-      >
+      <Link href={userHref} className="txn_overview_user_link">
         <span
           className="txn_overview_user_avatar"
           aria-hidden

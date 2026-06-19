@@ -107,6 +107,10 @@ export function normalizeApiTransactionListItem(raw: RawRecord): ApiTransactionL
       pickBool(raw, 'suspicious', 'suspicious'),
     isBlocked:
       pickBool(raw, 'isBlocked', 'is_blocked') || pickBool(raw, 'blocked', 'blocked'),
+    reviewStatus:
+      (pickString(raw, 'reviewStatus', 'review_status') as ApiTransactionListItem['reviewStatus']) ??
+      null,
+    canClearReview: pickBool(raw, 'canClearReview', 'can_clear_review'),
     fraudReason: pickString(raw, 'fraudReason', 'fraud_reason'),
     isInternalTestAccount: pickBool(raw, 'isInternalTestAccount', 'is_internal_test_account'),
     paymentMethod: pickString(raw, 'paymentMethod', 'payment_method'),
@@ -196,14 +200,18 @@ function normalizeStats(raw: RawRecord | null | undefined): TransactionsListStat
     refunds
   );
 
-  const scheduled = normalizeCountStat(pick<RawRecord>(raw, 'scheduled', 'scheduled'));
+  const blocked = normalizeCountStat(pick<RawRecord>(raw, 'blocked', 'blocked'));
+  const underReview = normalizeCountStat(
+    pick<RawRecord>(raw, 'underReview', 'under_review')
+  );
   const flagged = normalizeCountStat(pick<RawRecord>(raw, 'flagged', 'flagged'));
 
   if (
     !completedTransactions ||
     !pendingTransactions ||
     !refundTransactions ||
-    !scheduled ||
+    !blocked ||
+    !underReview ||
     !flagged
   ) {
     return null;
@@ -221,7 +229,8 @@ function normalizeStats(raw: RawRecord | null | undefined): TransactionsListStat
     completedTransactions,
     pendingTransactions,
     refundTransactions,
-    scheduled,
+    blocked,
+    underReview,
     flagged,
   };
 }

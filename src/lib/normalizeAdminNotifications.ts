@@ -1,6 +1,7 @@
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
 import type {
   NotificationAudience,
+  NotificationChannel,
   NotificationProviderOption,
   NotificationStats,
   NotificationTemplate,
@@ -17,11 +18,19 @@ function pick<T>(source: Record<string, unknown>, ...keys: string[]): T | undefi
 }
 
 export function normalizeNotificationTemplate(raw: Record<string, unknown>): NotificationTemplate {
+  const channelRaw = String(pick(raw, 'channel') ?? 'push');
+  const channel: NotificationChannel = channelRaw === 'email' ? 'email' : 'push';
+
   return {
     id: String(pick(raw, 'id') ?? ''),
     title: String(pick(raw, 'title') ?? ''),
     body: String(pick(raw, 'body') ?? ''),
     kind: (pick(raw, 'kind') as NotificationTemplate['kind']) ?? 'transactional',
+    channel,
+    email_subject:
+      pick(raw, 'email_subject') === null || pick(raw, 'email_subject') === undefined
+        ? null
+        : String(pick(raw, 'email_subject')),
   };
 }
 

@@ -19,6 +19,11 @@ import { toast } from 'sonner';
 import '@/styles/adminUsers.css';
 import '@/styles/adminShared.css';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
+import {
+  AdminBulkSelectToolbar,
+  type AdminBulkAction,
+} from '@/components/admin/ui/AdminBulkSelectToolbar';
+import { AdminRowCheckbox } from '@/components/admin/ui/AdminRowCheckbox';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
 import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
@@ -28,7 +33,8 @@ import {
 } from '@/components/admin/users/UserQuickActionModal';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminUsersList } from '@/hooks/useAdminUsersList';
-import { activateUser, blockUser, suspendUser } from '@/lib/adminUsers';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { activateUser, blockUser, clearUserSuspicion, suspendUser } from '@/lib/adminUsers';
 import { getAvatarBackground, getUserInitials } from '@/utils/userAvatar';
 import { formatUserLastActive } from '@/utils/resolveUserLastActive';
 import {
@@ -41,7 +47,7 @@ import type { ApiUser } from '@/types/adminUsers';
 
 type PendingAction = {
   type: UserQuickActionType;
-  user: ApiUser;
+  users: ApiUser[];
 };
 
 export default function UsersPage() {
@@ -53,6 +59,7 @@ export default function UsersPage() {
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actingUserId, setActingUserId] = useState<string | null>(null);
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const { users, quickActions, filters, stats, pagination, isLoading, error, refresh } =
     useAdminUsersList({
@@ -66,7 +73,60 @@ export default function UsersPage() {
   }, [searchTerm, statusFilter]);
 
   const openAction = (type: UserQuickActionType, user: ApiUser) => {
-    setPendingAction({ type, user });
+    setPendingAction({ type, users: [user] });
+  };
+
+  const userIds = users.map((user) => user.id);
+  const {
+    selectionMode,
+    selectedIds,
+    selectedCount,
+    toggleSelectionMode,
+    toggleItem,
+    isSelected,
+    exitSelectionMode,
+  } = useBulkSelection(userIds);
+
+  const selectedUsers = users.filter((user) => selectedIds.includes(user.id));
+
+  const runBulkUserAction = async (
+    label: string,
+    action: (user: ApiUser) => Promise<void>
+  ) => {
+    if (selectedUsers.length === 0) return;
+
+    setBulkBusy(true);
+    let successCount = 0;
+
+    try {
+      for (const user of selectedUsers) {
+        if (getAdminDemoMode()) {
+          successCount += 1;
+          continue;
+        }
+        await action(user);
+        successCount += 1;
+      }
+
+      toast.success(
+        getAdminDemoMode()
+          ? `Demo: ${label} simulated for ${selectedUsers.length} user(s).`
+          : `${label} completed for ${successCount} user(s).`
+      );
+      exitSelectionMode();
+      await refresh();
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : `${label} failed after ${successCount} of ${selectedUsers.length}.`
+      );
+      if (successCount > 0) {
+        await refresh();
+      }
+    } finally {
+      setBulkBusy(false);
+    }
   };
 
   const closeAction = () => {
@@ -80,29 +140,41 @@ export default function UsersPage() {
   const handleConfirmAction = async (payload: { reason?: string; days?: number }) => {
     if (!pendingAction) return;
 
-    const { type, user } = pendingAction;
+    const { type, users: actionUsers } = pendingAction;
 
     if (getAdminDemoMode()) {
-      toast.success(`Demo: ${user.fullName} ${type} action simulated.`);
+      toast.success(
+        `Demo: ${actionUsers.length} user${actionUsers.length === 1 ? '' : 's'} ${type} action simulated.`
+      );
       setPendingAction(null);
       return;
     }
     setIsSubmitting(true);
-    setActingUserId(user.id);
+    setActingUserId(actionUsers[0]?.id ?? null);
 
     try {
+      for (const user of actionUsers) {
+        if (type === 'block') {
+          await blockUser(user.id, payload.reason);
+        } else if (type === 'suspend') {
+          await suspendUser(user.id, payload);
+        } else {
+          await activateUser(user.id);
+        }
+      }
+
+      const label =
+        actionUsers.length === 1 ? actionUsers[0].fullName : `${actionUsers.length} users`;
       if (type === 'block') {
-        await blockUser(user.id, payload.reason);
-        toast.success(`${user.fullName} has been blocked.`);
+        toast.success(`${label} ${actionUsers.length === 1 ? 'has' : 'have'} been blocked.`);
       } else if (type === 'suspend') {
-        await suspendUser(user.id, payload);
-        toast.success(`${user.fullName} has been suspended.`);
+        toast.success(`${label} ${actionUsers.length === 1 ? 'has' : 'have'} been suspended.`);
       } else {
-        await activateUser(user.id);
-        toast.success(`${user.fullName} has been activated.`);
+        toast.success(`${label} ${actionUsers.length === 1 ? 'has' : 'have'} been activated.`);
       }
 
       setPendingAction(null);
+      exitSelectionMode();
       await refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Action failed. Please try again.');
@@ -111,6 +183,47 @@ export default function UsersPage() {
       setActingUserId(null);
     }
   };
+
+  const bulkActions: AdminBulkAction[] = [];
+
+  if (quickActions.clearSuspicion) {
+    bulkActions.push({
+      key: 'clear',
+      label: 'Clear',
+      variant: 'primary',
+      onClick: () =>
+        runBulkUserAction('Clear suspicion', (user) => clearUserSuspicion(user.id).then(() => undefined)),
+    });
+  }
+  if (quickActions.activate) {
+    bulkActions.push({
+      key: 'unblock',
+      label: 'Unblock',
+      onClick: () => runBulkUserAction('Activate', (user) => activateUser(user.id)),
+    });
+  }
+  if (quickActions.block) {
+    bulkActions.push({
+      key: 'block',
+      label: 'Block',
+      variant: 'danger',
+      onClick: () => {
+        if (selectedUsers.length === 0) return;
+        setPendingAction({ type: 'block', users: selectedUsers });
+      },
+    });
+  }
+  if (quickActions.suspend) {
+    bulkActions.push({
+      key: 'suspend',
+      label: 'Suspend',
+      variant: 'danger',
+      onClick: () => {
+        if (selectedUsers.length === 0) return;
+        setPendingAction({ type: 'suspend', users: selectedUsers });
+      },
+    });
+  }
 
   if (!canAccess('users.list')) {
     return (
@@ -158,6 +271,22 @@ export default function UsersPage() {
           value: stats.flaggedUsers.count.toLocaleString(),
           sub: 'Suspicious activity',
           border: 'border-orange-200',
+        },
+        {
+          key: 'blocked',
+          icon: <FaBan className="text-red-500 text-xl" />,
+          label: 'Blocked users',
+          value: stats.blockedUsers.count.toLocaleString(),
+          sub: 'Accounts blocked',
+          border: 'border-red-200',
+        },
+        {
+          key: 'suspended',
+          icon: <FaExclamationTriangle className="text-amber-500 text-xl" />,
+          label: 'Suspended users',
+          value: stats.suspendedUsers.count.toLocaleString(),
+          sub: 'Temporarily suspended',
+          border: 'border-amber-200',
         },
         ...(stats.deletedUsers
           ? [
@@ -226,21 +355,29 @@ export default function UsersPage() {
               type="text"
               placeholder="Search name, email, phone, or user ID"
               value={searchTerm}
+              maxLength={128}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <FaSearch />
           </div>
         </div>
 
-        <div className="admin_filter_row">
-          <AdminDropdown
-            variant="filter"
-            value={statusFilter}
-            onChange={setStatusFilter}
-            aria-label="Filter by status"
-            options={statusFilterOptions}
-          />
-        </div>
+        <AdminBulkSelectToolbar
+          selectionMode={selectionMode}
+          selectedCount={selectedCount}
+          isBusy={bulkBusy || isSubmitting}
+          actions={bulkActions}
+          onToggleSelectionMode={toggleSelectionMode}
+          filters={
+            <AdminDropdown
+              variant="filter"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              aria-label="Filter by status"
+              options={statusFilterOptions}
+            />
+          }
+        />
 
         {isLoading ? (
           <div className="users_page_loading">
@@ -269,8 +406,17 @@ export default function UsersPage() {
                   return (
                   <div
                     key={user.id}
-                    className={`admin_user_row${isDeleted ? ' admin_user_row_deleted' : ''}`}
+                    className={`admin_user_row${isDeleted ? ' admin_user_row_deleted' : ''}${
+                      selectionMode ? ' admin_user_row_with_checkbox' : ''
+                    }`}
                   >
+                    {selectionMode && (
+                      <AdminRowCheckbox
+                        checked={isSelected(user.id)}
+                        label={`Select ${user.fullName}`}
+                        onChange={() => toggleItem(user.id)}
+                      />
+                    )}
                     <Link
                       href={`/command-center/users/${user.id}`}
                       className="admin_user_row_link"
@@ -415,7 +561,13 @@ export default function UsersPage() {
       <UserQuickActionModal
         open={!!pendingAction}
         action={pendingAction?.type ?? null}
-        userName={pendingAction?.user.fullName ?? ''}
+        userName={
+          pendingAction
+            ? pendingAction.users.length === 1
+              ? pendingAction.users[0].fullName
+              : `${pendingAction.users.length} selected users`
+            : ''
+        }
         isSubmitting={isSubmitting}
         onClose={closeAction}
         onConfirm={handleConfirmAction}

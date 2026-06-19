@@ -148,6 +148,7 @@ export function useAdminNotifications({
               skipped_no_tokens: 20,
               failed: 0,
             },
+            email: null,
             message: 'Demo notification sent successfully.',
           };
         }

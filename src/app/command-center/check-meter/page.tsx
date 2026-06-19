@@ -12,7 +12,9 @@ import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { verifyMeter } from '@/lib/meterVerification';
 import type { MeterVerifyResult } from '@/types/meterVerification';
 import { MeterVerificationResultView } from '@/components/admin/meter/MeterVerificationResult';
+import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { buildCheckMeterReturn } from '@/utils/adminReturnNavigation';
 
 function CheckMeterPageContent() {
   const searchParams = useSearchParams();
@@ -33,6 +35,14 @@ function CheckMeterPageContent() {
   const [result, setResult] = useState<MeterVerifyResult | null>(null);
 
   const canVerify = canAccess('meters.verify');
+
+  const checkMeterReturn = useMemo(() => {
+    const params = new URLSearchParams();
+    if (initialMeter) params.set('meter', initialMeter);
+    if (initialDisco) params.set('disco', initialDisco);
+    if (initialType) params.set('type', initialType);
+    return buildCheckMeterReturn(params.toString() || undefined);
+  }, [initialMeter, initialDisco, initialType]);
 
   useEffect(() => {
     if (!initialDisco || discos.length === 0) return;
@@ -97,6 +107,10 @@ function CheckMeterPageContent() {
 
   return (
     <div className="check_meter_page">
+      <AdminBackButton
+        defaultHref="/command-center/check-meter"
+        defaultLabel="Back to check meter"
+      />
       <h1>Check Meter</h1>
       <p className="check_meter_subtitle">
         Verify a customer meter before support or admin actions.
@@ -166,7 +180,9 @@ function CheckMeterPageContent() {
         {error && <p className="check_meter_error">{error}</p>}
       </form>
 
-      {result && <MeterVerificationResultView result={result} />}
+      {result && (
+        <MeterVerificationResultView result={result} detailReturnContext={checkMeterReturn} />
+      )}
     </div>
   );
 }

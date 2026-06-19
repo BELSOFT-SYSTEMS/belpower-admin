@@ -2,6 +2,8 @@
  * Mock data shaped for future API integration (GET /users/all, user detail, transactions)
  */
 
+import type { TransactionReviewStatus } from '@/types/adminTransactions';
+
 export type UserListItem = {
   id: string;
   first_name: string;
@@ -36,6 +38,8 @@ export type AdminTransaction = {
   };
   suspicious: boolean;
   is_blocked?: boolean;
+  review_status?: TransactionReviewStatus | null;
+  can_clear_review?: boolean;
   fraud_reason?: string;
   avatar: string;
   // Service-specific (mock)

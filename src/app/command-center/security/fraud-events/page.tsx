@@ -1,22 +1,33 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FaExclamationTriangle, FaShieldAlt, FaUserSlash, FaSync } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import '@/styles/adminTransactions.css';
 import '@/styles/adminShared.css';
 import '@/styles/adminFraudEvents.css';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
 import { RunFraudScanModal } from '@/components/admin/fraud/RunFraudScanModal';
+import {
+  AdminBulkSelectToolbar,
+  type AdminBulkAction,
+} from '@/components/admin/ui/AdminBulkSelectToolbar';
+import { AdminRowCheckbox } from '@/components/admin/ui/AdminRowCheckbox';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminFraudEvents } from '@/hooks/useAdminFraudEvents';
-import { reviewFraudEvent, runFraudScan } from '@/lib/adminFraud';
+import { useFraudScanRunner } from '@/hooks/useFraudScanRunner';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { bulkReviewFraudEvents, reviewFraudEvent } from '@/lib/adminFraud';
 import { formatPrice } from '@/utils/FormatPrice';
 import { formatLastActive } from '@/utils/formatLastActive';
-import type { FraudEvent, FraudReviewStatus, FraudSeverity, FraudScanResult } from '@/types/adminFraud';
+import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import {
+  buildFraudEventsReturn,
+  withAdminReturn,
+} from '@/utils/adminReturnNavigation';
+import type { FraudEvent, FraudReviewStatus, FraudSeverity } from '@/types/adminFraud';
 
 const SEVERITY_OPTIONS: Array<{ value: FraudSeverity | ''; label: string }> = [
   { value: '', label: 'All severities' },
@@ -59,9 +70,15 @@ function FraudEventsContent() {
   const [reviewBusy, setReviewBusy] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
   const [showScanModal, setShowScanModal] = useState(false);
-  const [scanBusy, setScanBusy] = useState(false);
-  const [scanError, setScanError] = useState<string | null>(null);
-  const [scanResult, setScanResult] = useState<FraudScanResult | null>(null);
+  const {
+    steps: scanSteps,
+    isScanning: scanBusy,
+    result: scanResult,
+    error: scanError,
+    run: runFraudScanFlow,
+    reset: resetFraudScan,
+  } = useFraudScanRunner();
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const { events, pagination, stats, isLoading, error, refresh } = useAdminFraudEvents({
     page,
@@ -83,38 +100,139 @@ function FraudEventsContent() {
     [events, selectedEventId]
   );
 
+  const fraudEventsReturn = useMemo(() => {
+    const params = new URLSearchParams();
+    if (userIdFilter) params.set('userId', userIdFilter);
+    if (eventIdParam) params.set('eventId', eventIdParam);
+    return buildFraudEventsReturn(params.toString() || undefined);
+  }, [userIdFilter, eventIdParam]);
+
   const canReview = canAccess('fraud.review');
 
+  const selectableEventIds = useMemo(
+    () => events.filter((event) => event.reviewStatus === 'open').map((event) => event.id),
+    [events]
+  );
+
+  const {
+    selectionMode,
+    selectedIds,
+    selectedCount,
+    allVisibleSelected,
+    toggleSelectionMode,
+    toggleItem,
+    toggleSelectAll,
+    isSelected,
+    exitSelectionMode,
+  } = useBulkSelection(selectableEventIds);
+
+  const runBulkReview = useCallback(
+    async (reviewStatus: 'reviewed' | 'dismissed') => {
+      if (!canReview || selectedIds.length === 0) return;
+
+      setBulkBusy(true);
+      try {
+        const result = await bulkReviewFraudEvents({
+          eventIds: selectedIds,
+          reviewStatus,
+        });
+
+        toast.success(
+          `${result.updated} event${result.updated === 1 ? '' : 's'} ${
+            reviewStatus === 'reviewed' ? 'marked reviewed' : 'dismissed'
+          }`
+        );
+
+        if (result.failed.length > 0) {
+          toast.warning(`${result.failed.length} event(s) could not be updated`);
+        }
+
+        exitSelectionMode();
+        await refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to update events');
+      } finally {
+        setBulkBusy(false);
+      }
+    },
+    [canReview, selectedIds, exitSelectionMode, refresh]
+  );
+
+  const bulkActions = useMemo<AdminBulkAction[]>(
+    () => [
+      {
+        key: 'reviewed',
+        label: 'Mark reviewed',
+        variant: 'primary',
+        onClick: () => runBulkReview('reviewed'),
+      },
+      {
+        key: 'dismissed',
+        label: 'Dismiss',
+        onClick: () => runBulkReview('dismissed'),
+      },
+    ],
+    [runBulkReview]
+  );
+
+  const filterControls = (
+    <>
+      <select
+        value={severityFilter}
+        onChange={(e) => setSeverityFilter(e.target.value as FraudSeverity | '')}
+        aria-label="Filter by severity"
+      >
+        {SEVERITY_OPTIONS.map((option) => (
+          <option key={option.label} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <select
+        value={reviewFilter}
+        onChange={(e) => setReviewFilter(e.target.value as FraudReviewStatus | '')}
+        aria-label="Filter by review status"
+      >
+        {REVIEW_OPTIONS.map((option) => (
+          <option key={option.label} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </>
+  );
+
+  const handleEventRowClick = (event: FraudEvent) => {
+    if (selectionMode) {
+      if (event.reviewStatus === 'open') {
+        toggleItem(event.id);
+      }
+      return;
+    }
+    setSelectedEventId(event.id);
+  };
+
   const openScanModal = () => {
-    setScanError(null);
-    setScanResult(null);
+    resetFraudScan();
     setShowScanModal(true);
   };
 
   const closeScanModal = () => {
     if (scanBusy) return;
     setShowScanModal(false);
-    setScanError(null);
-    setScanResult(null);
+    resetFraudScan();
   };
 
   const handleRunScan = async () => {
-    setScanBusy(true);
-    setScanError(null);
-
     try {
-      const result = await runFraudScan();
-      setScanResult(result);
+      const result = await runFraudScanFlow();
       toast.success(
         `Fraud scan complete — ${result.created} new event${result.created === 1 ? '' : 's'}`
       );
       await refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to run fraud scan';
-      setScanError(message);
       toast.error(message);
-    } finally {
-      setScanBusy(false);
     }
   };
 
@@ -227,28 +345,20 @@ function FraudEventsContent() {
       </section>
 
       <div className="fraud_events_filters">
-        <select
-          value={severityFilter}
-          onChange={(e) => setSeverityFilter(e.target.value as FraudSeverity | '')}
-          aria-label="Filter by severity"
-        >
-          {SEVERITY_OPTIONS.map((option) => (
-            <option key={option.label} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={reviewFilter}
-          onChange={(e) => setReviewFilter(e.target.value as FraudReviewStatus | '')}
-          aria-label="Filter by review status"
-        >
-          {REVIEW_OPTIONS.map((option) => (
-            <option key={option.label} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        {canReview ? (
+          <AdminBulkSelectToolbar
+            selectionMode={selectionMode}
+            selectedCount={selectedCount}
+            isBusy={bulkBusy || reviewBusy}
+            actions={bulkActions}
+            allVisibleSelected={allVisibleSelected}
+            onToggleSelectAll={toggleSelectAll}
+            onToggleSelectionMode={toggleSelectionMode}
+            filters={filterControls}
+          />
+        ) : (
+          filterControls
+        )}
       </div>
 
       {error && (
@@ -270,35 +380,63 @@ function FraudEventsContent() {
             <p className="empty_fallback">No fraud events match your filters.</p>
           ) : (
             <div className="fraud_events_list">
-              {events.map((event) => (
-                <button
-                  key={event.id}
-                  type="button"
-                  className={`fraud_event_row${selectedEventId === event.id ? ' fraud_event_row_active' : ''}`}
-                  onClick={() => setSelectedEventId(event.id)}
-                >
-                  <div className="fraud_event_row_main">
-                    <div className="fraud_event_row_title">
-                      <span className={severityPillClass(event.severity)}>{event.severity}</span>
-                      <strong>{event.eventType}</strong>
-                      {event.isInternalTestAccount && (
-                        <span className="pill pill_internal_test">Internal test</span>
-                      )}
-                    </div>
-                    <p className="fraud_event_row_message">{event.message}</p>
-                    <p className="fraud_event_row_meta">
-                      {event.userName || event.userEmail || event.userId || 'Unknown user'}
-                      {event.amount != null ? ` · ${formatPrice(event.amount)}` : ''}
-                    </p>
+              {events.map((event) => {
+                const isActive = !selectionMode && selectedEventId === event.id;
+                const canSelectRow = selectionMode && event.reviewStatus === 'open';
+
+                return (
+                  <div
+                    key={event.id}
+                    className={`fraud_event_row${isActive ? ' fraud_event_row_active' : ''}${
+                      canSelectRow ? ' fraud_event_row_with_checkbox' : ''
+                    }${selectionMode && isSelected(event.id) ? ' fraud_event_row_selected' : ''}`}
+                  >
+                    {canSelectRow && (
+                      <AdminRowCheckbox
+                        checked={isSelected(event.id)}
+                        label={`Select fraud event ${event.eventType}`}
+                        onChange={() => toggleItem(event.id)}
+                      />
+                    )}
+                    <button
+                      type="button"
+                      className="fraud_event_row_button"
+                      onClick={() => handleEventRowClick(event)}
+                    >
+                      <div className="fraud_event_row_main">
+                        <div className="fraud_event_row_title">
+                          <span className={severityPillClass(event.severity)}>{event.severity}</span>
+                          <strong>{event.eventType}</strong>
+                          {event.isInternalTestAccount && (
+                            <span className="pill pill_internal_test">Internal test</span>
+                          )}
+                        </div>
+                        <p className="fraud_event_row_message">{event.message}</p>
+                        <p className="fraud_event_row_meta">
+                          {event.userName || event.userEmail || event.userId || 'Unknown user'}
+                          {event.serviceLabel ? ` · ${event.serviceLabel}` : ''}
+                          {event.amount != null ? ` · ${formatPrice(event.amount)}` : ''}
+                        </p>
+                      </div>
+                      <div className="fraud_event_row_side">
+                        <span className={`pill pill_review_${event.reviewStatus}`}>
+                          {event.reviewStatus}
+                        </span>
+                        <div className="fraud_event_row_times">
+                          {event.transactionCreatedAt && (
+                            <span className="fraud_event_row_txn_time" title="Transaction date">
+                              Txn {formatLastActive(event.transactionCreatedAt)}
+                            </span>
+                          )}
+                          <span className="fraud_event_row_detected_time" title="Detected">
+                            Detected {formatLastActive(event.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
                   </div>
-                  <div className="fraud_event_row_side">
-                    <span className={`pill pill_review_${event.reviewStatus}`}>
-                      {event.reviewStatus}
-                    </span>
-                    <span className="fraud_event_row_time">{formatLastActive(event.createdAt)}</span>
-                  </div>
-                </button>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -360,10 +498,40 @@ function FraudEventsContent() {
                     <span>{formatPrice(selectedEvent.amount)}</span>
                   </div>
                 )}
+                {selectedEvent.serviceLabel && (
+                  <div>
+                    <span className="fraud_detail_label">Service</span>
+                    <span>{selectedEvent.serviceLabel}</span>
+                  </div>
+                )}
+                {selectedEvent.transactionId && (
+                  <div>
+                    <span className="fraud_detail_label">Transaction</span>
+                    <Link
+                      href={withAdminReturn(
+                        `/command-center/transactions/${selectedEvent.transactionId}`,
+                        fraudEventsReturn
+                      )}
+                    >
+                      {selectedEvent.transactionReference || selectedEvent.transactionId}
+                    </Link>
+                  </div>
+                )}
+                {selectedEvent.transactionCreatedAt && (
+                  <div>
+                    <span className="fraud_detail_label">Transaction date</span>
+                    <span>{formatAdminDateTime(selectedEvent.transactionCreatedAt)}</span>
+                  </div>
+                )}
                 {selectedEvent.userId && (
                   <div>
                     <span className="fraud_detail_label">User</span>
-                    <Link href={`/command-center/users/${selectedEvent.userId}`}>
+                    <Link
+                      href={withAdminReturn(
+                        `/command-center/users/${selectedEvent.userId}`,
+                        fraudEventsReturn
+                      )}
+                    >
                       {selectedEvent.userName || selectedEvent.userEmail || selectedEvent.userId}
                     </Link>
                   </div>
@@ -388,7 +556,7 @@ function FraudEventsContent() {
                 )}
                 <div>
                   <span className="fraud_detail_label">Detected</span>
-                  <span>{formatLastActive(selectedEvent.createdAt)}</span>
+                  <span>{formatAdminDateTime(selectedEvent.createdAt)}</span>
                 </div>
               </div>
 
@@ -444,7 +612,8 @@ function FraudEventsContent() {
 
       <RunFraudScanModal
         open={showScanModal}
-        isSubmitting={scanBusy}
+        isScanning={scanBusy}
+        steps={scanSteps}
         result={scanResult}
         error={scanError}
         onClose={closeScanModal}

@@ -11,7 +11,12 @@ export type TransactionType =
 
 export type TransactionStatus = 'completed' | 'pending' | 'failed' | 'scheduled';
 
-export type TransactionReviewStatus = 'cleared' | 'under_review' | 'escalated' | 'pending';
+export type TransactionReviewStatus =
+  | 'cleared'
+  | 'under_review'
+  | 'escalated'
+  | 'pending'
+  | 'blocked';
 
 export type TransactionsQuickActions = {
   review: boolean;
@@ -44,7 +49,7 @@ export type TransactionsCountStat = {
  * Backend contract:
  * - Always return count stats aligned with volume scope: totalTransactions
  *   (same rows as totalVolume), completedTransactions, pendingTransactions,
- *   refundTransactions, plus scheduled and flagged.
+ *   refundTransactions, plus blocked, under review, and flagged.
  * - Return money stats (totalVolume, completed, pending, refunds) only when
  *   the caller has dashboard.money_stats (super_admin, finance).
  * - Set filters.canViewMoneyStats to match whether money fields are present.
@@ -60,7 +65,8 @@ export type TransactionsListStats = {
   completedTransactions: TransactionsCountStat;
   pendingTransactions: TransactionsCountStat;
   refundTransactions: TransactionsCountStat;
-  scheduled: TransactionsCountStat;
+  blocked: TransactionsCountStat;
+  underReview: TransactionsCountStat;
   flagged: TransactionsCountStat;
 };
 
@@ -101,6 +107,8 @@ export type ApiTransactionListItem = {
   scheduledInfo?: TransactionScheduledInfo;
   isSuspicious: boolean;
   isBlocked: boolean;
+  reviewStatus?: TransactionReviewStatus | 'blocked' | null;
+  canClearReview?: boolean;
   fraudReason?: string | null;
   isInternalTestAccount?: boolean;
   paymentMethod?: string | null;

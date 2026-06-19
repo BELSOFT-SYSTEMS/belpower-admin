@@ -27,6 +27,8 @@ export function mapApiTransactionListItem(tx: ApiTransactionListItem): AdminTran
       : undefined,
     suspicious: tx.isSuspicious,
     is_blocked: tx.isBlocked,
+    review_status: tx.reviewStatus ?? null,
+    can_clear_review: tx.canClearReview ?? false,
     fraud_reason: tx.fraudReason ?? undefined,
     avatar: '',
     payment_method: tx.paymentMethod ?? undefined,

@@ -49,6 +49,15 @@ export function getDetailActionTitle(
 }
 
 export function canShowClearFlag(detail: AdminUserDetail): boolean {
-  const isFlagged = detail.suspiciousActivity || detail.isSuspicious;
-  return detail.quickActions.clearSuspicion && isFlagged;
+  const hasOpenFraudEvents = (detail.fraudEvents ?? []).some(
+    (event) => event.reviewStatus === 'open'
+  );
+  const needsReview =
+    detail.suspiciousActivity ||
+    detail.isSuspicious ||
+    detail.security?.reviewStatus === 'under_review' ||
+    hasOpenFraudEvents ||
+    detail.suspiciousTransactionCount > 0;
+
+  return detail.quickActions.clearSuspicion && needsReview;
 }

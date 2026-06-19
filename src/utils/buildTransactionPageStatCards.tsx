@@ -4,7 +4,7 @@ import {
   FaClock,
   FaTimesCircle,
   FaHome,
-  FaCalendarAlt,
+  FaBan,
   FaUndo,
 } from 'react-icons/fa';
 import type { TransactionsListStats } from '@/types/adminTransactions';
@@ -107,18 +107,25 @@ function buildMoneyStatCards(stats: TransactionsListStats): TransactionPageStatC
 function buildOperationalStatCards(stats: TransactionsListStats): TransactionPageStatCard[] {
   return [
     {
-      key: 'scheduled',
-      icon: <FaCalendarAlt className="text-orange-500 text-xl" />,
-      label: 'Scheduled',
-      value: formatCount(stats.scheduled.count),
+      key: 'blocked',
+      icon: <FaBan className="text-red-500 text-xl" />,
+      label: 'Blocked',
+      value: formatCount(stats.blocked.count),
+      border: 'border-red-300',
+    },
+    {
+      key: 'underReview',
+      icon: <FaClipboardList className="text-orange-500 text-xl" />,
+      label: 'Under review',
+      value: formatCount(stats.underReview.count),
       border: 'border-orange-300',
     },
     {
       key: 'flagged',
-      icon: <FaTimesCircle className="text-red-500 text-xl" />,
+      icon: <FaTimesCircle className="text-amber-500 text-xl" />,
       label: 'Flagged',
       value: formatCount(stats.flagged.count),
-      border: 'border-red-300',
+      border: 'border-amber-300',
     },
   ];
 }

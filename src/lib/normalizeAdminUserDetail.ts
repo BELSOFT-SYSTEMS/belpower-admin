@@ -139,11 +139,15 @@ function normalizeLog(raw: RawRecord): AdminUserLog {
 
 function normalizeTransaction(raw: RawRecord): AdminUserTransaction {
   const scheduled = pick<RawRecord>(raw, 'scheduledInfo', 'scheduled_info');
+  const reviewStatus = pickString(raw, 'reviewStatus', 'review_status');
   const isSuspicious =
     pickBool(raw, 'isSuspicious', 'is_suspicious') ||
     pickBool(raw, 'suspicious', 'suspicious') ||
     pickBool(raw, 'isFlagged', 'is_flagged') ||
     pickBool(raw, 'flagged', 'flagged');
+  const needsActiveReview =
+    pickBool(raw, 'needsActiveReview', 'needs_active_review') ??
+    (isSuspicious && reviewStatus !== 'blocked' && reviewStatus !== 'cleared');
 
   return {
     id: String(pick(raw, 'id', 'id') ?? ''),
@@ -178,8 +182,12 @@ function normalizeTransaction(raw: RawRecord): AdminUserTransaction {
         }
       : undefined,
     isSuspicious,
+    needsActiveReview,
+    reviewStatus,
     isBlocked:
-      pickBool(raw, 'isBlocked', 'is_blocked') || pickBool(raw, 'blocked', 'blocked'),
+      reviewStatus === 'blocked' ||
+      pickBool(raw, 'isBlocked', 'is_blocked') ||
+      pickBool(raw, 'blocked', 'blocked'),
     fraudReason: pickString(raw, 'fraudReason', 'fraud_reason'),
     requeryRecommended: pickBool(raw, 'requeryRecommended', 'requery_recommended'),
     requeryReason: pickString(raw, 'requeryReason', 'requery_reason'),
@@ -323,8 +331,13 @@ export function normalizeAdminUserDetail(raw: RawRecord): AdminUserDetail {
 
     fraudEvents: pickArray(raw, 'fraudEvents', 'fraud_events').map(normalizeFraudEvent),
     fraudEventCount:
+      pickNumber(raw, 'openFraudEventCount', 'open_fraud_event_count') ??
       pickNumber(raw, 'fraudEventCount', 'fraud_event_count') ??
-      pickArray(raw, 'fraudEvents', 'fraud_events').length,
+      pickArray(raw, 'fraudEvents', 'fraud_events').filter(
+        (event) =>
+          String((event as RawRecord).reviewStatus ?? (event as RawRecord).review_status ?? 'open') ===
+          'open'
+      ).length,
 
     generatedAt: String(
       pick(raw, 'generatedAt', 'generated_at') ?? new Date().toISOString()

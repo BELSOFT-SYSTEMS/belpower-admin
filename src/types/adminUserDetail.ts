@@ -94,6 +94,8 @@ export type AdminUserTransaction = {
   isScheduled?: boolean;
   scheduledInfo?: AdminUserTransactionScheduledInfo;
   isSuspicious: boolean;
+  needsActiveReview?: boolean;
+  reviewStatus?: string | null;
   isBlocked?: boolean;
   fraudReason?: string | null;
   requeryRecommended?: boolean;

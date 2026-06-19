@@ -6,6 +6,7 @@ import { TRANSACTION_FILTER_ALL } from '@/constants/adminTransactionFilters';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminTransactionsList } from '@/hooks/useAdminTransactionsList';
 import { useAdminTransactionsListActions } from '@/hooks/useAdminTransactionsListActions';
+import type { AdminReturnContext } from '@/utils/adminReturnNavigation';
 
 type AdminTransactionsListPanelProps = {
   userId?: string;
@@ -15,7 +16,9 @@ type AdminTransactionsListPanelProps = {
   searchPlaceholder?: string;
   className?: string;
   isInternalTestAccount?: boolean;
+  detailReturnContext?: AdminReturnContext;
   onPaginationTotalChange?: (total: number) => void;
+  onActionComplete?: () => void | Promise<void>;
 };
 
 export function AdminTransactionsListPanel({
@@ -23,10 +26,12 @@ export function AdminTransactionsListPanel({
   showUser = true,
   enabled = true,
   listTitle = 'All transactions',
-  searchPlaceholder = 'Search ID, user, provider…',
+  searchPlaceholder = 'Search transaction ID, reference, session ID, user ID, provider, order ID…',
   className = '',
   isInternalTestAccount = false,
+  detailReturnContext,
   onPaginationTotalChange,
+  onActionComplete,
 }: AdminTransactionsListPanelProps) {
   const { canAccess } = useAdminAuth();
   const canUseQuickActions = canAccess('transactions.list');
@@ -53,8 +58,8 @@ export function AdminTransactionsListPanel({
     enabled,
   });
 
-  const { actingTxnId, handleReview, handleBlock, handleUnblock } =
-    useAdminTransactionsListActions(refresh);
+  const { actingTxnId, handleReview, handleBlock, handleUnblock, handleClearReview } =
+    useAdminTransactionsListActions(refresh, onActionComplete, detailReturnContext);
 
   useEffect(() => {
     setPage(1);
@@ -93,6 +98,7 @@ export function AdminTransactionsListPanel({
       showQuickActions={canUseQuickActions}
       showInternalTestBadge={canViewInternalTestTransactions}
       isInternalTestAccount={isInternalTestAccount}
+      detailReturnContext={detailReturnContext}
       actingTxnId={actingTxnId}
       transactions={transactions}
       quickActions={quickActions}
@@ -106,6 +112,7 @@ export function AdminTransactionsListPanel({
       onReview={handleReview}
       onBlock={handleBlock}
       onUnblock={handleUnblock}
+      onClearReview={handleClearReview}
     />
   );
 }

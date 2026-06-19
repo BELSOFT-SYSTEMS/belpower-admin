@@ -16,7 +16,10 @@ import type {
   FraudEventsListData,
   FraudEventsListParams,
   ReviewFraudEventPayload,
+  BulkReviewFraudEventsPayload,
+  BulkReviewFraudEventsResult,
   FraudScanResult,
+  FraudScanStepResult,
 } from '@/types/adminFraud';
 
 type ApiEnvelope<T> = {
@@ -145,10 +148,73 @@ export async function reviewFraudEvent(
   return normalizeFraudEvent(data);
 }
 
-export async function runFraudScan(): Promise<FraudScanResult> {
+export async function bulkReviewFraudEvents(
+  payload: BulkReviewFraudEventsPayload
+): Promise<BulkReviewFraudEventsResult> {
   let res: Response;
   try {
-    res = await fetch(`${ADMIN_API_BASE}/fraud-events/run-scan`, {
+    res = await fetch(`${ADMIN_API_BASE}/fraud-events/bulk-review`, {
+      method: 'POST',
+      headers: adminHeaders(),
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new AuthApiError(
+      'Unable to connect to the server. Please check your connection and try again.',
+      'NETWORK_ERROR'
+    );
+  }
+
+  const data = await handleResponse<Record<string, unknown>>(res, 'Failed to update fraud events');
+  const failedRaw = Array.isArray(data.failed) ? data.failed : [];
+
+  return {
+    updated: Number(data.updated ?? 0),
+    updatedIds: Array.isArray(data.updatedIds)
+      ? (data.updatedIds as string[])
+      : Array.isArray(data.updated_ids)
+        ? (data.updated_ids as string[])
+        : [],
+    failed: failedRaw.map((item) => {
+      const row = item as Record<string, unknown>;
+      return {
+        id: String(row.id ?? ''),
+        reason: String(row.reason ?? 'unknown'),
+      };
+    }),
+  };
+}
+
+function normalizeFraudScanStepResult(raw: Record<string, unknown>): FraudScanStepResult {
+  return {
+    checkId: String(raw.checkId ?? raw.check_id ?? ''),
+    label: String(raw.label ?? ''),
+    found: Number(raw.found ?? 0),
+    created: Number(raw.created ?? 0),
+    skipped: Number(raw.skipped ?? 0),
+  };
+}
+
+function normalizeFraudScanResult(raw: Record<string, unknown>): FraudScanResult {
+  const checksRaw = (raw.checks ?? {}) as Record<string, Record<string, unknown>>;
+  const checks = Object.fromEntries(
+    Object.entries(checksRaw).map(([key, value]) => [key, normalizeFraudScanStepResult(value)])
+  );
+
+  return {
+    startedAt: String(raw.startedAt ?? raw.started_at ?? ''),
+    finishedAt: String(raw.finishedAt ?? raw.finished_at ?? ''),
+    created: Number(raw.created ?? 0),
+    skipped: Number(raw.skipped ?? 0),
+    errors: Array.isArray(raw.errors) ? (raw.errors as FraudScanResult['errors']) : [],
+    checks: Object.keys(checks).length > 0 ? checks : undefined,
+  };
+}
+
+async function postFraudScan(path: string): Promise<Record<string, unknown>> {
+  let res: Response;
+  try {
+    res = await fetch(`${ADMIN_API_BASE}/fraud-events${path}`, {
       method: 'POST',
       headers: adminHeaders(),
     });
@@ -171,12 +237,29 @@ export async function runFraudScan(): Promise<FraudScanResult> {
     throw new AuthApiError(getErrorMessage(body, 'Failed to run fraud scan'), 'API_ERROR');
   }
 
-  const data = (body.data ?? {}) as Record<string, unknown>;
-  return {
-    startedAt: String(data.startedAt ?? data.started_at ?? ''),
-    finishedAt: String(data.finishedAt ?? data.finished_at ?? ''),
-    created: Number(data.created ?? 0),
-    skipped: Number(data.skipped ?? 0),
-    errors: Array.isArray(data.errors) ? (data.errors as FraudScanResult['errors']) : [],
-  };
+  return (body.data ?? {}) as Record<string, unknown>;
+}
+
+export async function beginFraudScan(): Promise<{ startedAt: string }> {
+  const data = await postFraudScan('/run-scan/begin');
+  return { startedAt: String(data.startedAt ?? data.started_at ?? '') };
+}
+
+export async function runFraudScanCheck(checkId: string): Promise<FraudScanStepResult> {
+  const data = await postFraudScan(`/run-scan/checks/${encodeURIComponent(checkId)}`);
+  return normalizeFraudScanStepResult(data);
+}
+
+export async function finishFraudScan(): Promise<FraudScanResult> {
+  const data = await postFraudScan('/run-scan/finish');
+  return normalizeFraudScanResult(data);
+}
+
+export async function cancelFraudScan(): Promise<void> {
+  await postFraudScan('/run-scan/cancel');
+}
+
+export async function runFraudScan(): Promise<FraudScanResult> {
+  const data = await postFraudScan('/run-scan');
+  return normalizeFraudScanResult(data);
 }

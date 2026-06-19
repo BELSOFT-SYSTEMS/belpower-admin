@@ -15,6 +15,7 @@ import { useAdminWallet } from '@/hooks/useAdminWallet';
 import { useAdminTransactionsListActions } from '@/hooks/useAdminTransactionsListActions';
 import { canViewWalletMoneyStats, canViewWalletPage } from '@/utils/adminWalletAccess';
 import type { WalletActivityFilter } from '@/types/adminWallet';
+import { buildWalletReturn } from '@/utils/adminReturnNavigation';
 
 const FILTER_ALL = '__all__' as const;
 type WalletCategoryFilter = WalletActivityFilter | typeof FILTER_ALL;
@@ -61,8 +62,10 @@ export default function WalletPage() {
     enabled: canAccessPage,
   });
 
-  const { actingTxnId, handleReview, handleBlock, handleUnblock } =
-    useAdminTransactionsListActions(refresh);
+  const walletReturn = useMemo(() => buildWalletReturn(), []);
+
+  const { actingTxnId, handleReview, handleBlock, handleUnblock, handleClearReview } =
+    useAdminTransactionsListActions(refresh, undefined, walletReturn);
 
   useEffect(() => {
     setPage(1);
@@ -209,6 +212,7 @@ export default function WalletPage() {
         statusFilter={statusFilter}
         page={page}
         showQuickActions
+        detailReturnContext={walletReturn}
         actingTxnId={actingTxnId}
         transactions={transactions}
         quickActions={quickActions}
@@ -222,6 +226,7 @@ export default function WalletPage() {
         onReview={handleReview}
         onBlock={handleBlock}
         onUnblock={handleUnblock}
+        onClearReview={handleClearReview}
       />
     </div>
   );

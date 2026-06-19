@@ -66,6 +66,7 @@ const REVIEW_STATUS_LABELS: Record<TransactionReviewStatus, string> = {
   under_review: 'Under review',
   escalated: 'Escalated',
   pending: 'Pending review',
+  blocked: 'Blocked',
 };
 
 export function getTransactionReviewStatusLabel(status: TransactionReviewStatus) {

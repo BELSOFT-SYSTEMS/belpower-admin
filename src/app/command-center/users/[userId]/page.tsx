@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AdminDiscoImage } from '@/components/admin/ui/AdminDiscoImage';
 import {
-  FaArrowLeft,
   FaUserSlash,
   FaBan,
   FaEnvelope,
@@ -30,6 +29,7 @@ import '@/styles/adminShared.css';
 import '@/styles/adminAdmins.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
+import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
 import { getDiscoDisplayName } from '@/constants/discoNames';
 import { AdminTransactionsListPanel } from '@/components/admin/transactions/AdminTransactionsListPanel';
 import {
@@ -58,6 +58,10 @@ import {
   getDetailActionAvailability,
   getDetailActionTitle,
 } from '@/utils/userDetailQuickActions';
+import {
+  buildUserDetailReturn,
+  withAdminReturn,
+} from '@/utils/adminReturnNavigation';
 
 const RISK_LABELS = {
   low: 'Low risk',
@@ -181,12 +185,21 @@ export default function UserDetailPage() {
       disco: meter.disco,
       type: meter.meterType,
     });
-    router.push(`/command-center/check-meter?${query.toString()}`);
+    const checkMeterPath = `/command-center/check-meter?${query.toString()}`;
+    if (!detail) {
+      router.push(checkMeterPath);
+      return;
+    }
+    const userReturn = buildUserDetailReturn(detail.id, detail.fullName, {
+      tab: activeTab !== 'overview' ? activeTab : undefined,
+    });
+    router.push(withAdminReturn(checkMeterPath, userReturn));
   };
 
   if (isLoading) {
     return (
       <div className="user_details_page">
+        <AdminBackButton defaultHref="/command-center/users" defaultLabel="Back to users" />
         <div className="users_page_loading" style={{ padding: '4rem 0' }}>
           <Loader2 className="animate-spin" size={32} aria-hidden />
           <p>Loading user…</p>
@@ -199,13 +212,7 @@ export default function UserDetailPage() {
     const isNotFound = errorCode === 'NOT_FOUND';
     return (
       <div className="user_details_page">
-        <button
-          type="button"
-          className="receipt_back"
-          onClick={() => router.push('/command-center/users')}
-        >
-          <FaArrowLeft /> Back to users
-        </button>
+        <AdminBackButton defaultHref="/command-center/users" defaultLabel="Back to users" />
         <div className="admin_panel_card not_found">
           <p>{isNotFound ? 'User not found.' : error ?? 'Failed to load user.'}</p>
           {!isNotFound && errorCode !== 'FORBIDDEN' && (
@@ -242,6 +249,7 @@ export default function UserDetailPage() {
         if (!isSubmitting) setShowDeleteUser(false);
       }}
       onConfirmDeleteUser={handleDeleteUser}
+      onActionComplete={refresh}
     />
   );
 }
@@ -265,6 +273,7 @@ type UserDetailContentProps = {
   onConfirmClearFlag: (reason?: string) => void;
   onCloseDeleteUser: () => void;
   onConfirmDeleteUser: () => void;
+  onActionComplete: () => void | Promise<void>;
 };
 
 function UserDetailContent({
@@ -286,14 +295,34 @@ function UserDetailContent({
   onConfirmClearFlag,
   onCloseDeleteUser,
   onConfirmDeleteUser,
+  onActionComplete,
 }: UserDetailContentProps) {
-  const router = useRouter();
   const { canAccess } = useAdminAuth();
   const { quickActions, displayStatus } = detail;
   const actions = getDetailActionAvailability(displayStatus);
 
   const suspiciousTxnCount = detail.suspiciousTransactionCount;
-  const suspiciousTransactions = detail.transactions.filter((t) => t.isSuspicious);
+  const suspiciousTransactions = detail.transactions.filter(
+    (t) => t.needsActiveReview ?? (t.isSuspicious && t.reviewStatus !== 'blocked' && t.reviewStatus !== 'cleared')
+  );
+  const openFraudEvents = (detail.fraudEvents ?? []).filter(
+    (event) => event.reviewStatus === 'open'
+  );
+  const userReturn = useMemo(
+    () =>
+      buildUserDetailReturn(detail.id, detail.fullName, {
+        tab: activeTab !== 'overview' ? activeTab : undefined,
+      }),
+    [detail.id, detail.fullName, activeTab]
+  );
+  const transactionsTabReturn = useMemo(
+    () => buildUserDetailReturn(detail.id, detail.fullName, { tab: 'transactions' }),
+    [detail.id, detail.fullName]
+  );
+  const securityTabReturn = useMemo(
+    () => buildUserDetailReturn(detail.id, detail.fullName, { tab: 'security' }),
+    [detail.id, detail.fullName]
+  );
   const savedMetersOnly = detail.savedMeters.filter((m) => !m.isPrimary);
   const [transactionsTabCount, setTransactionsTabCount] = useState(
     detail.stats.transactionCount
@@ -450,13 +479,7 @@ function UserDetailContent({
 
   return (
     <div className="user_details_page">
-      <button
-        type="button"
-        className="receipt_back"
-        onClick={() => router.push('/command-center/users')}
-      >
-        <FaArrowLeft /> Back to users
-      </button>
+      <AdminBackButton defaultHref="/command-center/users" defaultLabel="Back to users" />
 
       {isDeleted && (
         <div className="admin_alert admin_alert_warning">
@@ -480,14 +503,19 @@ function UserDetailContent({
             <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem' }}>
               This account has been flagged for review. {suspiciousTxnCount} suspicious
               transaction(s) on record
-              {detail.fraudEventCount > 0
-                ? ` · ${detail.fraudEventCount} fraud event(s) logged`
+              {openFraudEvents.length > 0
+                ? ` · ${openFraudEvents.length} open fraud event(s)`
                 : ''}
               .
-              {detail.fraudEventCount > 0 && (
+              {openFraudEvents.length > 0 && (
                 <>
                   {' '}
-                  <Link href={`/command-center/security/fraud-events?userId=${detail.id}`}>
+                  <Link
+                    href={withAdminReturn(
+                      `/command-center/security/fraud-events?userId=${detail.id}`,
+                      userReturn
+                    )}
+                  >
                     View fraud events
                   </Link>
                 </>
@@ -680,7 +708,10 @@ function UserDetailContent({
               {canAccess('transactions.list') && (
                 <div className="tab_hint_links">
                   <Link
-                    href={`/command-center/transactions?userId=${encodeURIComponent(detail.id)}`}
+                    href={withAdminReturn(
+                      `/command-center/transactions?userId=${encodeURIComponent(detail.id)}`,
+                      transactionsTabReturn
+                    )}
                     className="tab_hint_link"
                   >
                     Open in transactions
@@ -696,7 +727,9 @@ function UserDetailContent({
               searchPlaceholder="Search reference, provider…"
               className="user_txn_tab_panel"
               isInternalTestAccount={detail.isInternalTestAccount}
+              detailReturnContext={transactionsTabReturn}
               onPaginationTotalChange={setTransactionsTabCount}
+              onActionComplete={onActionComplete}
             />
           </div>
         )}
@@ -963,7 +996,10 @@ function UserDetailContent({
                   {suspiciousTransactions.map((tx) => (
                     <Link
                       key={tx.id}
-                      href={`/command-center/transactions/${tx.id}`}
+                      href={withAdminReturn(
+                        `/command-center/transactions/${tx.id}`,
+                        securityTabReturn
+                      )}
                       className="security_flagged_row"
                     >
                       <div className="security_flagged_main">
@@ -989,22 +1025,28 @@ function UserDetailContent({
               )}
             </section>
 
-            {detail.fraudEvents.length > 0 && (
+            {openFraudEvents.length > 0 && (
               <section className="detail_panel security_section">
                 <div className="security_section_title_row">
                   <h3 className="security_section_title">Fraud events</h3>
                   <Link
-                    href={`/command-center/security/fraud-events?userId=${detail.id}`}
+                    href={withAdminReturn(
+                      `/command-center/security/fraud-events?userId=${detail.id}`,
+                      securityTabReturn
+                    )}
                     className="security_section_link"
                   >
                     View all
                   </Link>
                 </div>
                 <div className="security_flagged_list">
-                  {detail.fraudEvents.slice(0, 5).map((event) => (
+                  {openFraudEvents.slice(0, 5).map((event) => (
                     <Link
                       key={event.id}
-                      href={`/command-center/security/fraud-events?eventId=${event.id}`}
+                      href={withAdminReturn(
+                        `/command-center/security/fraud-events?eventId=${event.id}&userId=${detail.id}`,
+                        securityTabReturn
+                      )}
                       className="security_flagged_row"
                     >
                       <div className="security_flagged_main">
@@ -1024,7 +1066,13 @@ function UserDetailContent({
                                 ? 'Auto-suspended'
                                 : 'Blocked'}
                         </span>
-                        <span>{formatAdminDateTime(event.createdAt)}</span>
+                        <time
+                          className="security_flagged_date"
+                          dateTime={event.createdAt}
+                          style={{ color: '#111827' }}
+                        >
+                          {formatAdminDateTime(event.createdAt)}
+                        </time>
                       </div>
                     </Link>
                   ))}

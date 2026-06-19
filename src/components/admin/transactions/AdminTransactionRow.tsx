@@ -6,6 +6,7 @@ import {
   FaBan,
   FaClipboardCheck,
   FaUnlock,
+  FaCheck,
 } from 'react-icons/fa';
 import type { AdminTransaction } from '@/data/adminMockData';
 import { getTransactionTitle } from '@/data/adminMockData';
@@ -25,6 +26,9 @@ import {
   getTransactionQuickActionTitle,
 } from '@/utils/transactionQuickActionState';
 import { formatPrice } from '@/utils/FormatPrice';
+import { AdminRowCheckbox } from '@/components/admin/ui/AdminRowCheckbox';
+import type { AdminReturnContext } from '@/utils/adminReturnNavigation';
+import { withAdminReturn } from '@/utils/adminReturnNavigation';
 
 type AdminTransactionRowProps = {
   transaction: AdminTransaction;
@@ -34,9 +38,14 @@ type AdminTransactionRowProps = {
   isInternalTestAccount?: boolean;
   rowBusy?: boolean;
   disableDetailLinks?: boolean;
+  detailReturnContext?: AdminReturnContext;
+  selectionMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: () => void;
   onReview?: (transaction: AdminTransaction) => void;
   onBlock?: (transaction: AdminTransaction) => void;
   onUnblock?: (transaction: AdminTransaction) => void;
+  onClearReview?: (transaction: AdminTransaction) => void;
 };
 
 export function AdminTransactionRow({
@@ -47,9 +56,14 @@ export function AdminTransactionRow({
   isInternalTestAccount = false,
   rowBusy = false,
   disableDetailLinks = false,
+  detailReturnContext,
+  selectionMode = false,
+  selected = false,
+  onToggleSelect,
   onReview,
   onBlock,
   onUnblock,
+  onClearReview,
 }: AdminTransactionRowProps) {
   const scheduled = isScheduledTransaction(tx);
   const isRefund = Boolean(tx.is_refund || tx.type === 'refund');
@@ -66,9 +80,21 @@ export function AdminTransactionRow({
   const canBlock = Boolean(quickActions?.block) && actions.canBlock;
   const showUnblock = Boolean(quickActions?.unblock && tx.is_blocked);
   const canUnblock = showUnblock && actions.canUnblock;
+  const canClearReview = Boolean(quickActions?.clearReview) && actions.canClearReview;
   const showActionBar = Boolean(
-    quickActions?.review || quickActions?.block || showUnblock
+    quickActions?.review || quickActions?.block || quickActions?.clearReview || showUnblock
   );
+  const transactionDetailHref = detailReturnContext
+    ? withAdminReturn(`/command-center/transactions/${tx.id}`, detailReturnContext)
+    : `/command-center/transactions/${tx.id}`;
+
+  const selectionCheckbox = selectionMode ? (
+    <AdminRowCheckbox
+      checked={selected}
+      label={`Select transaction ${tx.reference}`}
+      onChange={() => onToggleSelect?.()}
+    />
+  ) : null;
 
   const rowContent = (
     <>
@@ -138,22 +164,35 @@ export function AdminTransactionRow({
 
   if (!showQuickActions) {
     if (disableDetailLinks) {
-      return <div className={`${rowClassName} admin_txn_row_static`}>{rowContent}</div>;
+      return (
+        <div className={`${rowClassName} admin_txn_row_static admin_txn_row_with_checkbox`}>
+          {selectionCheckbox}
+          {rowContent}
+        </div>
+      );
     }
 
     return (
-      <Link href={`/command-center/transactions/${tx.id}`} className={rowClassName}>
-        {rowContent}
-      </Link>
+      <div className="admin_txn_row_with_checkbox">
+        {selectionCheckbox}
+        <Link href={transactionDetailHref} className={rowClassName}>
+          {rowContent}
+        </Link>
+      </div>
     );
   }
 
   return (
-    <div className={`admin_txn_row_wrap${scheduled ? ' admin_txn_row_wrap_scheduled' : ''}`}>
+    <div
+      className={`admin_txn_row_wrap${scheduled ? ' admin_txn_row_wrap_scheduled' : ''}${
+        selectionMode ? ' admin_txn_row_with_checkbox' : ''
+      }`}
+    >
+      {selectionCheckbox}
       {disableDetailLinks ? (
         <div className="admin_txn_row_link admin_txn_row_static">{rowContent}</div>
       ) : (
-        <Link href={`/command-center/transactions/${tx.id}`} className="admin_txn_row_link">
+        <Link href={transactionDetailHref} className="admin_txn_row_link">
           {rowContent}
         </Link>
       )}
@@ -221,6 +260,25 @@ export function AdminTransactionRow({
                 <FaUnlock />
               </button>
             )}
+            {quickActions?.clearReview && (
+              <button
+                type="button"
+                className="txn_quick_action action_clear"
+                title={
+                  disableDetailLinks
+                    ? 'Unavailable in demo mode'
+                    : getTransactionQuickActionTitle('clearReview', tx)
+                }
+                aria-label="Clear review"
+                disabled={disableDetailLinks || rowBusy || !canClearReview}
+                onClick={() => {
+                  if (rowBusy || !canClearReview) return;
+                  onClearReview?.(tx);
+                }}
+              >
+                <FaCheck />
+              </button>
+            )}
           </div>
         )}
         {disableDetailLinks ? (
@@ -242,7 +300,7 @@ export function AdminTransactionRow({
             </div>
           </div>
         ) : (
-          <Link href={`/command-center/transactions/${tx.id}`} className="admin_txn_meta_link">
+          <Link href={transactionDetailHref} className="admin_txn_meta_link">
             <div className="admin_txn_pills">
               <span className={`pill ${getTransactionStatusPillClass(tx)}`}>
                 {getTransactionStatusLabel(tx)}

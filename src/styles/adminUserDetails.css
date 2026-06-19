@@ -588,8 +588,14 @@
   border-radius: 0.5rem;
   background: #fef2f2;
   text-decoration: none;
-  color: inherit;
+  color: #111827;
   transition: background 0.15s, border-color 0.15s;
+}
+
+.user_details_page a.security_flagged_row,
+.user_details_page a.security_flagged_row:hover,
+.user_details_page a.security_flagged_row:visited {
+  color: #111827;
 }
 
 .user_details_page .security_flagged_row:hover {
@@ -622,12 +628,19 @@
   align-items: flex-end;
   gap: 0.35rem;
   flex-shrink: 0;
+  color: #111827;
 }
 
 .user_details_page .security_flagged_amount {
   font-size: 0.9375rem;
   font-weight: 600;
   color: #111827;
+}
+
+.user_details_page a.security_flagged_row .security_flagged_meta .security_flagged_date {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #111827 !important;
 }
 
 .user_details_page .security_empty_state {
@@ -739,6 +752,12 @@
 .user_details_page .user_txn_tab_panel .search_container input {
   width: 100%;
   max-width: 220px;
+  color: #111827;
+  background-color: #fff;
+}
+
+.user_details_page .user_txn_tab_panel .search_container input::placeholder {
+  color: #6b7280;
 }
 
 .user_details_page .user_txn_tab_panel .admin_txn_list {

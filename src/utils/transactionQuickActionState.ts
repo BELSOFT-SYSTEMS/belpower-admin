@@ -21,6 +21,7 @@ function resolveReviewStatus(
   context?: TransactionQuickActionContext
 ): TransactionReviewStatus {
   if (context?.reviewStatus) return context.reviewStatus;
+  if (tx.review_status) return tx.review_status;
   return tx.suspicious ? 'under_review' : 'cleared';
 }
 
@@ -57,14 +58,18 @@ export function getTransactionQuickActionAvailability(
 ): TransactionQuickActionAvailability {
   const isBlocked = Boolean(tx.is_blocked);
   const reviewStatus = resolveReviewStatus(tx, context);
-  const underReview = isUnderReview(tx, reviewStatus);
+  const underReview =
+    tx.can_clear_review ||
+    isUnderReview(tx, reviewStatus);
   const idleCleared = isIdleClearedTransaction(tx, reviewStatus);
 
   return {
     canReview: !idleCleared,
     canBlock: !isBlocked && !idleCleared,
     canUnblock: isBlocked && !underReview,
-    canClearReview: underReview && !isBlocked,
+    canClearReview:
+      Boolean(tx.can_clear_review) ||
+      (underReview && !isBlocked && reviewStatus === 'under_review'),
     canRequery:
       context?.requeryEligible === true ||
       context?.requeryRecommended === true ||

@@ -14,11 +14,15 @@ export type NotificationAudience =
   | 'dormant_users'
   | 'single_user';
 
+export type NotificationChannel = 'push' | 'email';
+
 export type NotificationTemplate = {
   id: string;
   title: string;
   body: string;
   kind: NotificationKind;
+  channel: NotificationChannel;
+  email_subject?: string | null;
 };
 
 export type SentNotification = {

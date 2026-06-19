@@ -48,11 +48,15 @@ export function normalizeFraudEvent(raw: RawRecord): FraudEvent {
     message: String(pick(raw, 'message', 'message') ?? ''),
     amount: pickNumber(raw, 'amount', 'amount'),
     paymentFor: pickString(raw, 'paymentFor', 'payment_for'),
+    serviceLabel: pickString(raw, 'serviceLabel', 'service_label'),
     paymentMethod: pickString(raw, 'paymentMethod', 'payment_method'),
     ipAddress: pickString(raw, 'ipAddress', 'ip_address'),
     userAgent: pickString(raw, 'userAgent', 'user_agent'),
     requestPath: pickString(raw, 'requestPath', 'request_path'),
     payload: payload && typeof payload === 'object' ? payload : null,
+    transactionId: pickString(raw, 'transactionId', 'transaction_id'),
+    transactionReference: pickString(raw, 'transactionReference', 'transaction_reference'),
+    transactionCreatedAt: pickString(raw, 'transactionCreatedAt', 'transaction_created_at'),
     actionTaken: String(
       pick(raw, 'actionTaken', 'action_taken') ?? 'blocked'
     ) as FraudActionTaken,

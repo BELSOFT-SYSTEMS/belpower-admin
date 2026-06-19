@@ -57,8 +57,8 @@ export function ClearSuspicionModal({
         <form className="admin_modal_form" onSubmit={handleSubmit}>
           <div className="admin_modal_body">
             <p className="admin_confirm_message">
-              This will clear the suspicious activity flag on <strong>{userName}</strong>.
-              Individual transactions may still show as flagged.
+              This will clear the suspicious activity flag on <strong>{userName}</strong>, dismiss
+              open fraud events, and clear flagged transactions for this user.
             </p>
 
             <div className="admin_form_row">

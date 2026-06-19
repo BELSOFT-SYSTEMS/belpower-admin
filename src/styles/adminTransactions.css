@@ -260,9 +260,15 @@
     border-radius: 0.375rem;
     border: 1px solid #d1d5db;
     font-size: 0.875rem;
+    color: #111827;
+    background-color: #fff;
     outline: none;
     width: 250px;
     transition: border-color 200ms ease-in-out;
+}
+.admin_txn_list_panel .search_container input::placeholder,
+.transactions_page .search_container input::placeholder {
+    color: #6b7280;
 }
 .admin_txn_list_panel .search_container input:focus,
 .transactions_page .search_container input:focus {

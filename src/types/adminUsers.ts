@@ -12,6 +12,7 @@ export type UsersQuickActions = {
   suspend: boolean;
   activate: boolean;
   message: boolean;
+  clearSuspicion?: boolean;
 };
 
 export type UsersPageStats = {
@@ -19,6 +20,8 @@ export type UsersPageStats = {
   newUsers: { count: number; period: '7d'; definition: string };
   activeUsers: { count: number; definition: string };
   flaggedUsers: { count: number; definition: string };
+  blockedUsers: { count: number; definition: string };
+  suspendedUsers: { count: number; definition: string };
   deletedUsers?: { count: number; definition: string };
 };
 

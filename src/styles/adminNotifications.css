@@ -160,6 +160,9 @@
 }
 
 .notifications_page .notif_preview_badge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 0.5rem;
 }
 
@@ -298,6 +301,25 @@
 .pill_notif_service_update {
   background: #dcfce7;
   color: #15803d;
+}
+
+.pill_notif_push {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.pill_notif_email {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.notifications_page .notif_preview_label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
 }
 
 .notifications_page .history_table_wrap {

@@ -425,6 +425,7 @@ function getUsersQuickActions(admin: AdminProfile | null): UsersQuickActions {
       suspend: true,
       activate: true,
       message: ADMIN_USER_MESSAGING_ENABLED,
+      clearSuspicion: true,
     };
   }
 
@@ -433,6 +434,7 @@ function getUsersQuickActions(admin: AdminProfile | null): UsersQuickActions {
     suspend: canAccess(admin, 'users.suspend'),
     activate: canAccess(admin, 'users.activate'),
     message: ADMIN_USER_MESSAGING_ENABLED && canAccess(admin, 'users.list'),
+    clearSuspicion: canAccess(admin, 'users.clear_suspicion'),
   };
 }
 
@@ -536,7 +538,10 @@ function buildTransactionStats(
   const completed = transactions.filter((tx) => tx.status === 'completed');
   const pending = transactions.filter((tx) => tx.status === 'pending');
   const refunds = transactions.filter((tx) => tx.isRefund || tx.type === 'refund');
-  const scheduled = transactions.filter((tx) => tx.isScheduled || tx.status === 'scheduled');
+  const blocked = transactions.filter((tx) => tx.isBlocked);
+  const underReview = transactions.filter(
+    (tx) => tx.reviewStatus === 'under_review' || (tx.isSuspicious && !tx.isBlocked)
+  );
   const flagged = transactions.filter((tx) => tx.isSuspicious);
 
   const sum = (items: ApiTransactionListItem[]) =>
@@ -549,7 +554,8 @@ function buildTransactionStats(
     completedTransactions: countStat(completed.length, 'Completed transactions'),
     pendingTransactions: countStat(pending.length, 'Pending transactions'),
     refundTransactions: countStat(refunds.length, 'Refund transactions'),
-    scheduled: countStat(scheduled.length, 'Scheduled transactions'),
+    blocked: countStat(blocked.length, 'Blocked transactions'),
+    underReview: countStat(underReview.length, 'Under review transactions'),
     flagged: countStat(flagged.length, 'Flagged transactions'),
   };
 
@@ -598,6 +604,8 @@ export function getMockUsersList(
           newUsers: { count: 128, period: '7d', definition: 'Joined in the last 7 days' },
           activeUsers: { count: 2910, definition: 'Active in the last 30 days' },
           flaggedUsers: { count: 14, definition: 'Users with suspicion flags' },
+          blockedUsers: { count: 6, definition: 'Blocked accounts' },
+          suspendedUsers: { count: 3, definition: 'Suspended accounts' },
         }
       : null,
     quickActions: getUsersQuickActions(admin),

@@ -140,12 +140,19 @@ export type CampaignPushStats = {
   failed: number;
 };
 
+export type CampaignEmailStats = {
+  attempted: number;
+  delivered: number;
+  failed: number;
+};
+
 export async function sendNotificationCampaign(
   payload: SendNotificationPayload
 ): Promise<{
   broadcast: SentNotification;
   notifications_sent: number;
   push: CampaignPushStats | null;
+  email: CampaignEmailStats | null;
   message: string;
 }> {
   const res = await fetch(`${ADMIN_API_BASE}/notifications/campaign`, {
@@ -163,6 +170,7 @@ export async function sendNotificationCampaign(
     broadcast?: Record<string, unknown>;
     notifications_sent?: number;
     push?: CampaignPushStats | null;
+    email?: CampaignEmailStats | null;
   }>(res, 'Failed to send notification');
 
   const broadcastRaw = body.data?.broadcast ?? {};
@@ -173,6 +181,7 @@ export async function sendNotificationCampaign(
     }),
     notifications_sent: Number(body.data?.notifications_sent ?? 0),
     push: body.data?.push ?? null,
+    email: body.data?.email ?? null,
     message: body.message ?? 'Notification sent',
   };
 }

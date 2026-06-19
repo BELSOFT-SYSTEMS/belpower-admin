@@ -37,6 +37,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { buildDashboardReturn, withAdminReturn } from '@/utils/adminReturnNavigation';
 
 type StatCard = {
   key: string;
@@ -44,6 +45,7 @@ type StatCard = {
   label: string;
   value: string;
   border: string;
+  href: string;
 };
 
 function DashboardHome() {
@@ -75,6 +77,7 @@ function DashboardHome() {
 
   const showPayments = showTotalPayments(data?.stats);
   const showRevenue = showRevenueChart(data?.charts);
+  const dashboardReturn = useMemo(() => buildDashboardReturn(), []);
 
   const revenueData = useMemo(
     () =>
@@ -115,6 +118,7 @@ function DashboardHome() {
         label: 'Total Payments',
         value: formatPrice(data.stats.totalPayments.amount),
         border: 'border-green-200',
+        href: '/command-center/wallet',
       });
     }
 
@@ -125,6 +129,7 @@ function DashboardHome() {
         label: 'Total Transactions',
         value: data.stats.totalTransactions.toLocaleString(),
         border: 'border-blue-200',
+        href: '/command-center/transactions',
       },
       {
         key: 'activeUsers',
@@ -132,6 +137,7 @@ function DashboardHome() {
         label: 'Active Users',
         value: data.stats.activeUsers.toLocaleString(),
         border: 'border-purple-200',
+        href: '/command-center/users',
       },
       {
         key: 'pendingTransactions',
@@ -139,11 +145,23 @@ function DashboardHome() {
         label: 'Pending Transactions',
         value: data.stats.pendingTransactions.toLocaleString(),
         border: 'border-yellow-200',
+        href: '/command-center/transactions?status=pending',
       }
     );
 
+    if (canViewFraud && data.fraudSummary?.visible) {
+      cards.push({
+        key: 'fraudAlerts',
+        icon: <FaShieldAlt className="text-red-500 text-2xl" />,
+        label: 'Fraud Alerts',
+        value: (data.fraudSummary.openCount ?? 0).toLocaleString(),
+        border: 'border-red-200',
+        href: '/command-center/security/fraud-events',
+      });
+    }
+
     return cards;
-  }, [data?.stats, showPayments]);
+  }, [data?.stats, data?.fraudSummary, showPayments, canViewFraud]);
 
   if (isLoading && !data) {
     return (
@@ -187,13 +205,17 @@ function DashboardHome() {
       <section className="stats_section">
         {statCards.length > 0 ? (
           statCards.map((stat) => (
-            <div key={stat.key} className={`stats_card ${stat.border}`}>
+            <Link
+              key={stat.key}
+              href={stat.href}
+              className={`stats_card stats_card_link ${stat.border}`}
+            >
               <div>{stat.icon}</div>
               <div>
                 <h2>{stat.value}</h2>
                 <p>{stat.label}</p>
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className="empty_fallback">No stats available</div>
@@ -209,7 +231,10 @@ function DashboardHome() {
                 data.recentTransactions.map((tx) => (
                   <Link
                     key={tx.id}
-                    href={`/command-center/transactions/${tx.id}`}
+                    href={withAdminReturn(
+                      `/command-center/transactions/${tx.id}`,
+                      dashboardReturn
+                    )}
                     className="card_item card_item_link"
                   >
                     <div className="card_avatar">{getInitialsFromDisplayName(tx.userName)}</div>
@@ -240,7 +265,7 @@ function DashboardHome() {
                 data.newUsers.map((user) => (
                   <Link
                     key={user.id}
-                    href={`/command-center/users/${user.id}`}
+                    href={withAdminReturn(`/command-center/users/${user.id}`, dashboardReturn)}
                     className="card_item card_item_link"
                   >
                     <div className="card_avatar">{getInitialsFromDisplayName(user.fullName)}</div>
@@ -265,63 +290,6 @@ function DashboardHome() {
         </div>
 
         <div className="right_column">
-          {canViewFraud && data?.fraudSummary?.visible && (
-            <div className="card fraud_dashboard_card">
-              <div className="fraud_dashboard_card_header">
-                <h2>
-                  <FaShieldAlt style={{ marginRight: 8 }} />
-                  Fraud Alerts
-                </h2>
-                <Link href="/command-center/security/fraud-events" className="card_link">
-                  View all
-                </Link>
-              </div>
-              <div className="fraud_dashboard_stats">
-                <div>
-                  <strong>{data.fraudSummary.criticalOpen ?? 0}</strong>
-                  <span>Critical open</span>
-                </div>
-                <div>
-                  <strong>{data.fraudSummary.openCount ?? 0}</strong>
-                  <span>Open events</span>
-                </div>
-                <div>
-                  <strong>{data.fraudSummary.last24h ?? 0}</strong>
-                  <span>Last 24h</span>
-                </div>
-              </div>
-              <div className="card_list">
-                {data.fraudSummary.recent?.length ? (
-                  data.fraudSummary.recent.map((event) => (
-                    <Link
-                      key={event.id}
-                      href={`/command-center/security/fraud-events?eventId=${event.id}`}
-                      className="card_item card_item_link"
-                    >
-                      <div className="card_content">
-                        <p className="card_name">
-                          <span className={`pill pill_severity_${event.severity}`}>
-                            {event.severity}
-                          </span>
-                          {event.eventType}
-                        </p>
-                        <p className="card_amount">{event.message}</p>
-                      </div>
-                      <div className="card_meta">
-                        {event.isInternalTestAccount && (
-                          <span className="pill pill_internal_test">Internal test</span>
-                        )}
-                        <p className="card_time">{formatLastActive(event.createdAt)}</p>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <p className="empty_fallback">No recent fraud events</p>
-                )}
-              </div>
-            </div>
-          )}
-
           {showRevenue && (
             <div className="chart_card">
               <h2>Revenue Overview</h2>

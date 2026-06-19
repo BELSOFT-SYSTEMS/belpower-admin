@@ -107,6 +107,16 @@ function normalizeStats(raw: RawRecord | null | undefined): UsersPageStats | nul
     newUsers: newUsers as UsersPageStats['newUsers'],
     activeUsers,
     flaggedUsers,
+    blockedUsers:
+      normalizeStatBlock(pick<RawRecord>(raw, 'blockedUsers', 'blocked_users')) ?? {
+        count: 0,
+        definition: 'status_blocked',
+      },
+    suspendedUsers:
+      normalizeStatBlock(pick<RawRecord>(raw, 'suspendedUsers', 'suspended_users')) ?? {
+        count: 0,
+        definition: 'status_suspended',
+      },
     deletedUsers: normalizeStatBlock(pick<RawRecord>(raw, 'deletedUsers', 'deleted_users')),
   };
 }
@@ -148,6 +158,9 @@ export function normalizeUsersList(raw: RawRecord): UsersListData {
       activate: pickBool(quickActionsRaw, 'activate', 'activate'),
       message:
         ADMIN_USER_MESSAGING_ENABLED && pickBool(quickActionsRaw, 'message', 'message'),
+      clearSuspicion:
+        pickBool(quickActionsRaw, 'clearSuspicion', 'clear_suspicion') ||
+        pickBool(quickActionsRaw, 'clear_suspicion', 'clear_suspicion'),
     },
     users: users.map(normalizeUser),
     pagination: {
