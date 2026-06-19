@@ -1,5 +1,6 @@
 import { canAccess } from '@/lib/adminAuth';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
+import { isSuperAdminActor } from '@/utils/adminInternalTestAccess';
 import type { AdminProfile } from '@/types/adminAuth';
 import type {
   DashboardNewUser,
@@ -214,6 +215,8 @@ export function getMockDashboardOverview(
       userGrowth,
     },
     filters: {
+      excludeInternalTest: true,
+      canToggleInternalTestExclusion: isSuperAdminActor(admin),
       canViewInternalTestUsers: getAdminDemoMode() || canAccess(admin, 'users.list'),
       canViewDeletedUsers: false,
       appliedUserId: params.userId?.trim() ? params.userId.trim() : null,
