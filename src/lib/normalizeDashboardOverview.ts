@@ -145,6 +145,12 @@ function normalizeFilters(raw: RawRecord | undefined): DashboardFilters {
   const source = (raw ?? {}) as RawRecord;
 
   return {
+    excludeInternalTest: pickBool(source, 'excludeInternalTest', 'exclude_internal_test'),
+    canToggleInternalTestExclusion: pickBool(
+      source,
+      'canToggleInternalTestExclusion',
+      'can_toggle_internal_test_exclusion'
+    ),
     canViewInternalTestUsers: pickBool(
       source,
       'canViewInternalTestUsers',

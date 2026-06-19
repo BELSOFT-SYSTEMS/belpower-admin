@@ -61,6 +61,11 @@ async function proxyRequest(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
+  const excludeInternalTest = req.headers.get('x-exclude-internal-test');
+  if (excludeInternalTest) {
+    headers.set('X-Exclude-Internal-Test', excludeInternalTest);
+  }
+
   const init: RequestInit = {
     method: req.method,
     headers,

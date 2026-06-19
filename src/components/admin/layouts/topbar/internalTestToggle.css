@@ -1,0 +1,30 @@
+.internal_test_toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.internal_test_toggle input {
+  accent-color: #0f766e;
+}
+
+@media (max-width: 1024px) {
+  .internal_test_toggle span {
+    display: none;
+  }
+
+  .internal_test_toggle {
+    padding: 0.35rem;
+  }
+}

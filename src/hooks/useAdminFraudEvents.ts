@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getFraudEventsList, getFraudEventStats } from '@/lib/adminFraud';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import type {
   FraudEventStats,
   FraudEventsListData,
@@ -24,6 +25,7 @@ export function useAdminFraudEvents({
   enabled = true,
   includeStats = true,
 }: UseAdminFraudEventsOptions = {}) {
+  const { refreshKey } = useAdminAnalytics();
   const [data, setData] = useState<FraudEventsListData | null>(null);
   const [stats, setStats] = useState<FraudEventStats | null>(null);
   const [isLoading, setIsLoading] = useState(enabled);
@@ -62,7 +64,7 @@ export function useAdminFraudEvents({
     } finally {
       setIsLoading(false);
     }
-  }, [enabled, includeStats, page, queryParams]);
+  }, [enabled, includeStats, page, queryParams, refreshKey]);
 
   useEffect(() => {
     refresh();

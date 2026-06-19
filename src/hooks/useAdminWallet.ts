@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getMockTransactionsList, getMockWalletOverview } from '@/data/adminListPagesMock';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import { getWalletOverview } from '@/lib/adminWallet';
 import { getTransactionsList } from '@/lib/adminTransactions';
 import type { WalletActivityFilter, WalletOverviewStats } from '@/types/adminWallet';
@@ -66,6 +67,7 @@ export function useAdminWallet({
   enabled = true,
 }: UseAdminWalletOptions) {
   const { admin } = useAdminAuth();
+  const { refreshKey } = useAdminAnalytics();
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [stats, setStats] = useState<WalletOverviewStats | null>(null);
   const [transactions, setTransactions] = useState<ApiTransactionListItem[]>([]);
@@ -135,7 +137,7 @@ export function useAdminWallet({
     } finally {
       setIsLoading(false);
     }
-  }, [admin, enabled, listParams, page]);
+  }, [admin, enabled, listParams, page, refreshKey]);
 
   useEffect(() => {
     if (!enabled) {

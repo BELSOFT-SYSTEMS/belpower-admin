@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AdminAuthProvider } from '@/context/AdminAuthContext';
 import { AdminDemoProvider } from '@/context/AdminDemoContext';
+import { AdminAnalyticsProvider } from '@/context/AdminAnalyticsContext';
 import AdminDashboardLayout from './AdminDashboardLayout';
 
 export const metadata: Metadata = {
@@ -20,7 +21,9 @@ export default function CommandCenterLayout({
   return (
     <AdminAuthProvider>
       <AdminDemoProvider>
-        <AdminDashboardLayout>{children}</AdminDashboardLayout>
+        <AdminAnalyticsProvider>
+          <AdminDashboardLayout>{children}</AdminDashboardLayout>
+        </AdminAnalyticsProvider>
       </AdminDemoProvider>
     </AdminAuthProvider>
   );

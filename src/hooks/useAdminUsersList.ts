@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getMockUsersList } from '@/data/adminListPagesMock';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import { getUsersList } from '@/lib/adminUsers';
 import type {
   UsersListData,
@@ -32,6 +33,7 @@ export function useAdminUsersList({
   limit = 20,
 }: UseAdminUsersListOptions) {
   const { admin } = useAdminAuth();
+  const { refreshKey } = useAdminAnalytics();
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [data, setData] = useState<UsersListData | null>(null);
   const [cachedStats, setCachedStats] = useState<UsersPageStats | null>(null);
@@ -80,7 +82,7 @@ export function useAdminUsersList({
     } finally {
       setIsLoading(false);
     }
-  }, [admin, queryParams]);
+  }, [admin, queryParams, refreshKey]);
 
   useEffect(() => {
     refresh();

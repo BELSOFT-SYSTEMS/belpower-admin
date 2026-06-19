@@ -100,7 +100,7 @@ export default function WalletPage() {
         label: 'Total user wallet balance',
         value: totalBalanceDisplay.value,
         valueClassName: totalBalanceDisplay.isNegative ? 'wallet_balance_negative' : undefined,
-        sub: 'Across all users',
+        sub: 'Current balance held in customer wallets',
         border: 'border-blue-200',
       });
     }

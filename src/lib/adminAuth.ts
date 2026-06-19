@@ -4,6 +4,7 @@ import type {
   LoginResult,
   LoginSuccessData,
 } from '@/types/adminAuth';
+import { appendAnalyticsHeaders } from '@/utils/adminAnalyticsPreference';
 
 /** Browser calls go through the Next.js proxy to avoid CORS. */
 export const ADMIN_API_BASE =
@@ -202,6 +203,8 @@ export function adminHeaders(): Record<string, string> {
     headers.Authorization = `Bearer ${token}`;
   }
 
+  appendAnalyticsHeaders(headers);
+
   return headers;
 }
 
@@ -246,6 +249,12 @@ async function adminRequest(path: string, options: RequestInit = {}): Promise<Re
   }
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  const analyticsHeaders: Record<string, string> = {};
+  appendAnalyticsHeaders(analyticsHeaders);
+  for (const [key, value] of Object.entries(analyticsHeaders)) {
+    headers.set(key, value);
   }
 
   try {

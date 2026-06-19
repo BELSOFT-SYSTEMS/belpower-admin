@@ -37,6 +37,8 @@ export type DashboardNewUser = {
 };
 
 export type DashboardFilters = {
+  excludeInternalTest: boolean;
+  canToggleInternalTestExclusion: boolean;
   canViewInternalTestUsers: boolean;
   canViewDeletedUsers: boolean;
   appliedUserId: string | null;

@@ -3,6 +3,7 @@ import type { AdminProfile } from '@/types/adminAuth';
 type InternalTestVisibilityFilters = {
   canViewInternalTestTransactions?: boolean;
   canViewInternalTestUsers?: boolean;
+  excludeInternalTest?: boolean;
 } | null | undefined;
 
 export function isSuperAdminActor(admin: AdminProfile | null | undefined): boolean {
@@ -14,6 +15,9 @@ export function resolveCanViewInternalTest(
   filters: InternalTestVisibilityFilters,
   admin: AdminProfile | null | undefined
 ): boolean {
+  if (filters && typeof filters.excludeInternalTest === 'boolean') {
+    return !filters.excludeInternalTest && isSuperAdminActor(admin);
+  }
   if (filters && typeof filters.canViewInternalTestTransactions === 'boolean') {
     return filters.canViewInternalTestTransactions;
   }

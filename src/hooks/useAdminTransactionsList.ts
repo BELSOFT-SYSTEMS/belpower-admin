@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getMockTransactionsList } from '@/data/adminListPagesMock';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import { getTransactionsList } from '@/lib/adminTransactions';
 import type {
   TransactionType,
@@ -47,6 +48,7 @@ export function useAdminTransactionsList({
   enabled = true,
 }: UseAdminTransactionsListOptions) {
   const { admin } = useAdminAuth();
+  const { refreshKey } = useAdminAnalytics();
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [data, setData] = useState<TransactionsListData | null>(null);
   const [cachedStats, setCachedStats] = useState<TransactionsListStats | null>(null);
@@ -97,7 +99,7 @@ export function useAdminTransactionsList({
     } finally {
       setIsLoading(false);
     }
-  }, [admin, enabled, queryParams]);
+  }, [admin, enabled, queryParams, refreshKey]);
 
   useEffect(() => {
     if (!enabled) {

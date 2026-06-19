@@ -17,6 +17,7 @@ import { useAdminShell } from "@/context/AdminShellContext";
 import { canManageMaintenance } from "@/utils/adminSettingsAccess";
 import { useAdminInboxNotifications } from "@/hooks/useAdminInboxNotifications";
 import { useAdminWebPush } from "@/hooks/useAdminWebPush";
+import { InternalTestExclusionToggle } from "@/components/admin/layouts/topbar/InternalTestExclusionToggle";
 
 export default function AdminTopBar() {
   const { displayName, admin, isAuthenticated } = useAdminAuth();
@@ -98,6 +99,7 @@ export default function AdminTopBar() {
           </div>
 
           <div className="topbar_right">
+            <InternalTestExclusionToggle />
             {renderBell(25)}
 
             <div className="relative">
@@ -166,6 +168,7 @@ export default function AdminTopBar() {
           </div>
 
           <div className="flex items-center gap-4">
+          <InternalTestExclusionToggle />
           <div className="relative">
             <button
               type="button"

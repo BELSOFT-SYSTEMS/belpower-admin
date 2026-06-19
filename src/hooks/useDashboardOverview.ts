@@ -5,6 +5,7 @@ import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import { getMockDashboardOverview } from '@/data/adminDashboardMock';
 import { getDashboardOverview } from '@/lib/adminDashboard';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import type { DashboardOverview, DashboardOverviewParams } from '@/types/adminDashboard';
 
 const POLL_MS = 60_000;
@@ -21,6 +22,7 @@ export function useDashboardOverview(
   params: DashboardOverviewParams = {}
 ): UseDashboardOverviewResult {
   const { admin } = useAdminAuth();
+  const { refreshKey } = useAdminAnalytics();
   const { months = 6, recentLimit = 5, userId } = params;
   const [data, setData] = useState<DashboardOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +57,7 @@ export function useDashboardOverview(
         else setIsLoading(false);
       }
     },
-    [admin, months, recentLimit, userId]
+    [admin, months, recentLimit, userId, refreshKey]
   );
 
   useEffect(() => {
