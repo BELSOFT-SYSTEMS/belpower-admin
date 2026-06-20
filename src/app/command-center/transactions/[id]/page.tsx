@@ -31,7 +31,7 @@ import {
 } from '@/utils/transactionIcons';
 import { getTransactionTitle } from '@/data/adminMockData';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
-import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
+import { getPaymentMethodLabel, getTransactionTotalAmount } from '@/utils/transactionAmountDisplay';
 import {
   formatScheduledFrequency,
   formatTxnDateTime,
@@ -207,7 +207,7 @@ export default function TransactionDetailPage() {
       return;
     }
 
-    const refundAmount = detail.refund.amount ?? transaction.totalAmount;
+    const refundAmount = detail.refund.amount ?? getTransactionTotalAmount(detail);
     const confirmed = window.confirm(
       `Refund ${formatPrice(refundAmount)} to ${detail.user.fullName}'s wallet?\n\nThis credits the customer wallet for a failed/pending transaction where payment was taken.`
     );
@@ -466,7 +466,7 @@ export default function TransactionDetailPage() {
                   disabled={isActing}
                   title={
                     refundHint ||
-                    `Refund ${formatPrice(detail.refund.amount ?? transaction.totalAmount)} to customer wallet`
+                    `Refund ${formatPrice(detail.refund.amount ?? getTransactionTotalAmount(detail))} to customer wallet`
                   }
                   onClick={handleRefund}
                 >

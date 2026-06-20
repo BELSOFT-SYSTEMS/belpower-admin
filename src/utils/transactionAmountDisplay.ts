@@ -26,6 +26,10 @@ function totalOf(tx: BreakdownInput): number {
   return tx.total_amount ?? tx.totalAmount ?? tx.amount + serviceChargeOf(tx);
 }
 
+export function getTransactionTotalAmount(tx: BreakdownInput): number {
+  return totalOf(tx);
+}
+
 function amountPurchasedOf(tx: BreakdownInput): number | null {
   const value = tx.amount_purchased ?? tx.amountPurchased;
   if (value == null || !Number.isFinite(value) || value <= 0) return null;
