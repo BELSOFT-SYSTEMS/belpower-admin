@@ -24,6 +24,7 @@ import { TransactionFraudAudit } from '@/components/admin/transactions/Transacti
 import { BreakableTransactionReference } from '@/components/admin/transactions/BreakableTransactionReference';
 import { TransactionCustomerCard } from '@/components/admin/transactions/TransactionCustomerCard';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
+import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import {
   getTransactionIcon,
@@ -548,23 +549,47 @@ export default function TransactionDetailPage() {
                   <span className="txn_overview_eyebrow">Service</span>
                   <h3>{getTransactionTitle(transaction)}</h3>
                   <p className="txn_overview_ref">
-                    <BreakableTransactionReference
-                      value={transaction.reference}
-                      className="txn_breakable_ref"
-                    />
+                    <span className="txn_overview_ref_line">
+                      <span className="txn_overview_ref_label">Transaction ID</span>
+                      <BreakableTransactionReference
+                        value={transaction.id}
+                        className="txn_breakable_ref"
+                      />
+                    </span>
+                    <span className="txn_overview_ref_line">
+                      <span className="txn_overview_ref_label">Reference</span>
+                      <BreakableTransactionReference
+                        value={transaction.reference}
+                        className="txn_breakable_ref"
+                      />
+                    </span>
                     {transaction.order_id ? (
-                      <>
-                        <span className="txn_overview_ref_sep"> · </span>
+                      <span className="txn_overview_ref_line">
+                        <span className="txn_overview_ref_label">Order ID</span>
                         <BreakableTransactionReference
                           value={transaction.order_id}
                           className="txn_breakable_ref"
                         />
-                      </>
+                      </span>
                     ) : null}
                   </p>
                   <span className={`pill ${getTransactionStatusPillClass(transaction)}`}>
                     {getTransactionStatusLabel(transaction)}
                   </span>
+                  {transaction.type === 'electricity' && transaction.token && (
+                    <div className="txn_overview_token">
+                      <AdminCopyableValue
+                        label="Electricity token"
+                        value={transaction.token}
+                        copyLabel="Copy token"
+                      />
+                      {transaction.units != null && (
+                        <span className="txn_overview_token_units">
+                          {transaction.units} kWh
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

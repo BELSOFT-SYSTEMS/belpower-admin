@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { FaCopy, FaCheck, FaCreditCard, FaClock, FaCalendarCheck } from 'react-icons/fa';
+import { FaCreditCard, FaClock, FaCalendarCheck } from 'react-icons/fa';
 import { AdminTransaction } from '@/data/adminMockData';
 import type { TransactionPaymentInfo } from '@/types/adminTransactions';
 import { TransactionAmountBreakdown } from '@/components/admin/transactions/TransactionAmountBreakdown';
+import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { formatPrice } from '@/utils/FormatPrice';
 import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
@@ -18,44 +18,6 @@ type Props = {
   transaction: AdminTransaction;
   payment?: TransactionPaymentInfo;
 };
-
-function CopyableRef({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
-  };
-
-  return (
-    <div className="payment_ref_copy_field">
-      <span className="payment_ref_field_label">{label}</span>
-      <div className="payment_ref_copy_row">
-        <code className="payment_ref_mono">{value}</code>
-        <button
-          type="button"
-          className={`payment_ref_copy_btn${copied ? ' payment_ref_copy_btn_done' : ''}`}
-          onClick={copy}
-          title={`Copy ${label}`}
-        >
-          {copied ? <FaCheck /> : <FaCopy />}
-          <span>{copied ? 'Copied' : 'Copy'}</span>
-        </button>
-      </div>
-    </div>
-  );
-}
 
 export function TransactionPaymentReferences({ transaction, payment }: Props) {
   const scheduled = isScheduledTransaction(transaction) && transaction.scheduled_info;
@@ -85,21 +47,22 @@ export function TransactionPaymentReferences({ transaction, payment }: Props) {
         <section className="payment_ref_panel">
           <h4 className="payment_ref_panel_title">References</h4>
           <div className="payment_ref_fields">
-            <CopyableRef label="Transaction ID" value={transaction.reference} />
+            <AdminCopyableValue label="Transaction ID" value={transaction.id} />
+            <AdminCopyableValue label="Reference" value={transaction.reference} />
             {transaction.order_id && (
-              <CopyableRef label="Order ID" value={transaction.order_id} />
+              <AdminCopyableValue label="Order ID" value={transaction.order_id} />
             )}
             {payment?.gatewayReference && (
-              <CopyableRef label="Gateway reference" value={payment.gatewayReference} />
+              <AdminCopyableValue label="Gateway reference" value={payment.gatewayReference} />
             )}
             {payment?.walletDebitReference && (
-              <CopyableRef
+              <AdminCopyableValue
                 label="Wallet debit reference"
                 value={payment.walletDebitReference}
               />
             )}
             {payment?.providerReference && (
-              <CopyableRef label="Provider reference" value={payment.providerReference} />
+              <AdminCopyableValue label="Provider reference" value={payment.providerReference} />
             )}
           </div>
         </section>

@@ -370,9 +370,9 @@
 
 .txn_overview_ref {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.125rem 0.25rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   margin: 0 0 0.5rem;
   font-size: 0.8125rem;
   color: #6b7280;
@@ -381,8 +381,39 @@
   max-width: 100%;
 }
 
+.txn_overview_ref_line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+.txn_overview_ref_label {
+  flex: 0 0 auto;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
 .txn_overview_ref_sep {
   flex: 0 0 auto;
+}
+
+.txn_overview_token {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.txn_overview_token_units {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: #6b7280;
 }
 
 .txn_overview_payment_card {

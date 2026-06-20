@@ -30,6 +30,7 @@ import '@/styles/adminAdmins.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
+import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { getDiscoDisplayName } from '@/constants/discoNames';
 import { AdminTransactionsListPanel } from '@/components/admin/transactions/AdminTransactionsListPanel';
 import {
@@ -574,7 +575,11 @@ function UserDetailContent({
               <div className="overview_fields_grid">
                 <div className="overview_field">
                   <span className="overview_label">User ID</span>
-                  <span className="overview_value">{detail.id}</span>
+                  <AdminCopyableValue
+                    value={detail.id}
+                    variant="inline"
+                    className="overview_value overview_value_copyable"
+                  />
                 </div>
                 <div className="overview_field">
                   <span className="overview_label">Joined</span>

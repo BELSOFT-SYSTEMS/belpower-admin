@@ -903,6 +903,19 @@
   word-break: break-word;
 }
 
+.user_details_page .overview_value_copyable {
+  display: flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.user_details_page .overview_value_copyable .admin_copyable_mono {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .user_details_page .overview_value_emphasis {
   color: #2563eb;
 }
