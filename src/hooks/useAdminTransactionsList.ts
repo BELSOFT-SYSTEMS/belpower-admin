@@ -26,6 +26,7 @@ const DEFAULT_QUICK_ACTIONS: TransactionsQuickActions = {
   unblock: false,
   clearReview: false,
   requery: false,
+  refund: false,
 };
 
 type UseAdminTransactionsListOptions = {

@@ -446,6 +446,7 @@ function getTransactionsQuickActions(admin: AdminProfile | null): TransactionsQu
       unblock: true,
       clearReview: true,
       requery: true,
+      refund: true,
     };
   }
 
@@ -455,6 +456,7 @@ function getTransactionsQuickActions(admin: AdminProfile | null): TransactionsQu
     unblock: canAccess(admin, 'transactions.block'),
     clearReview: canAccess(admin, 'transactions.block'),
     requery: canAccess(admin, 'transactions.requery'),
+    refund: canAccess(admin, 'transactions.refund'),
   };
 }
 

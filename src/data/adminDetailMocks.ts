@@ -211,12 +211,25 @@ function buildTransactionDetail(tx: (typeof DEMO_TRANSACTIONS)[number]): Transac
       requeryProcessed: false,
       reason: null,
     },
+    refund: {
+      eligible: (tx.status === 'failed' || tx.status === 'pending') && tx.type !== 'refund',
+      reason:
+        tx.status === 'completed'
+          ? 'Refund is only available for failed or pending transactions'
+          : null,
+      amount: tx.totalAmount,
+      walletRefunded: false,
+      refundTransactionId: null,
+      refundAmount: null,
+    },
     quickActions: {
       review: true,
       block: true,
       unblock: tx.isBlocked,
       clearReview: true,
       requery: true,
+      refund:
+        (tx.status === 'failed' || tx.status === 'pending') && tx.type !== 'refund',
     },
     generatedAt: new Date().toISOString(),
   };
