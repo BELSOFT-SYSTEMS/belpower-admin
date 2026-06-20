@@ -12,6 +12,7 @@ import {
   FaCheckCircle,
   FaCreditCard,
   FaRedo,
+  FaWallet,
 } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -45,6 +46,7 @@ import { getAdminDemoMode } from '@/lib/adminDemoMode';
 import {
   blockTransaction,
   clearTransactionReview,
+  refundTransaction,
   requeryTransaction,
   unblockTransaction,
 } from '@/lib/adminTransactions';
@@ -198,6 +200,34 @@ export default function TransactionDetailPage() {
     }
   };
 
+  const handleRefund = async () => {
+    if (!transaction || !detail?.quickActions.refund || !detail.refund.eligible) return;
+    if (getAdminDemoMode()) {
+      toast.success(`Demo: refund simulated for ${transaction.reference}.`);
+      return;
+    }
+
+    const refundAmount = detail.refund.amount ?? transaction.totalAmount;
+    const confirmed = window.confirm(
+      `Refund ${formatPrice(refundAmount)} to ${detail.user.fullName}'s wallet?\n\nThis credits the customer wallet for a failed/pending transaction where payment was taken.`
+    );
+    if (!confirmed) return;
+
+    const reasonInput = window.prompt('Optional refund reason for audit log:');
+    if (reasonInput === null) return;
+
+    setIsActing(true);
+    try {
+      await refundTransaction(transaction.id, reasonInput || undefined);
+      toast.success(`Refund processed for ${transaction.reference}.`);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to refund transaction.');
+    } finally {
+      setIsActing(false);
+    }
+  };
+
   const handlePrintReceipt = async () => {
     if (!detail) return;
     setIsPrinting(true);
@@ -279,7 +309,13 @@ export default function TransactionDetailPage() {
   const showRequery = Boolean(
     quickActions.requery && detail.requery.eligible
   );
+  const showRefund = Boolean(
+    canAccess('transactions.refund') &&
+      quickActions.refund &&
+      detail.refund.eligible
+  );
   const requeryReason = detail.requery.reason?.trim();
+  const refundHint = detail.refund.reason?.trim();
 
   return (
     <div className="receipt_page_wrap transaction_details_page">
@@ -297,6 +333,20 @@ export default function TransactionDetailPage() {
               {detail.fraud.riskReason ??
                 transaction.fraud_reason ??
                 'Flagged by fraud detection rules.'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {detail.refund.walletRefunded && (
+        <div className="admin_alert admin_alert_success">
+          <span>✓</span>
+          <div>
+            <strong>Refunded to wallet</strong>
+            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem' }}>
+              {detail.refund.refundAmount != null
+                ? `${formatPrice(detail.refund.refundAmount)} credited to customer wallet.`
+                : 'This transaction has already been refunded.'}
             </p>
           </div>
         </div>
@@ -407,6 +457,20 @@ export default function TransactionDetailPage() {
                   onClick={handleRequery}
                 >
                   <FaRedo /> Manual requery
+                </button>
+              )}
+              {showRefund && (
+                <button
+                  type="button"
+                  className="header_action_refund"
+                  disabled={isActing}
+                  title={
+                    refundHint ||
+                    `Refund ${formatPrice(detail.refund.amount ?? transaction.totalAmount)} to customer wallet`
+                  }
+                  onClick={handleRefund}
+                >
+                  <FaWallet /> Refund to wallet
                 </button>
               )}
             </div>

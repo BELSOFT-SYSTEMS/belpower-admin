@@ -50,7 +50,7 @@ export const ADMIN_PERMISSION_CATALOG: AdminPermissionCatalogItem[] = [
 
 export const ADMIN_ROLE_DESCRIPTIONS: Record<string, string> = {
   super_admin: 'Full access to all admin panel features',
-  admin: 'Manage users and junior staff; no money-only finance actions',
+  admin: 'Manage users and junior staff; includes manual refunds',
   support: 'Dashboard and customer support (no money stats)',
   content_manager: 'Profile only until adverts module ships',
   finance: 'Users, transactions, money stats, refund (cannot activate users)',
@@ -76,6 +76,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[] | null> = {
     'transactions.review',
     'transactions.block',
     'transactions.requery',
+    'transactions.refund',
     'fraud.view',
     'fraud.review',
     'meters.verify',

@@ -250,6 +250,19 @@
   background: #eff6ff;
 }
 
+.detail_header_row .header_action_refund {
+  border-color: #86efac;
+  color: #166534;
+}
+
+.detail_header_row .header_action_refund svg {
+  color: #16a34a;
+}
+
+.detail_header_row .header_action_refund:hover:not(:disabled) {
+  background: #f0fdf4;
+}
+
 .detail_header_right .header_requery_hint {
   margin: 0.5rem 0 0;
   max-width: 22rem;

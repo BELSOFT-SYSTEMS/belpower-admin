@@ -5,6 +5,7 @@ import type {
   TransactionFraudInfo,
   TransactionManualRequeryInfo,
   TransactionPaymentInfo,
+  TransactionRefundInfo,
   TransactionRequeryInfo,
   TransactionReviewStatus,
   TransactionUserInfo,
@@ -120,6 +121,19 @@ function normalizeLastManualRequery(
   return { at, adminId };
 }
 
+function normalizeRefund(raw: RawRecord | undefined): TransactionRefundInfo {
+  const source = (raw ?? {}) as RawRecord;
+
+  return {
+    eligible: pickBool(source, 'eligible', 'eligible'),
+    reason: pickString(source, 'reason', 'reason'),
+    amount: pickNumber(source, 'amount', 'amount'),
+    walletRefunded: pickBool(source, 'walletRefunded', 'wallet_refunded'),
+    refundTransactionId: pickString(source, 'refundTransactionId', 'refund_transaction_id'),
+    refundAmount: pickNumber(source, 'refundAmount', 'refund_amount'),
+  };
+}
+
 function normalizeRequery(raw: RawRecord | undefined, orderId: string | null): TransactionRequeryInfo {
   const source = (raw ?? {}) as RawRecord;
 
@@ -216,6 +230,7 @@ export function normalizeAdminTransactionDetail(raw: RawRecord): TransactionDeta
     payment,
     user,
     requery: normalizeRequery(pick<RawRecord>(raw, 'requery', 'requery'), orderId),
+    refund: normalizeRefund(pick<RawRecord>(raw, 'refund', 'refund')),
     generatedAt:
       pickString(raw, 'generatedAt', 'generated_at') ?? new Date().toISOString(),
   };
@@ -229,6 +244,7 @@ export function normalizeAdminTransactionDetail(raw: RawRecord): TransactionDeta
       clearReview:
         pickBool(quickActionsRaw, 'clearReview', 'clear_review') || canBlock,
       requery: pickBool(quickActionsRaw, 'requery', 'requery'),
+      refund: pickBool(quickActionsRaw, 'refund', 'refund'),
     },
   };
 }

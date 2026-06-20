@@ -280,6 +280,7 @@ export function normalizeTransactionsList(raw: RawRecord): TransactionsListData 
       unblock: pickBool(quickActionsRaw, 'unblock', 'unblock'),
       clearReview: pickBool(quickActionsRaw, 'clearReview', 'clear_review'),
       requery: pickBool(quickActionsRaw, 'requery', 'requery'),
+      refund: pickBool(quickActionsRaw, 'refund', 'refund'),
     },
     transactions: transactions.map(normalizeApiTransactionListItem),
     pagination: {

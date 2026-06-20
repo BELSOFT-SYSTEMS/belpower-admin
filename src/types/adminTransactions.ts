@@ -24,6 +24,7 @@ export type TransactionsQuickActions = {
   unblock: boolean;
   clearReview: boolean;
   requery: boolean;
+  refund: boolean;
 };
 
 export type TransactionsVolumeStat = {
@@ -201,6 +202,15 @@ export type TransactionRequeryInfo = {
   reason?: string | null;
 };
 
+export type TransactionRefundInfo = {
+  eligible: boolean;
+  reason?: string | null;
+  amount?: number | null;
+  walletRefunded: boolean;
+  refundTransactionId?: string | null;
+  refundAmount?: number | null;
+};
+
 /** Detail — extends list item with full service/payment/fraud fields */
 export type ApiTransactionDetail = ApiTransactionListItem & {
   orderId?: string | null;
@@ -217,6 +227,7 @@ export type ApiTransactionDetail = ApiTransactionListItem & {
   payment: TransactionPaymentInfo;
   user: TransactionUserInfo;
   requery: TransactionRequeryInfo;
+  refund: TransactionRefundInfo;
   generatedAt: string;
 };
 
@@ -243,4 +254,13 @@ export type RequeryTransactionResult = {
   transactionId: string;
   status: TransactionStatus;
   reviewStatus?: TransactionReviewStatus;
+};
+
+export type RefundTransactionResult = {
+  refund: {
+    success: boolean;
+    message?: string;
+    refundTransaction?: { id: string; amount: number; reference?: string };
+    newBalance?: number;
+  };
 };

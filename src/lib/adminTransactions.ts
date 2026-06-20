@@ -12,6 +12,7 @@ import type {
   BlockTransactionResult,
   ClearTransactionReviewResult,
   RequeryTransactionResult,
+  RefundTransactionResult,
   TransactionDetailData,
   TransactionsListData,
   TransactionsListParams,
@@ -344,4 +345,13 @@ export async function requeryTransaction(
   transactionId: string
 ): Promise<RequeryTransactionResult> {
   return postTransactionByIdAction<RequeryTransactionResult>(transactionId, 'requery');
+}
+
+export async function refundTransaction(
+  transactionId: string,
+  reason?: string
+): Promise<RefundTransactionResult> {
+  return postTransactionByIdAction<RefundTransactionResult>(transactionId, 'refund', {
+    ...(reason?.trim() ? { reason: reason.trim() } : {}),
+  });
 }
