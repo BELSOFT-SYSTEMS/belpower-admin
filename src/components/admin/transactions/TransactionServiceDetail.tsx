@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { AdminTransaction } from '@/data/adminMockData';
-import { ElectricityTokenPanel } from '@/components/admin/transactions/ElectricityTokenPanel';
 import { getDiscoDisplayName } from '@/constants/discoNames';
 import {
   getProviderDisplayName,
@@ -113,17 +112,6 @@ export function TransactionServiceDetail({ transaction }: Props) {
                   label="Payment method"
                   value={getPaymentMethodLabel(transaction.payment_method)}
                 />
-                <ServiceField label="Amount paid" value={formatPrice(transaction.amount)} />
-                <ServiceField
-                  label="Amount purchased"
-                  value={formatPrice(transaction.amount_purchased ?? 0)}
-                />
-                <ServiceField
-                  label="Service charge"
-                  value={formatPrice(transaction.service_charge)}
-                />
-                <ServiceField label="VAT" value={formatPrice(transaction.vat)} />
-                <ServiceField label="Total paid" value={formatPrice(transaction.total_amount)} />
               </>
             )}
             {isCable && (
@@ -132,12 +120,6 @@ export function TransactionServiceDetail({ transaction }: Props) {
                   label="Payment method"
                   value={getPaymentMethodLabel(transaction.payment_method)}
                 />
-                <ServiceField label="Package amount" value={formatPrice(transaction.amount)} />
-                <ServiceField
-                  label="Service charge"
-                  value={formatPrice(transaction.service_charge)}
-                />
-                <ServiceField label="Total paid" value={formatPrice(transaction.total_amount)} />
               </>
             )}
             {isCable && <ServiceField label="Customer" value={transaction.customer_name} />}
@@ -174,14 +156,6 @@ export function TransactionServiceDetail({ transaction }: Props) {
           </div>
         </section>
       </div>
-
-      {isElectricity && (
-        <ElectricityTokenPanel
-          token={transaction.token}
-          units={transaction.units}
-          status={transaction.status}
-        />
-      )}
     </div>
   );
 }
