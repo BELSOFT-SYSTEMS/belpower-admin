@@ -13,6 +13,7 @@ type MaintenanceToggle = {
   id: MaintenanceToggleKey;
   label: string;
   description: string;
+  section?: 'maintenance' | 'dva';
 };
 
 type BannerState = {
@@ -36,6 +37,20 @@ const MAINTENANCE_TOGGLES: MaintenanceToggle[] = [
     id: 'stop_wallet_funding',
     label: 'Stop wallet funding',
     description: 'Disable wallet top-ups and deposits.',
+  },
+  {
+    id: 'stop_paystack_dva',
+    label: 'Disable Paystack DVA',
+    description:
+      'Blocks Paystack DVA wallet funding and electricity/cable purchases. Card and wallet payments stay available.',
+    section: 'dva',
+  },
+  {
+    id: 'stop_buypower_dva',
+    label: 'Disable BuyPower DVA',
+    description:
+      'Blocks BuyPower DVA wallet top-up and electricity/cable purchases. Card and wallet payments stay available.',
+    section: 'dva',
   },
   {
     id: 'stop_airtime',
@@ -63,6 +78,10 @@ const BANNER_ON: Record<MaintenanceToggleKey, string> = {
   stop_login: 'User login has been stopped for maintenance. All non-deleted users were notified.',
   stop_all_purchases: 'All purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_wallet_funding: 'Wallet funding has been stopped for maintenance. All non-deleted users were notified.',
+  stop_paystack_dva:
+    'Paystack DVA has been disabled. Wallet funding and electricity/cable via Paystack DVA are unavailable.',
+  stop_buypower_dva:
+    'BuyPower DVA has been disabled. Wallet top-up and electricity/cable via BuyPower DVA are unavailable.',
   stop_airtime: 'Airtime purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_data: 'Data purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_electricity: 'Electricity purchases have been stopped for maintenance. All non-deleted users were notified.',
@@ -73,6 +92,8 @@ const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
   stop_login: 'User login has been re-enabled. All non-deleted users were notified.',
   stop_all_purchases: 'All purchases have been re-enabled. All non-deleted users were notified.',
   stop_wallet_funding: 'Wallet funding has been re-enabled. All non-deleted users were notified.',
+  stop_paystack_dva: 'Paystack DVA has been re-enabled for wallet funding and utility purchases.',
+  stop_buypower_dva: 'BuyPower DVA has been re-enabled for wallet top-up and utility purchases.',
   stop_airtime: 'Airtime purchases have been re-enabled. All non-deleted users were notified.',
   stop_data: 'Data purchases have been re-enabled. All non-deleted users were notified.',
   stop_electricity: 'Electricity purchases have been re-enabled. All non-deleted users were notified.',
@@ -80,19 +101,62 @@ const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
 };
 
 function getBannerForToggle(id: MaintenanceToggleKey, enabled: boolean): BannerState {
+  const isDvaToggle = id === 'stop_paystack_dva' || id === 'stop_buypower_dva';
+
   if (enabled) {
     return {
       variant: 'success',
-      title: 'Maintenance enabled',
+      title: isDvaToggle ? 'DVA provider disabled' : 'Maintenance enabled',
       message: BANNER_ON[id],
     };
   }
 
   return {
     variant: 'info',
-    title: 'Service restored',
+    title: isDvaToggle ? 'DVA provider enabled' : 'Service restored',
     message: BANNER_OFF[id],
   };
+}
+
+const MAINTENANCE_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section !== 'dva');
+const DVA_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section === 'dva');
+
+function renderToggleList(
+  toggles: MaintenanceToggle[],
+  flags: Record<MaintenanceToggleKey, boolean> | null,
+  updatingKey: MaintenanceToggleKey | null,
+  handleToggle: (id: MaintenanceToggleKey, enabled: boolean) => void
+) {
+  return (
+    <ul className="settings_toggle_list">
+      {toggles.map((toggle) => {
+        const enabled = flags?.[toggle.id] ?? false;
+        const isUpdating = updatingKey === toggle.id;
+
+        return (
+          <li
+            key={toggle.id}
+            className={`settings_toggle_row${enabled ? ' is_active' : ''}`}
+          >
+            <div className="settings_toggle_copy">
+              <span className="settings_toggle_label">{toggle.label}</span>
+              <p className="settings_toggle_desc">{toggle.description}</p>
+            </div>
+            <label className="settings_switch">
+              <input
+                type="checkbox"
+                checked={enabled}
+                disabled={isUpdating || !flags}
+                onChange={(e) => handleToggle(toggle.id, e.target.checked)}
+                aria-label={`${toggle.label} maintenance`}
+              />
+              <span className="settings_switch_track" />
+            </label>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 export default function SettingsPage() {
@@ -168,38 +232,24 @@ export default function SettingsPage() {
           <p>Seven independent switches. Turning one on or off notifies all eligible users.</p>
         </div>
 
-        {isLoading ? (
-          <p className="page_subtitle">Loading maintenance settings…</p>
-        ) : (
-          <ul className="settings_toggle_list">
-            {MAINTENANCE_TOGGLES.map((toggle) => {
-              const enabled = flags?.[toggle.id] ?? false;
-              const isUpdating = updatingKey === toggle.id;
+        {isLoading
+          ? <p className="page_subtitle">Loading maintenance settings…</p>
+          : renderToggleList(MAINTENANCE_SECTION_TOGGLES, flags, updatingKey, handleToggle)}
+      </section>
 
-              return (
-                <li
-                  key={toggle.id}
-                  className={`settings_toggle_row${enabled ? ' is_active' : ''}`}
-                >
-                  <div className="settings_toggle_copy">
-                    <span className="settings_toggle_label">{toggle.label}</span>
-                    <p className="settings_toggle_desc">{toggle.description}</p>
-                  </div>
-                  <label className="settings_switch">
-                    <input
-                      type="checkbox"
-                      checked={enabled}
-                      disabled={isUpdating || !flags}
-                      onChange={(e) => handleToggle(toggle.id, e.target.checked)}
-                      aria-label={`${toggle.label} maintenance`}
-                    />
-                    <span className="settings_switch_track" />
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+      <section className="settings_card">
+        <div className="settings_card_header">
+          <h2>DVA provider controls</h2>
+          <p>
+            Disable Paystack or BuyPower DVA independently for wallet funding and electricity/cable.
+            Apps read <code>/api/v1/config/payment-availability</code> to hide unavailable options.
+            No mass user notifications are sent for these toggles.
+          </p>
+        </div>
+
+        {isLoading
+          ? <p className="page_subtitle">Loading DVA settings…</p>
+          : renderToggleList(DVA_SECTION_TOGGLES, flags, updatingKey, handleToggle)}
       </section>
     </div>
   );

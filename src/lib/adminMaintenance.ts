@@ -56,6 +56,8 @@ function normalizeMaintenanceState(raw: Record<string, unknown> | undefined): Ma
     userLogin: Boolean(raw?.userLogin),
     userPurchase: Boolean(raw?.userPurchase),
     walletFunding: Boolean(raw?.walletFunding),
+    paystackDva: Boolean(raw?.paystackDva),
+    buyPowerDva: Boolean(raw?.buyPowerDva),
     services: {
       airtime: Boolean(services.airtime),
       data: Boolean(services.data),
@@ -70,6 +72,8 @@ export function maintenanceStateToFlags(state: MaintenanceState): Record<Mainten
     stop_login: state.userLogin,
     stop_all_purchases: state.userPurchase,
     stop_wallet_funding: state.walletFunding,
+    stop_paystack_dva: state.paystackDva,
+    stop_buypower_dva: state.buyPowerDva,
     stop_airtime: state.services.airtime,
     stop_data: state.services.data,
     stop_electricity: state.services.electricity,
@@ -88,6 +92,10 @@ export function buildMaintenancePatch(
       return { userPurchase: enabled };
     case 'stop_wallet_funding':
       return { walletFunding: enabled };
+    case 'stop_paystack_dva':
+      return { paystackDva: enabled };
+    case 'stop_buypower_dva':
+      return { buyPowerDva: enabled };
     case 'stop_airtime':
       return { services: { airtime: enabled } };
     case 'stop_data':
