@@ -9,6 +9,8 @@ export type UserDetailQuickActions = {
   message: boolean;
   clearSuspicion: boolean;
   delete: boolean;
+  purchaseBills?: boolean;
+  walletCreditManual?: boolean;
 };
 
 export type UserMeterType = 'prepaid' | 'postpaid';

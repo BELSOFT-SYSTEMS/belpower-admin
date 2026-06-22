@@ -72,6 +72,12 @@ function normalizeQuickActions(raw: RawRecord | undefined): UserDetailQuickActio
     message: ADMIN_USER_MESSAGING_ENABLED && pickBool(source, 'message', 'message'),
     clearSuspicion: pickBool(source, 'clearSuspicion', 'clear_suspicion'),
     delete: pickBool(source, 'delete', 'delete'),
+    purchaseBills:
+      pickBool(source, 'purchaseBills', 'purchase_bills') ||
+      pickBool(source, 'purchaseBills', 'purchaseBills'),
+    walletCreditManual:
+      pickBool(source, 'walletCreditManual', 'wallet_credit_manual') ||
+      pickBool(source, 'walletCreditManual', 'walletCreditManual'),
   };
 }
 

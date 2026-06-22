@@ -1,0 +1,743 @@
+.admin_purchase_tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin_purchase_loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  color: #64748b;
+}
+
+.admin_purchase_preflight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.admin_purchase_eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin_purchase_balance {
+  font-size: 1.5rem;
+  color: #0f172a;
+}
+
+.admin_purchase_preflight_meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.admin_purchase_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.admin_purchase_card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem;
+  text-align: center;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin_purchase_card:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.08);
+}
+
+.admin_purchase_card:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin_purchase_card_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+}
+
+.admin_purchase_card_icon img {
+  width: 100%;
+  height: auto;
+}
+
+.admin_purchase_card_airtime {
+  background: #dcfce7;
+}
+
+.admin_purchase_card_data {
+  background: #fce7f3;
+}
+
+.admin_purchase_card_cable {
+  background: #fef9c3;
+}
+
+.admin_purchase_card_electricity {
+  background: #f3e8ff;
+}
+
+.admin_purchase_card strong {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.admin_purchase_card span {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.admin_purchase_unavailable {
+  color: #b45309;
+  font-style: normal;
+  font-size: 0.75rem;
+}
+
+.admin_purchase_modal_backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  padding: 5.5rem 1rem 2rem;
+  overflow-y: auto;
+  background: rgb(15 23 42 / 0.45);
+}
+
+.admin_purchase_processing_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.5);
+}
+
+.admin_purchase_processing_card {
+  width: min(100%, 28rem);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  text-align: center;
+}
+
+.admin_purchase_processing_spinner {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: #3b82f6;
+}
+
+.admin_purchase_processing_spinner svg {
+  animation: admin_purchase_spin 0.8s linear infinite;
+}
+
+.admin_purchase_processing_card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin_purchase_processing_card p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.admin_purchase_status_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  border-radius: 9999px;
+}
+
+.admin_purchase_status_icon_success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.admin_purchase_status_icon_pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.admin_purchase_status_icon_error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.admin_purchase_status_amount {
+  margin-bottom: 0.5rem !important;
+  font-weight: 600;
+  color: #111827 !important;
+}
+
+.admin_purchase_status_meta {
+  margin-top: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+.admin_purchase_status_countdown {
+  margin-top: 1rem !important;
+  font-size: 0.8125rem !important;
+  color: #6b7280 !important;
+}
+
+.admin_purchase_status_actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.admin_purchase_status_success h2 {
+  color: #166534;
+}
+
+.admin_purchase_status_pending h2 {
+  color: #b45309;
+}
+
+.admin_purchase_status_error h2 {
+  color: #b91c1c;
+}
+
+@keyframes admin_purchase_spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.admin_purchase_modal {
+  width: min(100%, 640px);
+  max-height: calc(100vh - 7rem);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 40px rgb(15 23 42 / 0.18);
+  overflow: hidden;
+}
+
+.admin_purchase_modal_scroll {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.admin_purchase_modal_topbar {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+}
+
+.admin_purchase_modal_topbar h5 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin_purchase_topbar_spacer {
+  width: 2.5rem;
+}
+
+.admin_purchase_back_btn,
+.admin_purchase_modal_close {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  color: #1f2937;
+}
+
+.admin_purchase_back_btn:hover,
+.admin_purchase_modal_close:hover {
+  background: #f3f4f6;
+}
+
+.admin_purchase_modal_close {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.admin_purchase_form_body,
+.admin_purchase_confirm_body {
+  padding: 1.25rem;
+}
+
+.admin_purchase_form_actions,
+.admin_purchase_confirm_actions {
+  display: flex;
+  justify-content: center;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.admin_purchase_field_group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.admin_purchase_field_group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.admin_purchase_field_group input,
+.admin_purchase_field_group select,
+.admin_purchase_field_group textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  font: inherit;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin_purchase_field_group input:focus,
+.admin_purchase_field_group select:focus,
+.admin_purchase_field_group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.admin_purchase_number_network {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .admin_purchase_number_network {
+    grid-template-columns: 38% 62%;
+  }
+}
+
+.admin_purchase_select_network {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.admin_purchase_select_network figure {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.admin_purchase_select_network select {
+  border: 0;
+  padding: 0.25rem 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin_purchase_select_network select:focus {
+  box-shadow: none;
+}
+
+.admin_purchase_fixed_amounts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin_purchase_fixed_amounts_2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .admin_purchase_fixed_amounts_2col {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin_purchase_fixed_amounts button {
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.admin_purchase_fixed_amounts .selected {
+  background: #2563eb;
+  color: #fff;
+}
+
+.admin_purchase_fixed_amounts .not_selected {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.admin_purchase_amount_card {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+}
+
+.admin_purchase_amount_card p {
+  margin: 0;
+}
+
+.admin_purchase_placeholder {
+  color: #9ca3af;
+}
+
+.admin_purchase_tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin_purchase_tabs button {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.admin_purchase_tabs .tab_active {
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin_purchase_bundle_options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .admin_purchase_bundle_options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin_purchase_bundle_options button {
+  border: 0;
+  border-radius: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin_purchase_bundle_options button span {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.admin_purchase_bundle_options button p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+}
+
+.admin_purchase_bundle_options .selected {
+  background: #2563eb;
+  color: #fff;
+}
+
+.admin_purchase_bundle_options .not_selected {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.admin_purchase_flat_packages {
+  grid-template-columns: 1fr;
+}
+
+.admin_purchase_meter_wrap {
+  position: relative;
+}
+
+.admin_purchase_meter_wrap input.verified {
+  border-color: #22c55e;
+}
+
+.admin_purchase_meter_status {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8125rem;
+  color: #2563eb;
+}
+
+.admin_purchase_meter_status.verified {
+  color: #16a34a;
+}
+
+.admin_purchase_verified_box {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+}
+
+.admin_purchase_verified_box p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #15803d;
+}
+
+.admin_purchase_verified_box p + p {
+  margin-top: 0.25rem;
+  color: #16a34a;
+}
+
+.admin_purchase_subheading {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin_purchase_error {
+  margin: 0.25rem 0 0;
+  color: #dc2626;
+  font-size: 0.8125rem;
+}
+
+.admin_purchase_inline_loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #64748b;
+  padding: 1rem 0;
+}
+
+.admin_purchase_btn_wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.admin_purchase_btn_wrap button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  border: 0;
+  border-radius: 0.125rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(to bottom, #0064ff, #000041);
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.admin_purchase_btn_wrap button:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #1e88e5, #0d47a1);
+}
+
+.admin_purchase_btn_wrap button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+.admin_purchase_continue_btn {
+  width: 100%;
+  max-width: 300px;
+}
+
+.admin_purchase_confirm_section {
+  margin-bottom: 1.5rem;
+}
+
+.admin_purchase_confirm_section:last-child {
+  margin-bottom: 0;
+}
+
+.admin_purchase_section_title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.admin_purchase_section_title::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  background: #4f46e5;
+}
+
+.admin_purchase_provider_info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+}
+
+.admin_purchase_provider_logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+  flex-shrink: 0;
+}
+
+.admin_purchase_provider_logo img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.admin_purchase_provider_name {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin_purchase_provider_meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.admin_purchase_amount_row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
+  font-size: 0.9375rem;
+}
+
+.admin_purchase_amount_row:last-child {
+  border-bottom: 0;
+}
+
+.admin_purchase_amount_total {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #d1d5db;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin_purchase_balance_ok {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.admin_purchase_balance_low {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.admin_purchase_insufficient {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-left: 4px solid #f87171;
+  border-radius: 0.375rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.875rem;
+}
+
+.admin_wallet_credit_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.admin_wallet_credit_intro {
+  margin-top: 0;
+}
+
+.admin_wallet_credit_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0.5rem;
+}
+
+.admin_wallet_credit_form .admin_purchase_field_group:last-of-type {
+  margin-bottom: 0.75rem;
+}
+
+.admin_wallet_credit_checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #374151;
+}

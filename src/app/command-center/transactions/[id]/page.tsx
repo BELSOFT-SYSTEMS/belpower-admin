@@ -25,6 +25,7 @@ import { BreakableTransactionReference } from '@/components/admin/transactions/B
 import { TransactionCustomerCard } from '@/components/admin/transactions/TransactionCustomerCard';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
 import { ElectricityTokenPanel } from '@/components/admin/transactions/ElectricityTokenPanel';
+import { TransactionRefundModal } from '@/components/admin/transactions/TransactionRefundModal';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import {
   getTransactionIcon,
@@ -87,6 +88,7 @@ export default function TransactionDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isActing, setIsActing] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [refundModalOpen, setRefundModalOpen] = useState(false);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -201,26 +203,24 @@ export default function TransactionDetailPage() {
     }
   };
 
-  const handleRefund = async () => {
+  const handleRefundClick = () => {
+    if (!transaction || !detail?.quickActions.refund || !detail.refund.eligible) return;
+    setRefundModalOpen(true);
+  };
+
+  const handleConfirmRefund = async (reason?: string) => {
     if (!transaction || !detail?.quickActions.refund || !detail.refund.eligible) return;
     if (getAdminDemoMode()) {
       toast.success(`Demo: refund simulated for ${transaction.reference}.`);
+      setRefundModalOpen(false);
       return;
     }
 
-    const refundAmount = detail.refund.amount ?? getTransactionTotalAmount(detail);
-    const confirmed = window.confirm(
-      `Refund ${formatPrice(refundAmount)} to ${detail.user.fullName}'s wallet?\n\nThis credits the customer wallet for a failed/pending transaction where payment was taken.`
-    );
-    if (!confirmed) return;
-
-    const reasonInput = window.prompt('Optional refund reason for audit log:');
-    if (reasonInput === null) return;
-
     setIsActing(true);
     try {
-      await refundTransaction(transaction.id, reasonInput || undefined);
+      await refundTransaction(transaction.id, reason);
       toast.success(`Refund processed for ${transaction.reference}.`);
+      setRefundModalOpen(false);
       await refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to refund transaction.');
@@ -469,7 +469,7 @@ export default function TransactionDetailPage() {
                     refundHint ||
                     `Refund ${formatPrice(detail.refund.amount ?? getTransactionTotalAmount(detail))} to customer wallet`
                   }
-                  onClick={handleRefund}
+                  onClick={handleRefundClick}
                 >
                   <FaWallet /> Refund to wallet
                 </button>
@@ -658,6 +658,19 @@ export default function TransactionDetailPage() {
           </div>
         )}
       </div>
+
+      <TransactionRefundModal
+        open={refundModalOpen}
+        userName={detail.user.fullName}
+        refundAmount={detail.refund.amount ?? getTransactionTotalAmount(detail)}
+        transactionReference={transaction.reference}
+        eligibilityHint={refundHint}
+        isSubmitting={isActing}
+        onClose={() => {
+          if (!isActing) setRefundModalOpen(false);
+        }}
+        onConfirm={handleConfirmRefund}
+      />
     </div>
   );
 }

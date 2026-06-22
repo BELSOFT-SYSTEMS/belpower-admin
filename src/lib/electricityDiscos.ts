@@ -1,4 +1,5 @@
 import { DISCO_NAMES, getDiscoDisplayName } from '@/constants/discoNames';
+import { ADMIN_API_BASE, adminHeaders } from '@/lib/adminAuth';
 import type { ElectricityDisco, ElectricityDiscosApiResponse } from '@/types/electricityDiscos';
 
 export function mapPowerDiscosRecord(data: Record<string, boolean>): ElectricityDisco[] {
@@ -51,7 +52,31 @@ export function toDiscoDropdownOptions(
   ];
 }
 
-export async function fetchElectricityDiscos(): Promise<ElectricityDisco[]> {
+async function fetchElectricityDiscosFromAdminCatalog(): Promise<ElectricityDisco[] | null> {
+  try {
+    const response = await fetch(`${ADMIN_API_BASE}/purchases/catalog/discos/electricity`, {
+      method: 'GET',
+      headers: {
+        ...adminHeaders(),
+        Accept: 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    const payload = (await response.json()) as ElectricityDiscosApiResponse;
+
+    if (!response.ok || payload.success === false || !payload.data) {
+      return null;
+    }
+
+    const discos = mapPowerDiscosResponse(payload);
+    return discos.length > 0 ? discos : null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchElectricityDiscosFromGuestRoute(): Promise<ElectricityDisco[]> {
   const response = await fetch('/api/bills/electricity/discos', {
     method: 'GET',
     headers: { Accept: 'application/json' },
@@ -70,4 +95,13 @@ export async function fetchElectricityDiscos(): Promise<ElectricityDisco[]> {
   }
 
   return discos;
+}
+
+export async function fetchElectricityDiscos(): Promise<ElectricityDisco[]> {
+  const adminDiscos = await fetchElectricityDiscosFromAdminCatalog();
+  if (adminDiscos && adminDiscos.length > 0) {
+    return adminDiscos;
+  }
+
+  return fetchElectricityDiscosFromGuestRoute();
 }

@@ -27,6 +27,7 @@ import '@/styles/adminUserDetails.css';
 import '@/styles/adminTransactions.css';
 import '@/styles/adminShared.css';
 import '@/styles/adminAdmins.css';
+import '@/styles/adminUserPurchases.css';
 import { formatPrice } from '@/utils/FormatPrice';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
@@ -39,6 +40,8 @@ import {
 } from '@/components/admin/users/UserQuickActionModal';
 import { AdminConfirmModal } from '@/components/admin/admins/AdminConfirmModal';
 import { ClearSuspicionModal } from '@/components/admin/users/ClearSuspicionModal';
+import { BillPurchaseTab } from '@/components/admin/users/billPurchase/BillPurchaseTab';
+import { ManualWalletCreditPanel } from '@/components/admin/users/walletCredit/ManualWalletCreditPanel';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminUserDetail } from '@/hooks/useAdminUserDetail';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
@@ -300,6 +303,10 @@ function UserDetailContent({
 }: UserDetailContentProps) {
   const { canAccess } = useAdminAuth();
   const { quickActions, displayStatus } = detail;
+  const canPurchaseBills =
+    canAccess('users.purchase_bills') || Boolean(quickActions.purchaseBills);
+  const canWalletCredit =
+    canAccess('users.wallet_credit_manual') || Boolean(quickActions.walletCreditManual);
   const actions = getDetailActionAvailability(displayStatus);
 
   const suspiciousTxnCount = detail.suspiciousTransactionCount;
@@ -371,6 +378,12 @@ function UserDetailContent({
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
+    ...(canPurchaseBills && displayStatus !== 'deleted'
+      ? [{ id: 'bill-purchase', label: 'Bill Purchase' }]
+      : []),
+    ...(canWalletCredit && displayStatus !== 'deleted'
+      ? [{ id: 'wallet-credit', label: 'Wallet credit' }]
+      : []),
     {
       id: 'transactions',
       label: 'Transactions',
@@ -701,6 +714,27 @@ function UserDetailContent({
                 <p className="empty_fallback">No primary meter on file.</p>
               </section>
             )}
+          </div>
+        )}
+
+        {activeTab === 'bill-purchase' && (
+          <div className="tab_panel">
+            <BillPurchaseTab
+              userId={detail.id}
+              userEmail={detail.email}
+              userPhone={detail.phone}
+              userName={detail.fullName}
+              onPurchaseComplete={onActionComplete}
+            />
+          </div>
+        )}
+
+        {activeTab === 'wallet-credit' && (
+          <div className="tab_panel">
+            <ManualWalletCreditPanel
+              userId={detail.id}
+              onCreditComplete={onActionComplete}
+            />
           </div>
         )}
 
