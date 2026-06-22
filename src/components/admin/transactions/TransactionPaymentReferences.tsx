@@ -4,6 +4,7 @@ import { FaCreditCard, FaClock, FaCalendarCheck } from 'react-icons/fa';
 import { AdminTransaction } from '@/data/adminMockData';
 import type { TransactionPaymentInfo } from '@/types/adminTransactions';
 import { TransactionAmountBreakdown } from '@/components/admin/transactions/TransactionAmountBreakdown';
+import { ElectricityTokenPanel } from '@/components/admin/transactions/ElectricityTokenPanel';
 import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { formatPrice } from '@/utils/FormatPrice';
 import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
@@ -78,6 +79,15 @@ export function TransactionPaymentReferences({ transaction, payment }: Props) {
           </div>
         </section>
       </div>
+
+      {transaction.type === 'electricity' && (
+        <ElectricityTokenPanel
+          token={transaction.token}
+          units={transaction.units}
+          status={transaction.status}
+          className="payment_ref_token_panel"
+        />
+      )}
 
       <section className="payment_ref_panel payment_ref_dates_panel">
         <h4 className="payment_ref_panel_title">Timeline</h4>

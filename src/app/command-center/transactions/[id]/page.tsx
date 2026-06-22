@@ -24,7 +24,7 @@ import { TransactionFraudAudit } from '@/components/admin/transactions/Transacti
 import { BreakableTransactionReference } from '@/components/admin/transactions/BreakableTransactionReference';
 import { TransactionCustomerCard } from '@/components/admin/transactions/TransactionCustomerCard';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
-import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
+import { ElectricityTokenPanel } from '@/components/admin/transactions/ElectricityTokenPanel';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import {
   getTransactionIcon,
@@ -576,19 +576,13 @@ export default function TransactionDetailPage() {
                   <span className={`pill ${getTransactionStatusPillClass(transaction)}`}>
                     {getTransactionStatusLabel(transaction)}
                   </span>
-                  {transaction.type === 'electricity' && transaction.token && (
-                    <div className="txn_overview_token">
-                      <AdminCopyableValue
-                        label="Electricity token"
-                        value={transaction.token}
-                        copyLabel="Copy token"
-                      />
-                      {transaction.units != null && (
-                        <span className="txn_overview_token_units">
-                          {transaction.units} kWh
-                        </span>
-                      )}
-                    </div>
+                  {transaction.type === 'electricity' && (
+                    <ElectricityTokenPanel
+                      token={transaction.token}
+                      units={transaction.units}
+                      status={transaction.status}
+                      variant="overview"
+                    />
                   )}
                 </div>
               </div>

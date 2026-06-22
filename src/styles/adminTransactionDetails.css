@@ -790,6 +790,22 @@
   border-color: #86efac;
 }
 
+.service_detail_token_missing {
+  margin: 0.75rem 0 0;
+  color: var(--admin-muted, #64748b);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.service_detail_token_units_block {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.payment_ref_token_panel {
+  margin-top: 1rem;
+}
+
 .service_detail_token_value {
   display: block;
   width: 100%;

@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
-import { FaCopy, FaCheck } from 'react-icons/fa';
 import { AdminTransaction } from '@/data/adminMockData';
+import { ElectricityTokenPanel } from '@/components/admin/transactions/ElectricityTokenPanel';
 import { getDiscoDisplayName } from '@/constants/discoNames';
 import {
   getProviderDisplayName,
@@ -39,7 +38,6 @@ function PaymentRow({ label, value }: { label: string; value: React.ReactNode })
 }
 
 export function TransactionServiceDetail({ transaction }: Props) {
-  const [tokenCopied, setTokenCopied] = useState(false);
   const type = transaction.type;
   const isElectricity = type === 'electricity';
   const isCable = type === 'cable';
@@ -52,16 +50,6 @@ export function TransactionServiceDetail({ transaction }: Props) {
     provider: transaction.provider,
     service: transaction.service,
   });
-
-  const copyToken = async (token: string) => {
-    try {
-      await navigator.clipboard.writeText(token);
-      setTokenCopied(true);
-      window.setTimeout(() => setTokenCopied(false), 2000);
-    } catch {
-      setTokenCopied(false);
-    }
-  };
 
   return (
     <div className="service_detail_tab">
@@ -187,33 +175,12 @@ export function TransactionServiceDetail({ transaction }: Props) {
         </section>
       </div>
 
-      {isElectricity && transaction.token && (
-        <div className="service_detail_token_card">
-          <div className="service_detail_token_top">
-            <div>
-              <span className="service_detail_token_label">Electricity token</span>
-              {transaction.units != null && (
-                <span className="service_detail_token_units">{transaction.units} kWh</span>
-              )}
-            </div>
-            <button
-              type="button"
-              className={`service_detail_copy_btn${tokenCopied ? ' service_detail_copy_btn_done' : ''}`}
-              onClick={() => copyToken(transaction.token!)}
-            >
-              {tokenCopied ? (
-                <>
-                  <FaCheck /> Copied
-                </>
-              ) : (
-                <>
-                  <FaCopy /> Copy token
-                </>
-              )}
-            </button>
-          </div>
-          <code className="service_detail_token_value">{transaction.token}</code>
-        </div>
+      {isElectricity && (
+        <ElectricityTokenPanel
+          token={transaction.token}
+          units={transaction.units}
+          status={transaction.status}
+        />
       )}
     </div>
   );
