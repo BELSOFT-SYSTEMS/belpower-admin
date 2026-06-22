@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaCheckCircle, FaInfoCircle, FaTimes } from 'react-icons/fa';
 import '@/styles/adminSettings.css';
 import '@/styles/adminShared.css';
@@ -120,6 +120,7 @@ function getBannerForToggle(id: MaintenanceToggleKey, enabled: boolean): BannerS
 
 const MAINTENANCE_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section !== 'dva');
 const DVA_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section === 'dva');
+const SETTINGS_TOAST_AUTO_DISMISS_MS = 6000;
 
 function renderToggleList(
   toggles: MaintenanceToggle[],
@@ -164,6 +165,28 @@ export default function SettingsPage() {
   const canManage = canManageMaintenance(admin);
   const { flags, isLoading, updatingKey, error, updateToggle } = useAdminMaintenance(canManage);
   const [banner, setBanner] = useState<BannerState | null>(null);
+  const [toastDismissed, setToastDismissed] = useState(false);
+
+  const activeToast: BannerState | null = banner
+    ?? (error && !toastDismissed
+      ? { variant: 'error', title: 'Error', message: error }
+      : null);
+
+  useEffect(() => {
+    setToastDismissed(false);
+  }, [banner, error]);
+
+  useEffect(() => {
+    if (!banner || banner.variant === 'error') return;
+
+    const timer = window.setTimeout(() => setBanner(null), SETTINGS_TOAST_AUTO_DISMISS_MS);
+    return () => window.clearTimeout(timer);
+  }, [banner]);
+
+  const dismissToast = useCallback(() => {
+    setBanner(null);
+    setToastDismissed(true);
+  }, []);
 
   const handleToggle = useCallback(
     async (id: MaintenanceToggleKey, enabled: boolean) => {
@@ -192,39 +215,41 @@ export default function SettingsPage() {
 
   return (
     <div className="settings_page">
+      {activeToast && (
+        <div
+          className={`settings_toast settings_toast_${activeToast.variant}`}
+          role="status"
+        >
+          <span className="settings_toast_icon" aria-hidden>
+            {activeToast.variant === 'success' ? (
+              <FaCheckCircle />
+            ) : activeToast.variant === 'error' ? (
+              <FaTimes />
+            ) : (
+              <FaInfoCircle />
+            )}
+          </span>
+          <div className="settings_toast_body">
+            <strong>{activeToast.title}</strong>
+            <p>{activeToast.message}</p>
+          </div>
+          <button
+            type="button"
+            className="settings_toast_dismiss"
+            aria-label="Dismiss message"
+            onClick={dismissToast}
+          >
+            <FaTimes />
+          </button>
+        </div>
+      )}
+
       <h1>Settings</h1>
       <p className="page_subtitle">
         Maintenance controls for the consumer app. Each toggle updates live immediately and
         sends in-app and push notifications to all users except deleted accounts (including
         internal testers).
       </p>
-
-      {(banner || error) && (
-        <div
-          className={`settings_banner settings_banner_${banner?.variant ?? 'error'}`}
-          role="status"
-        >
-          <span className="settings_banner_icon" aria-hidden>
-            {banner?.variant === 'success' ? (
-              <FaCheckCircle />
-            ) : (
-              <FaInfoCircle />
-            )}
-          </span>
-          <div className="settings_banner_body">
-            <strong>{banner?.title ?? 'Error'}</strong>
-            <p>{banner?.message ?? error}</p>
-          </div>
-          <button
-            type="button"
-            className="settings_banner_dismiss"
-            aria-label="Dismiss message"
-            onClick={() => setBanner(null)}
-          >
-            <FaTimes />
-          </button>
-        </div>
-      )}
 
       <section className="settings_card">
         <div className="settings_card_header">
