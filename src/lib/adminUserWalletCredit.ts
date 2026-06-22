@@ -12,8 +12,9 @@ export type WalletCreditPreflight = {
   userStatus: string;
   canCredit: boolean;
   blockReasons: string[];
-  maxWalletBalance: number;
-  maxCreditAllowed: number;
+  maxWalletBalance: number | null;
+  maxCreditAllowed: number | null;
+  isInternalTestAccount?: boolean;
 };
 
 export type ManualWalletCreditPayload = {

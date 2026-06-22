@@ -7,6 +7,8 @@ import { formatPrice } from '@/utils/FormatPrice';
 
 export type AdminPurchaseStatus = 'processing' | 'success' | 'pending' | 'error';
 
+export type AdminStatusOverlayContext = 'purchase' | 'wallet_credit';
+
 const SERVICE_LABELS: Record<AdminPurchaseService, string> = {
   airtime: 'Airtime',
   data: 'Data bundle',
@@ -25,6 +27,7 @@ const PROCESSING_COPY: Partial<Record<AdminPurchaseService, string>> = {
 type Props = {
   open: boolean;
   status: AdminPurchaseStatus;
+  context?: AdminStatusOverlayContext;
   service?: AdminPurchaseService;
   message?: string;
   reference?: string;
@@ -38,6 +41,7 @@ type Props = {
 export function AdminPurchaseStatusOverlay({
   open,
   status,
+  context = 'purchase',
   service,
   message,
   reference,
@@ -85,8 +89,11 @@ export function AdminPurchaseStatusOverlay({
 
   const serviceLabel = service ? SERVICE_LABELS[service] : 'Purchase';
   const processingMessage =
-    (service && PROCESSING_COPY[service]) ||
-    'Please wait while we complete this purchase for the user.';
+    context === 'wallet_credit'
+      ? "Please wait while we verify and credit this user's wallet."
+      : (service && PROCESSING_COPY[service]) ||
+        'Please wait while we complete this purchase for the user.';
+  const actionLabel = context === 'wallet_credit' ? 'Wallet credit' : 'Purchase';
 
   return (
     <div
@@ -94,7 +101,7 @@ export function AdminPurchaseStatusOverlay({
       role="status"
       aria-live="polite"
       aria-busy={status === 'processing'}
-      aria-label={`Purchase ${status}`}
+      aria-label={`${actionLabel} ${status}`}
     >
       <div className={`admin_purchase_processing_card admin_purchase_status_${status}`}>
         {status === 'processing' && (
@@ -112,9 +119,17 @@ export function AdminPurchaseStatusOverlay({
             <div className="admin_purchase_status_icon admin_purchase_status_icon_success" aria-hidden="true">
               <Check size={28} strokeWidth={2.5} />
             </div>
-            <h2>{serviceLabel} purchase successful</h2>
+            <h2>
+              {context === 'wallet_credit'
+                ? 'Wallet credited successfully'
+                : `${serviceLabel} purchase successful`}
+            </h2>
             {amount != null && amount > 0 && (
-              <p className="admin_purchase_status_amount">{formatPrice(amount)} completed for user</p>
+              <p className="admin_purchase_status_amount">
+                {context === 'wallet_credit'
+                  ? `${formatPrice(amount)} credited to user wallet`
+                  : `${formatPrice(amount)} completed for user`}
+              </p>
             )}
             {message && <p>{message}</p>}
             {reference && (
@@ -133,10 +148,12 @@ export function AdminPurchaseStatusOverlay({
             <div className="admin_purchase_status_icon admin_purchase_status_icon_pending" aria-hidden="true">
               <Clock size={28} strokeWidth={2.5} />
             </div>
-            <h2>Purchase is processing</h2>
+            <h2>{context === 'wallet_credit' ? 'Wallet credit is processing' : 'Purchase is processing'}</h2>
             <p>
               {message ||
-                'Wallet debited. Final status may take a moment — check Transactions for updates.'}
+                (context === 'wallet_credit'
+                  ? 'The credit is being processed. Check Transactions if the balance does not update shortly.'
+                  : 'Wallet debited. Final status may take a moment — check Transactions for updates.')}
             </p>
             {reference && (
               <p className="admin_purchase_status_meta">
@@ -154,7 +171,7 @@ export function AdminPurchaseStatusOverlay({
             <div className="admin_purchase_status_icon admin_purchase_status_icon_error" aria-hidden="true">
               <X size={28} strokeWidth={2.5} />
             </div>
-            <h2>Purchase failed</h2>
+            <h2>{context === 'wallet_credit' ? 'Wallet credit failed' : 'Purchase failed'}</h2>
             <p>{message || 'Something went wrong. Please try again.'}</p>
             <div className="admin_purchase_status_actions">
               {onRetry && (
