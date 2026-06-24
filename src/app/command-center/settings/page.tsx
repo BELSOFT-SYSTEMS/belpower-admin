@@ -79,9 +79,9 @@ const BANNER_ON: Record<MaintenanceToggleKey, string> = {
   stop_all_purchases: 'All purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_wallet_funding: 'Wallet funding has been stopped for maintenance. All non-deleted users were notified.',
   stop_paystack_dva:
-    'Paystack DVA has been disabled. Wallet funding and electricity/cable via Paystack DVA are unavailable.',
+    'Paystack DVA has been disabled. Wallet funding and electricity/cable via Paystack DVA are unavailable. All non-deleted users were notified.',
   stop_buypower_dva:
-    'BuyPower DVA has been disabled. Wallet top-up and electricity/cable via BuyPower DVA are unavailable.',
+    'BuyPower DVA has been disabled. Wallet top-up and electricity/cable via BuyPower DVA are unavailable. All non-deleted users were notified.',
   stop_airtime: 'Airtime purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_data: 'Data purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_electricity: 'Electricity purchases have been stopped for maintenance. All non-deleted users were notified.',
@@ -92,8 +92,8 @@ const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
   stop_login: 'User login has been re-enabled. All non-deleted users were notified.',
   stop_all_purchases: 'All purchases have been re-enabled. All non-deleted users were notified.',
   stop_wallet_funding: 'Wallet funding has been re-enabled. All non-deleted users were notified.',
-  stop_paystack_dva: 'Paystack DVA has been re-enabled for wallet funding and utility purchases.',
-  stop_buypower_dva: 'BuyPower DVA has been re-enabled for wallet top-up and utility purchases.',
+  stop_paystack_dva: 'Paystack DVA has been re-enabled for wallet funding and utility purchases. All non-deleted users were notified.',
+  stop_buypower_dva: 'BuyPower DVA has been re-enabled for wallet top-up and utility purchases. All non-deleted users were notified.',
   stop_airtime: 'Airtime purchases have been re-enabled. All non-deleted users were notified.',
   stop_data: 'Data purchases have been re-enabled. All non-deleted users were notified.',
   stop_electricity: 'Electricity purchases have been re-enabled. All non-deleted users were notified.',
@@ -247,14 +247,14 @@ export default function SettingsPage() {
       <h1>Settings</h1>
       <p className="page_subtitle">
         Maintenance controls for the consumer app. Each toggle updates live immediately and
-        sends in-app and push notifications to all users except deleted accounts (including
+        sends in-app, push, and email notifications to all users except deleted accounts (including
         internal testers).
       </p>
 
       <section className="settings_card">
         <div className="settings_card_header">
           <h2>Maintenance mode</h2>
-          <p>Seven independent switches. Turning one on or off notifies all eligible users.</p>
+          <p>Seven independent switches. Turning one on or off notifies all eligible users by in-app, push, and email.</p>
         </div>
 
         {isLoading
@@ -267,8 +267,6 @@ export default function SettingsPage() {
           <h2>DVA provider controls</h2>
           <p>
             Disable Paystack or BuyPower DVA independently for wallet funding and electricity/cable.
-            Apps read <code>/api/v1/config/payment-availability</code> to hide unavailable options.
-            No mass user notifications are sent for these toggles.
           </p>
         </div>
 
