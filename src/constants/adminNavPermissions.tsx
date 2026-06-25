@@ -11,6 +11,7 @@ import {
   FaBell,
   FaEnvelope,
   FaShieldAlt,
+  FaHandshake,
 } from 'react-icons/fa';
 
 export type AdminNavItem = {
@@ -33,6 +34,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     href: '/command-center/users',
     icon: <FaUsers className="w-5 h-5" />,
     permission: 'users.list',
+  },
+  {
+    name: 'Partners',
+    href: '/command-center/partners',
+    icon: <FaHandshake className="w-5 h-5" />,
+    permission: 'partners.list',
   },
   {
     name: 'Transactions',
