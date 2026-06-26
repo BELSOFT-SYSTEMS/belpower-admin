@@ -8,6 +8,7 @@ import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { AdminMultiSelect } from '@/components/admin/ui/AdminMultiSelect';
 import { NotificationUserSearch } from '@/components/admin/notifications/NotificationUserSearch';
+import { NotificationSendingOverlay } from '@/components/admin/notifications/NotificationSendingOverlay';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
@@ -220,6 +221,10 @@ export default function NotificationsPage() {
 
   return (
     <div className="notifications_page">
+      <NotificationSendingOverlay
+        open={isSending}
+        isEmail={selectedTemplate?.channel === 'email'}
+      />
       <h1>Notifications</h1>
       <p className="page_subtitle">
         Send push, in-app, or email notifications to users. Pick a template, choose your audience,
@@ -391,9 +396,19 @@ export default function NotificationsPage() {
                     className="btn_send_notif"
                     disabled={!canSubmit || isSending}
                     onClick={handleSend}
+                    aria-busy={isSending}
                   >
-                    <FaPaperPlane />{' '}
-                    {selectedTemplate?.channel === 'email' ? 'Send email' : 'Send notification'}
+                    {isSending ? (
+                      <>
+                        Sending
+                        <span className="notif_sending_dots" aria-hidden="true" />
+                      </>
+                    ) : (
+                      <>
+                        <FaPaperPlane />{' '}
+                        {selectedTemplate?.channel === 'email' ? 'Send email' : 'Send notification'}
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

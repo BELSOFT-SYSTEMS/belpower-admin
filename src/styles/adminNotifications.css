@@ -235,6 +235,62 @@
   cursor: not-allowed;
 }
 
+.notif_sending_dots::after {
+  content: '';
+  animation: notif_sending_dots 1.4s steps(4, end) infinite;
+}
+
+@keyframes notif_sending_dots {
+  0%,
+  20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%,
+  100% {
+    content: '...';
+  }
+}
+
+.notif_sending_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.5);
+}
+
+.notif_sending_card {
+  width: min(100%, 24rem);
+  padding: 1.5rem 1.75rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  text-align: center;
+}
+
+.notif_sending_card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.notif_sending_card p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
 .notifications_page .settings_banner {
   display: flex;
   align-items: flex-start;
