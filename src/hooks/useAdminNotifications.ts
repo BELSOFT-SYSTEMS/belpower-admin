@@ -9,6 +9,7 @@ import {
   getMockNotificationUsers,
 } from '@/data/adminDemoMocks';
 import { getAdminDemoMode } from '@/lib/adminDemoMode';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import {
   estimateNotificationAudience,
   getAudienceOptions,
@@ -37,6 +38,7 @@ export function useAdminNotifications({
   canViewHistory,
   historyScope,
 }: UseAdminNotificationsOptions) {
+  const { refreshKey } = useAdminAnalytics();
   const [templates, setTemplates] = useState<NotificationTemplate[]>([]);
   const [states, setStates] = useState<string[]>([]);
   const [providers, setProviders] = useState<NotificationProviderOption[]>([]);
@@ -87,7 +89,7 @@ export function useAdminNotifications({
     } finally {
       setIsLoading(false);
     }
-  }, [canViewHistory, historyScope]);
+  }, [canViewHistory, historyScope, refreshKey]);
 
   useEffect(() => {
     loadBaseData();

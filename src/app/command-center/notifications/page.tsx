@@ -9,6 +9,7 @@ import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
 import { AdminMultiSelect } from '@/components/admin/ui/AdminMultiSelect';
 import { NotificationUserSearch } from '@/components/admin/notifications/NotificationUserSearch';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 import { useAdminNotifications } from '@/hooks/useAdminNotifications';
 import {
   buildProviderDropdownOptions,
@@ -37,6 +38,7 @@ const AUDIENCE_HINTS: Record<NotificationAudience, string> = {
 
 export default function NotificationsPage() {
   const { admin } = useAdminAuth();
+  const { refreshKey } = useAdminAnalytics();
   const canViewHistory = canViewNotificationHistory(admin);
   const canSend = canSendNotifications(admin);
   const [historyScope, setHistoryScope] = useState<'mine' | 'all'>('mine');
@@ -155,7 +157,7 @@ export default function NotificationsPage() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [templateId, estimatePayload, estimateAudience, canSend]);
+  }, [templateId, estimatePayload, estimateAudience, canSend, refreshKey]);
 
   const handleUserSearch = useCallback(
     async (query: string) => {
