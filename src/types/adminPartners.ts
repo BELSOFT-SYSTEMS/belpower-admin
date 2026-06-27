@@ -8,6 +8,7 @@ export type PartnerStatus =
 export type PartnerListItem = {
   id: string;
   agentFullName: string;
+  tradingName?: string | null;
   businessName: string;
   cacRegistrationNumber: string;
   phone: string;

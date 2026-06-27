@@ -110,7 +110,7 @@ export default function PartnersPage() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search business, agent, email, phone, CAC..."
+            placeholder="Search trading name, business, agent, email, phone, CAC..."
             aria-label="Search partners"
             className="w-full rounded-md border border-gray-300 py-2 pl-9 pr-3 text-sm"
           />
@@ -164,8 +164,13 @@ export default function PartnersPage() {
                   partners.map((partner) => (
                     <tr key={partner.id} className="border-t border-gray-100">
                       <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{partner.businessName}</div>
-                        <div className="text-xs text-gray-500">{partner.cacRegistrationNumber}</div>
+                        <div className="font-medium text-gray-900">
+                          {partner.tradingName || partner.businessName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {partner.tradingName ? `${partner.businessName} · ` : ''}
+                          {partner.cacRegistrationNumber}
+                        </div>
                       </td>
                       <td className="px-4 py-3">{partner.agentFullName}</td>
                       <td className="px-4 py-3">

@@ -174,9 +174,14 @@ export default function PartnerDetailPage() {
         <div>
           <h1 className="text-2xl font-semibold text-black flex items-center gap-2">
             <FaHandshake className="text-blue-600" />
-            {partner.businessName}
+            {partner.tradingName || partner.businessName}
           </h1>
-          <p className="text-sm text-gray-600 mt-1">{partner.agentFullName}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {partner.agentFullName}
+            {partner.tradingName ? (
+              <span className="text-gray-500"> · {partner.businessName}</span>
+            ) : null}
+          </p>
         </div>
         <span className={statusClass(partner.status)}>{partner.status.replace(/_/g, ' ')}</span>
       </div>
@@ -227,6 +232,14 @@ export default function PartnerDetailPage() {
         <section className="rounded-lg border border-gray-200 bg-white p-4">
           <h2 className="text-lg font-semibold text-black mb-3">Business details</h2>
           <dl className="grid gap-3 text-sm">
+            <div>
+              <dt className="text-gray-500">Trading name</dt>
+              <dd className="font-medium text-gray-900">{partner.tradingName || '—'}</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Business name (CAC)</dt>
+              <dd className="font-medium text-gray-900">{partner.businessName}</dd>
+            </div>
             <div>
               <dt className="text-gray-500">CAC number</dt>
               <dd className="font-medium text-gray-900">{partner.cacRegistrationNumber}</dd>
