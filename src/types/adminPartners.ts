@@ -60,3 +60,29 @@ export type PartnerActionPayload = {
   note?: string;
   reason?: string;
 };
+
+export type PartnerTransactionItem = {
+  id: string;
+  reference: string;
+  order_id: string | null;
+  service_type: string;
+  amount: number;
+  service_charge: number;
+  status: string;
+  payment_method: string;
+  created_at: string;
+  completed_at: string | null;
+  metadata: {
+    partner_reference?: string | null;
+    partner_api_mode?: string;
+    simulated?: boolean;
+  };
+};
+
+export type PartnerApiKeyRotateResult = {
+  keyType: 'test' | 'live';
+  apiKey: string;
+  label: string;
+  maskedLabel: string;
+  rotatedAt: string;
+};

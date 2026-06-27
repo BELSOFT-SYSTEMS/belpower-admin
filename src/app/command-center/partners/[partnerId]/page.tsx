@@ -18,6 +18,12 @@ import {
 } from '@/lib/adminPartners';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
 import type { PartnerDetail, PartnerStatus } from '@/types/adminPartners';
+import { ManualPartnerWalletCreditPanel } from '@/components/admin/partners/walletCredit/ManualPartnerWalletCreditPanel';
+import { PartnerDepositRequestsPanel } from '@/components/admin/partners/walletCredit/PartnerDepositRequestsPanel';
+import { PartnerTransactionsPanel } from '@/components/admin/partners/PartnerTransactionsPanel';
+import { PartnerApiKeysAdminPanel } from '@/components/admin/partners/PartnerApiKeysAdminPanel';
+
+type PartnerTab = 'overview' | 'transactions' | 'api' | 'wallet-credit';
 
 function statusClass(status: PartnerStatus): string {
   if (status === 'active') return 'pill pill_active';
@@ -31,7 +37,10 @@ export default function PartnerDetailPage() {
   const { canAccess } = useAdminAuth();
   const canView = canAccess('partners.detail');
   const canManage = canAccess('partners.approve');
+  const canCreditWallet = canAccess('partners.wallet_credit_manual');
   const partnerId = params.partnerId;
+
+  const [activeTab, setActiveTab] = useState<PartnerTab>('overview');
 
   const [partner, setPartner] = useState<PartnerDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -172,6 +181,48 @@ export default function PartnerDetailPage() {
         <span className={statusClass(partner.status)}>{partner.status.replace(/_/g, ' ')}</span>
       </div>
 
+      {canCreditWallet || canView ? (
+        <div className="mb-6 flex flex-wrap gap-2 border-b border-gray-200">
+          {(
+            [
+              ['overview', 'Overview'],
+              ['transactions', 'Transactions'],
+              ['api', 'API'],
+              ...(canCreditWallet ? [['wallet-credit', 'Wallet credit'] as const] : []),
+            ] as const
+          ).map(([tab, label]) => (
+            <button
+              key={tab}
+              type="button"
+              className={`px-4 py-2 text-sm font-medium ${
+                activeTab === tab
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-600'
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {activeTab === 'wallet-credit' && canCreditWallet ? (
+        <div className="space-y-4">
+          <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={() => void refresh()} />
+          <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={() => void refresh()} />
+        </div>
+      ) : activeTab === 'transactions' ? (
+        <PartnerTransactionsPanel partnerId={partner.id} />
+      ) : activeTab === 'api' ? (
+        <PartnerApiKeysAdminPanel
+          partnerId={partner.id}
+          apiKeys={partner.apiKeys}
+          canManage={canManage}
+          onUpdated={() => void refresh()}
+        />
+      ) : (
+      <>
       <div className="grid gap-4 lg:grid-cols-2 mb-6">
         <section className="rounded-lg border border-gray-200 bg-white p-4">
           <h2 className="text-lg font-semibold text-black mb-3">Business details</h2>
@@ -208,21 +259,11 @@ export default function PartnerDetailPage() {
         </section>
 
         <section className="rounded-lg border border-gray-200 bg-white p-4">
-          <h2 className="text-lg font-semibold text-black mb-3">API keys</h2>
-          {partner.apiKeys.length === 0 ? (
-            <p className="text-sm text-gray-600">
-              No API keys yet. Keys are issued when the partner is approved.
-            </p>
-          ) : (
-            <ul className="space-y-2 text-sm">
-              {partner.apiKeys.map((key) => (
-                <li key={key.id} className="rounded-md bg-gray-50 px-3 py-2">
-                  <strong className="capitalize">{key.keyType}</strong>: {key.label}{' '}
-                  {key.isActive ? '(active)' : '(inactive)'}
-                </li>
-              ))}
-            </ul>
-          )}
+          <h2 className="text-lg font-semibold text-black mb-3">Quick links</h2>
+          <p className="text-sm text-gray-600">
+            View API keys and rotate them from the <strong>API</strong> tab. Purchase history is under{' '}
+            <strong>Transactions</strong>.
+          </p>
         </section>
       </div>
 
@@ -360,6 +401,8 @@ export default function PartnerDetailPage() {
           <p className="text-sm text-gray-700">{partner.rejectionReason}</p>
         </section>
       ) : null}
+      </>
+      )}
     </div>
   );
 }

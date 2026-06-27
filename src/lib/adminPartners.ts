@@ -7,7 +7,9 @@ import {
 } from '@/lib/adminAuth';
 import type {
   PartnerActionPayload,
+  PartnerApiKeyRotateResult,
   PartnerDetail,
+  PartnerTransactionItem,
   PartnersListData,
   PartnersListParams,
 } from '@/types/adminPartners';
@@ -146,5 +148,31 @@ export async function deactivatePartner(payload: PartnerActionPayload): Promise<
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+  });
+}
+
+export async function getPartnerTransactions(
+  partnerId: string,
+  params?: { page?: number; status?: string; serviceType?: string }
+): Promise<{
+  items: PartnerTransactionItem[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}> {
+  const query = new URLSearchParams();
+  if (params?.page) query.set('page', String(params.page));
+  if (params?.status) query.set('status', params.status);
+  if (params?.serviceType) query.set('serviceType', params.serviceType);
+  const suffix = query.toString() ? `?${query}` : '';
+  return partnerRequest(`/${encodeURIComponent(partnerId)}/transactions${suffix}`);
+}
+
+export async function rotatePartnerApiKey(
+  partnerId: string,
+  keyType: 'test' | 'live'
+): Promise<PartnerApiKeyRotateResult> {
+  return partnerRequest(`/${encodeURIComponent(partnerId)}/api-keys/${keyType}/rotate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({}),
   });
 }
