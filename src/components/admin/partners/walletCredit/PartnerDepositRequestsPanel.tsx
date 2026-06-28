@@ -10,7 +10,7 @@ import {
   rejectPartnerDepositRequest,
   type PartnerDepositRequestAdminItem,
 } from '@/lib/adminPartnerWalletCredit';
-import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import { formatRecordAdminDateTime } from '@/utils/formatAdminDate';
 import '@/styles/adminUserPurchases.css';
 
 type Props = {
@@ -116,6 +116,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
         <ul className="partner_deposit_request_list">
           {items.map((item) => {
             const creditAmount = item.expectedWalletCredit ?? Math.max(0, item.amount - 50);
+            const submittedAt = formatRecordAdminDateTime(item, 'createdAt', 'created_at');
 
             return (
               <li key={item.id} className="partner_deposit_request_card">
@@ -146,10 +147,12 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                     : `₦50 deposit charge applies — wallet receives ${formatPrice(creditAmount)}.`}
                 </p>
 
-                <p className="partner_deposit_request_time">
-                  <Clock3 size={14} aria-hidden />
-                  Submitted {formatAdminDateTime(item.createdAt)}
-                </p>
+                {submittedAt !== '—' ? (
+                  <p className="partner_deposit_request_time">
+                    <Clock3 size={14} aria-hidden />
+                    Submitted {submittedAt}
+                  </p>
+                ) : null}
 
                 <div className="admin_purchase_field_group partner_deposit_request_field">
                   <label htmlFor={`bank-ref-${item.id}`}>Bank reference</label>

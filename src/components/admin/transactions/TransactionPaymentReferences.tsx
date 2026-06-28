@@ -7,7 +7,7 @@ import { TransactionAmountBreakdown } from '@/components/admin/transactions/Tran
 import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { formatPrice } from '@/utils/FormatPrice';
 import { getPaymentMethodLabel } from '@/utils/transactionAmountDisplay';
-import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import { formatRecordAdminDateTime } from '@/utils/formatAdminDate';
 import {
   formatScheduledFrequency,
   formatTxnDateTime,
@@ -87,7 +87,7 @@ export function TransactionPaymentReferences({ transaction, payment }: Props) {
             <div>
               <span className="payment_ref_timeline_label">Created</span>
               <span className="payment_ref_timeline_value">
-                {formatAdminDateTime(transaction.created_at)}
+                {formatRecordAdminDateTime(transaction, 'createdAt', 'created_at')}
               </span>
             </div>
           </div>

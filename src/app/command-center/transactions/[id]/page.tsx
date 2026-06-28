@@ -32,7 +32,7 @@ import {
   getTransactionIconFallback,
 } from '@/utils/transactionIcons';
 import { getTransactionTitle } from '@/data/adminMockData';
-import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import { formatAdminDateTime, formatRecordAdminDateTime } from '@/utils/formatAdminDate';
 import { getPaymentMethodLabel, getTransactionTotalAmount } from '@/utils/transactionAmountDisplay';
 import {
   formatScheduledFrequency,
@@ -600,7 +600,7 @@ export default function TransactionDetailPage() {
                 <div>
                   <span className="txn_overview_timeline_label">Created</span>
                   <span className="txn_overview_timeline_value">
-                    {formatAdminDateTime(transaction.created_at)}
+                    {formatRecordAdminDateTime(transaction, 'createdAt', 'created_at')}
                   </span>
                 </div>
               </div>
@@ -609,7 +609,7 @@ export default function TransactionDetailPage() {
                 <div>
                   <span className="txn_overview_timeline_label">Completed</span>
                   <span className="txn_overview_timeline_value">
-                    {formatAdminDateTime(transaction.completed_at)}
+                    {formatRecordAdminDateTime(transaction, 'completedAt', 'completed_at')}
                   </span>
                 </div>
               </div>

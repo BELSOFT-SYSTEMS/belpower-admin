@@ -1,4 +1,5 @@
 import { ADMIN_API_BASE, adminHeaders, AuthApiError } from '@/lib/adminAuth';
+import { pickApiTimestampString } from '@/utils/pickApiField';
 
 type ApiEnvelope<T> = {
   success?: boolean;
@@ -92,7 +93,19 @@ export async function fetchPartnerDepositRequests(status = 'pending'): Promise<{
     headers: adminHeaders(),
     cache: 'no-store',
   });
-  return parseResponse(res, 'Failed to load partner deposit requests');
+  const data = await parseResponse<{
+    items: Array<PartnerDepositRequestAdminItem & { created_at?: string; updated_at?: string }>;
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }>(res, 'Failed to load partner deposit requests');
+
+  return {
+    ...data,
+    items: data.items.map((item) => ({
+      ...item,
+      createdAt: pickApiTimestampString(item, 'created') ?? '',
+      updatedAt: pickApiTimestampString(item, 'updated') ?? '',
+    })),
+  };
 }
 
 export async function approvePartnerDepositRequest(

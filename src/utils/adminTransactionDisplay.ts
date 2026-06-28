@@ -2,6 +2,7 @@ import { formatInTimeZone } from 'date-fns-tz';
 import type { AdminTransaction } from '@/data/adminMockData';
 import type { TransactionReviewStatus } from '@/types/adminTransactions';
 import { ADMIN_DISPLAY_TIMEZONE, parseApiDate } from '@/utils/parseApiDate';
+import { pickApiDateString } from '@/utils/pickApiField';
 
 export type ScheduledInfo = {
   frequency: string;
@@ -58,7 +59,9 @@ export function getTransactionListDate(tx: AdminTransaction) {
   if (isScheduledTransaction(tx) && tx.scheduled_info?.next_purchase) {
     return `Next · ${formatTxnDateShort(tx.scheduled_info.next_purchase)}`;
   }
-  return formatTxnDateShort(tx.created_at);
+  const createdAt =
+    pickApiDateString(tx as Record<string, unknown>, 'createdAt', 'created_at') ?? tx.created_at;
+  return formatTxnDateShort(createdAt);
 }
 
 const REVIEW_STATUS_LABELS: Record<TransactionReviewStatus, string> = {

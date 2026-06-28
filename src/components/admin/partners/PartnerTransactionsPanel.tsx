@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPartnerTransactions } from '@/lib/adminPartners';
 import type { PartnerTransactionItem } from '@/types/adminPartners';
-import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import { formatRecordAdminDateTime } from '@/utils/formatAdminDate';
 
 type PartnerTransactionsPanelProps = {
   partnerId: string;
@@ -86,7 +86,9 @@ export function PartnerTransactionsPanel({ partnerId }: PartnerTransactionsPanel
                 <td className="px-3 py-3">
                   <span className={statusClass(item.status)}>{item.status}</span>
                 </td>
-                <td className="px-3 py-3 text-gray-600">{formatAdminDateTime(item.created_at)}</td>
+                <td className="px-3 py-3 text-gray-600">
+                  {formatRecordAdminDateTime(item, 'createdAt', 'created_at')}
+                </td>
               </tr>
             ))}
           </tbody>
