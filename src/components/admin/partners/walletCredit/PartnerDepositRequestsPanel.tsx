@@ -56,8 +56,8 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
       });
       toast.success(
         `Deposit approved. Wallet credited ${formatPrice(
-          item.expectedWalletCredit ?? Math.max(0, item.amount - (item.platformDepositFee ?? 50))
-        )}`
+          item.expectedWalletCredit ?? item.amount
+        )}${item.feeWaived ? ' in full' : ''}`
       );
       await load();
       onUpdated?.();
@@ -113,8 +113,9 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                   {item.partner?.businessName || 'Partner'} · {formatPrice(item.amount)} received
                 </p>
                 <p className="text-sm text-gray-600">
-                  Credits {formatPrice(item.expectedWalletCredit ?? Math.max(0, item.amount - 50))} after ₦
-                  {(item.platformDepositFee ?? 50).toLocaleString('en-NG')} deposit charge
+                  {item.feeWaived
+                    ? `Credits ${formatPrice(item.amount)} in full (deposit charge waived above ₦100,000)`
+                    : `Credits ${formatPrice(item.expectedWalletCredit ?? Math.max(0, item.amount - 50))} after ₦50 deposit charge`}
                 </p>
                 <p className="text-sm text-gray-600">
                   {item.partner?.email} · {formatAdminDateTime(item.createdAt)}

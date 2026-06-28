@@ -43,6 +43,7 @@ export type PartnerDepositRequestAdminItem = {
   amount: number;
   expectedWalletCredit?: number;
   platformDepositFee?: number;
+  feeWaived?: boolean;
   bankReference: string | null;
   status: string;
   adminNote: string | null;
