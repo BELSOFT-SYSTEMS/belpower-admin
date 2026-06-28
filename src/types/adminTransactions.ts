@@ -96,6 +96,7 @@ export type ApiTransactionListItem = {
   customerType?: TransactionCustomerType;
   customerEmail?: string | null;
   customerPhone?: string | null;
+  customerName?: string | null;
   userName: string;
   type: TransactionType;
   service: string;
@@ -182,6 +183,7 @@ export type TransactionUserInfo = {
   fullName: string;
   email?: string | null;
   phone?: string | null;
+  purchaseCustomerName?: string | null;
   customerType?: TransactionCustomerType;
   partnerId?: string | null;
   isInternalTestAccount?: boolean;

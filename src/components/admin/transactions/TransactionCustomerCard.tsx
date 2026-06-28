@@ -45,6 +45,21 @@ function avatarSeed(customer: TransactionUserInfo) {
   return customer.partnerId || customer.id || customer.fullName || 'customer';
 }
 
+function hasPurchaseCustomerDetails(customer: TransactionUserInfo) {
+  return Boolean(
+    customer.purchaseCustomerName?.trim() ||
+      customer.email?.trim() ||
+      customer.phone?.trim()
+  );
+}
+
+function customerFieldLabel(customer: TransactionUserInfo, field: 'email' | 'phone') {
+  if (customer.customerType === 'partner') {
+    return field === 'email' ? 'Customer email' : 'Customer phone';
+  }
+  return field === 'email' ? 'Email' : 'Phone';
+}
+
 export function TransactionCustomerCard({
   customer,
   isInternalTestAccount,
@@ -68,16 +83,28 @@ export function TransactionCustomerCard({
   const body = (
     <div className="txn_overview_user_body">
       <span className="txn_overview_user_name">{customer.fullName}</span>
-      <div className="txn_customer_fields">
-        <div className="txn_customer_field">
-          <span className="txn_customer_label">Email</span>
-          <span className="txn_customer_value">{displayValue(customer.email)}</span>
+      {customer.customerType !== 'partner' || hasPurchaseCustomerDetails(customer) ? (
+        <div className="txn_customer_fields">
+          {customer.customerType === 'partner' && customer.purchaseCustomerName ? (
+            <div className="txn_customer_field">
+              <span className="txn_customer_label">Customer name</span>
+              <span className="txn_customer_value">{customer.purchaseCustomerName}</span>
+            </div>
+          ) : null}
+          {customer.customerType !== 'partner' || customer.email || customer.phone ? (
+            <>
+              <div className="txn_customer_field">
+                <span className="txn_customer_label">{customerFieldLabel(customer, 'email')}</span>
+                <span className="txn_customer_value">{displayValue(customer.email)}</span>
+              </div>
+              <div className="txn_customer_field">
+                <span className="txn_customer_label">{customerFieldLabel(customer, 'phone')}</span>
+                <span className="txn_customer_value">{displayValue(customer.phone)}</span>
+              </div>
+            </>
+          ) : null}
         </div>
-        <div className="txn_customer_field">
-          <span className="txn_customer_label">Phone</span>
-          <span className="txn_customer_value">{displayValue(customer.phone)}</span>
-        </div>
-      </div>
+      ) : null}
       {isInternalTestAccount ? (
         <span className="pill pill_internal_test">Internal test</span>
       ) : null}

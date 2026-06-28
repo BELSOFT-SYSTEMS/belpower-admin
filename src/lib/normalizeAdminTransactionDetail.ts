@@ -186,6 +186,10 @@ function normalizeUser(raw: RawRecord | undefined, fallback: TransactionUserInfo
     fullName,
     email: pickString(source, 'email', 'email') ?? fallback.email ?? null,
     phone: pickString(source, 'phone', 'phone') ?? fallback.phone ?? null,
+    purchaseCustomerName:
+      pickString(source, 'purchaseCustomerName', 'purchase_customer_name') ??
+      fallback.purchaseCustomerName ??
+      null,
     customerType:
       (pickString(source, 'customerType', 'customer_type') ??
         pickString(source, 'type', 'type')) as TransactionUserInfo['customerType'] ??
@@ -215,6 +219,7 @@ export function normalizeAdminTransactionDetail(raw: RawRecord): TransactionDeta
     fullName: base.userName,
     email: base.customerEmail ?? null,
     phone: base.customerPhone ?? null,
+    purchaseCustomerName: base.customerName ?? null,
     customerType: base.customerType,
     partnerId: base.partnerId ?? null,
     isInternalTestAccount: base.isInternalTestAccount,

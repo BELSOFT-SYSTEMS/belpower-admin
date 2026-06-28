@@ -92,6 +92,7 @@ export function normalizeApiTransactionListItem(raw: RawRecord): ApiTransactionL
       undefined,
     customerEmail: pickString(raw, 'customerEmail', 'customer_email'),
     customerPhone: pickString(raw, 'customerPhone', 'customer_phone'),
+    customerName: pickString(raw, 'customerName', 'customer_name'),
     userName: String(pick(raw, 'userName', 'user_name') ?? ''),
     type: normalizeTransactionType(pick(raw, 'type', 'type')),
     service: String(pick(raw, 'service', 'service') ?? ''),
