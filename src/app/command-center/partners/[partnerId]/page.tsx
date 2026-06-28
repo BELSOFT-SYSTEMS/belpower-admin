@@ -674,8 +674,14 @@ function PartnerDetailContent({
 
         {activeTab === 'wallet-credit' && canCreditWallet ? (
           <div className="tab_panel partner_wallet_credit_tab">
-            <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={onRefresh} />
-            <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={onRefresh} />
+            <p className="tab_hint partner_wallet_credit_tab_hint">
+              Wallet balance is shown in the stats above. Review pending deposit requests on the left
+              or credit the wallet manually on the right after verifying a bank transfer.
+            </p>
+            <div className="partner_wallet_credit_grid">
+              <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={onRefresh} />
+              <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={onRefresh} />
+            </div>
           </div>
         ) : null}
       </div>

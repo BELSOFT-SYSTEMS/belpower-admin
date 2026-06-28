@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Clock3, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/utils/FormatPrice';
 import {
@@ -11,6 +11,7 @@ import {
   type PartnerDepositRequestAdminItem,
 } from '@/lib/adminPartnerWalletCredit';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import '@/styles/adminUserPurchases.css';
 
 type Props = {
   partnerId?: string;
@@ -84,79 +85,108 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="admin_purchase_loading">
-        <Loader2 className="animate-spin" /> Loading pending deposits…
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="admin_panel_card">
-        <h3 className="admin_purchase_subheading">Pending deposit requests</h3>
-        <p className="admin_form_hint">No pending partner deposit requests.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="admin_panel_card">
-      <h3 className="admin_purchase_subheading">Pending deposit requests</h3>
-      <ul className="mt-4 space-y-4">
-        {items.map((item) => (
-          <li key={item.id} className="rounded-md border border-gray-200 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="font-medium text-gray-900">
-                  {item.partner?.businessName || 'Partner'} · {formatPrice(item.amount)} received
-                </p>
-                <p className="text-sm text-gray-600">
+    <section className="partner_wallet_credit_panel partner_wallet_credit_panel_deposits">
+      <header className="partner_wallet_credit_panel_header">
+        <div>
+          <span className="partner_wallet_credit_eyebrow">Deposit queue</span>
+          <h3 className="partner_wallet_credit_title">Pending deposit requests</h3>
+          <p className="partner_wallet_credit_intro">
+            Review bank transfers submitted from the partner portal. Approve after verifying the
+            payment on your bank statement.
+          </p>
+        </div>
+        {!isLoading && items.length > 0 ? (
+          <span className="partner_wallet_credit_count" aria-label={`${items.length} pending`}>
+            {items.length}
+          </span>
+        ) : null}
+      </header>
+
+      {isLoading ? (
+        <div className="partner_wallet_credit_loading">
+          <Loader2 className="animate-spin" aria-hidden />
+          Loading pending deposits…
+        </div>
+      ) : items.length === 0 ? (
+        <div className="partner_wallet_credit_empty">
+          <p>No pending deposit requests for this partner.</p>
+        </div>
+      ) : (
+        <ul className="partner_deposit_request_list">
+          {items.map((item) => {
+            const creditAmount = item.expectedWalletCredit ?? Math.max(0, item.amount - 50);
+
+            return (
+              <li key={item.id} className="partner_deposit_request_card">
+                <div className="partner_deposit_request_top">
+                  <div>
+                    <p className="partner_deposit_request_amount">{formatPrice(item.amount)}</p>
+                    <p className="partner_deposit_request_partner">
+                      {item.partner?.businessName || 'Partner'}
+                    </p>
+                    <p className="partner_deposit_request_meta">{item.partner?.email}</p>
+                  </div>
+                  <span
+                    className={
+                      item.feeWaived
+                        ? 'partner_deposit_request_badge partner_deposit_request_badge_waived'
+                        : 'partner_deposit_request_badge'
+                    }
+                  >
+                    {item.feeWaived
+                      ? 'Fee waived'
+                      : `Credits ${formatPrice(creditAmount)}`}
+                  </span>
+                </div>
+
+                <p className="partner_deposit_request_credit_line">
                   {item.feeWaived
-                    ? `Credits ${formatPrice(item.amount)} in full (deposit charge waived above ₦100,000)`
-                    : `Credits ${formatPrice(item.expectedWalletCredit ?? Math.max(0, item.amount - 50))} after ₦50 deposit charge`}
+                    ? `Full ${formatPrice(item.amount)} will be credited (deposit charge waived above ₦100,000).`
+                    : `₦50 deposit charge applies — wallet receives ${formatPrice(creditAmount)}.`}
                 </p>
-                <p className="text-sm text-gray-600">
-                  {item.partner?.email} · {formatAdminDateTime(item.createdAt)}
+
+                <p className="partner_deposit_request_time">
+                  <Clock3 size={14} aria-hidden />
+                  Submitted {formatAdminDateTime(item.createdAt)}
                 </p>
-              </div>
-            </div>
-            <div className="mt-3">
-              <label className="block text-sm text-gray-700" htmlFor={`bank-ref-${item.id}`}>
-                Bank reference
-              </label>
-              <input
-                id={`bank-ref-${item.id}`}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                defaultValue={item.bankReference || ''}
-                onChange={(e) =>
-                  setBankReferences((prev) => ({ ...prev, [item.id]: e.target.value }))
-                }
-                disabled={busyId === item.id}
-              />
-            </div>
-            <div className="mt-3 flex gap-2">
-              <button
-                type="button"
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-                disabled={busyId === item.id}
-                onClick={() => void handleApprove(item)}
-              >
-                Approve & credit wallet
-              </button>
-              <button
-                type="button"
-                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-                disabled={busyId === item.id}
-                onClick={() => void handleReject(item)}
-              >
-                Reject
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+
+                <div className="admin_purchase_field_group partner_deposit_request_field">
+                  <label htmlFor={`bank-ref-${item.id}`}>Bank reference</label>
+                  <input
+                    id={`bank-ref-${item.id}`}
+                    defaultValue={item.bankReference || ''}
+                    onChange={(e) =>
+                      setBankReferences((prev) => ({ ...prev, [item.id]: e.target.value }))
+                    }
+                    disabled={busyId === item.id}
+                    placeholder="Enter verified transaction reference"
+                  />
+                </div>
+
+                <div className="partner_deposit_request_actions">
+                  <button
+                    type="button"
+                    className="partner_wallet_credit_btn partner_wallet_credit_btn_primary"
+                    disabled={busyId === item.id}
+                    onClick={() => void handleApprove(item)}
+                  >
+                    Approve &amp; credit wallet
+                  </button>
+                  <button
+                    type="button"
+                    className="partner_wallet_credit_btn partner_wallet_credit_btn_danger"
+                    disabled={busyId === item.id}
+                    onClick={() => void handleReject(item)}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }

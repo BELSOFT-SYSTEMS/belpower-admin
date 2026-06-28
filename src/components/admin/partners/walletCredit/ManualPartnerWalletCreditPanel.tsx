@@ -135,9 +135,12 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
 
   if (isLoading) {
     return (
-      <div className="admin_purchase_loading">
-        <Loader2 className="animate-spin" /> Loading partner wallet credit details…
-      </div>
+      <section className="partner_wallet_credit_panel partner_wallet_credit_panel_manual">
+        <div className="partner_wallet_credit_loading">
+          <Loader2 className="animate-spin" aria-hidden />
+          Loading partner wallet credit details…
+        </div>
+      </section>
     );
   }
 
@@ -157,89 +160,87 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
         onDismiss={statusOverlay?.status === 'error' ? () => setStatusOverlay(null) : undefined}
       />
 
-      <div className="admin_purchase_tab">
-        <div className="admin_purchase_preflight admin_panel_card">
+      <section className="partner_wallet_credit_panel partner_wallet_credit_panel_manual">
+        <header className="partner_wallet_credit_panel_header">
           <div>
-            <span className="admin_purchase_eyebrow">Wallet balance</span>
-            <strong className="admin_purchase_balance">{formatPrice(preflight.walletBalance)}</strong>
+            <span className="partner_wallet_credit_eyebrow">Manual credit</span>
+            <h3 className="partner_wallet_credit_title">Manual partner wallet credit</h3>
+            <p className="partner_wallet_credit_intro">
+              Credit the partner wallet after verifying a bank transfer outside the deposit request
+              flow. Bank reference and a verification note are required for audit.
+            </p>
           </div>
-          <div className="admin_purchase_preflight_meta">
-            <span>Status: {preflight.partnerStatus}</span>
+        </header>
+
+        {!preflight.canCredit && preflight.blockReasons.length > 0 ? (
+          <div className="admin_panel_alert admin_panel_alert_warning partner_wallet_credit_alert">
+            {preflight.blockReasons.map((reason) => (
+              <p key={reason}>{reason}</p>
+            ))}
           </div>
-          {!preflight.canCredit && preflight.blockReasons.length > 0 && (
-            <div className="admin_panel_alert admin_panel_alert_warning">
-              {preflight.blockReasons.map((reason) => (
-                <p key={reason}>{reason}</p>
-              ))}
-            </div>
-          )}
-        </div>
+        ) : null}
 
-        <div className="admin_wallet_credit_panel admin_panel_card">
-          <h3 className="admin_purchase_subheading">Manual partner wallet credit</h3>
-          <p className="admin_form_hint admin_wallet_credit_intro">
-            Credit the partner wallet after verifying a bank transfer. Bank reference and a
-            verification note are required for audit.
-          </p>
-
-          <form className="admin_wallet_credit_form" onSubmit={(e) => void handleSubmit(e)}>
-            <div className="admin_purchase_field_group">
-              <label htmlFor="partner-wallet-credit-amount">Amount to credit (₦)</label>
-              <input
-                id="partner-wallet-credit-amount"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={!preflight.canCredit || isBusy}
-              />
-            </div>
-            <div className="admin_purchase_field_group">
-              <label htmlFor="partner-wallet-credit-bank-ref">Bank reference / transaction ID</label>
-              <input
-                id="partner-wallet-credit-bank-ref"
-                value={bankReference}
-                onChange={(e) => setBankReference(e.target.value)}
-                disabled={!preflight.canCredit || isBusy}
-              />
-            </div>
-            <div className="admin_purchase_field_group">
-              <label htmlFor="partner-wallet-credit-received-at">Date received (optional)</label>
-              <input
-                id="partner-wallet-credit-received-at"
-                type="date"
-                value={bankReceivedAt}
-                onChange={(e) => setBankReceivedAt(e.target.value)}
-                disabled={!preflight.canCredit || isBusy}
-              />
-            </div>
-            <div className="admin_purchase_field_group">
-              <label htmlFor="partner-wallet-credit-note">Verification note</label>
-              <textarea
-                id="partner-wallet-credit-note"
-                rows={3}
-                value={adminNote}
-                onChange={(e) => setAdminNote(e.target.value)}
-                disabled={!preflight.canCredit || isBusy}
-                placeholder="How was this bank transfer verified?"
-              />
-            </div>
-            <label className="admin_wallet_credit_checkbox">
-              <input
-                type="checkbox"
-                checked={notifyPartner}
-                onChange={(e) => setNotifyPartner(e.target.checked)}
-                disabled={!preflight.canCredit || isBusy}
-              />
-              Notify partner that wallet was funded
-            </label>
-            <div className="admin_purchase_btn_wrap">
-              <button type="submit" disabled={!preflight.canCredit || isProcessing}>
-                {isProcessing ? 'Crediting…' : 'Credit partner wallet'}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+        <form className="admin_wallet_credit_form" onSubmit={(e) => void handleSubmit(e)}>
+          <div className="admin_purchase_field_group">
+            <label htmlFor="partner-wallet-credit-amount">Amount to credit (₦)</label>
+            <input
+              id="partner-wallet-credit-amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              disabled={!preflight.canCredit || isBusy}
+            />
+          </div>
+          <div className="admin_purchase_field_group">
+            <label htmlFor="partner-wallet-credit-bank-ref">Bank reference / transaction ID</label>
+            <input
+              id="partner-wallet-credit-bank-ref"
+              value={bankReference}
+              onChange={(e) => setBankReference(e.target.value)}
+              disabled={!preflight.canCredit || isBusy}
+            />
+          </div>
+          <div className="admin_purchase_field_group">
+            <label htmlFor="partner-wallet-credit-received-at">Date received (optional)</label>
+            <input
+              id="partner-wallet-credit-received-at"
+              type="date"
+              value={bankReceivedAt}
+              onChange={(e) => setBankReceivedAt(e.target.value)}
+              disabled={!preflight.canCredit || isBusy}
+            />
+          </div>
+          <div className="admin_purchase_field_group">
+            <label htmlFor="partner-wallet-credit-note">Verification note</label>
+            <textarea
+              id="partner-wallet-credit-note"
+              rows={3}
+              value={adminNote}
+              onChange={(e) => setAdminNote(e.target.value)}
+              disabled={!preflight.canCredit || isBusy}
+              placeholder="How was this bank transfer verified?"
+            />
+          </div>
+          <label className="admin_wallet_credit_checkbox">
+            <input
+              type="checkbox"
+              checked={notifyPartner}
+              onChange={(e) => setNotifyPartner(e.target.checked)}
+              disabled={!preflight.canCredit || isBusy}
+            />
+            Notify partner that wallet was funded
+          </label>
+          <div className="partner_wallet_credit_form_actions">
+            <button
+              type="submit"
+              className="partner_wallet_credit_btn partner_wallet_credit_btn_primary"
+              disabled={!preflight.canCredit || isProcessing}
+            >
+              {isProcessing ? 'Crediting…' : 'Credit partner wallet'}
+            </button>
+          </div>
+        </form>
+      </section>
     </>
   );
 }

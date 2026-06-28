@@ -43,6 +43,255 @@
   gap: 1rem;
 }
 
+.partner_wallet_credit_tab_hint {
+  margin-bottom: 0.25rem;
+}
+
+.partner_wallet_credit_grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .partner_wallet_credit_grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+
+.partner_wallet_credit_panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.875rem;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.partner_wallet_credit_panel_deposits {
+  border-top: 3px solid #0064ff;
+}
+
+.partner_wallet_credit_panel_manual {
+  border-top: 3px solid #000041;
+}
+
+.partner_wallet_credit_panel_header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.partner_wallet_credit_eyebrow {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0064ff;
+}
+
+.partner_wallet_credit_panel_manual .partner_wallet_credit_eyebrow {
+  color: #000041;
+}
+
+.partner_wallet_credit_title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.partner_wallet_credit_intro {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.partner_wallet_credit_count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #0064ff 0%, #004fcc 100%);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.partner_wallet_credit_loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 0;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.partner_wallet_credit_empty {
+  padding: 2rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px dashed #d1d5db;
+  background: linear-gradient(180deg, #f8fbff 0%, #f9fafb 100%);
+  text-align: center;
+}
+
+.partner_wallet_credit_empty p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.partner_deposit_request_list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partner_deposit_request_card {
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #f9fafb;
+}
+
+.partner_deposit_request_top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.partner_deposit_request_amount {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #000041;
+}
+
+.partner_deposit_request_partner {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.partner_deposit_request_meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.partner_deposit_request_badge {
+  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 9999px;
+  background: #e8f0ff;
+  color: #004fcc;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.partner_deposit_request_badge_waived {
+  background: #ecfccb;
+  color: #3f6212;
+}
+
+.partner_deposit_request_credit_line {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #4b5563;
+}
+
+.partner_deposit_request_time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.partner_deposit_request_field {
+  margin-top: 0.875rem;
+  margin-bottom: 0;
+}
+
+.partner_deposit_request_actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.partner_wallet_credit_alert {
+  margin: 0;
+}
+
+.partner_wallet_credit_form_actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.25rem;
+}
+
+.partner_wallet_credit_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.partner_wallet_credit_btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.partner_wallet_credit_btn_primary {
+  color: #fff;
+  background: linear-gradient(to bottom, #0064ff, #000041);
+}
+
+.partner_wallet_credit_btn_primary:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #1e88e5, #0d47a1);
+}
+
+.partner_wallet_credit_btn_danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fff;
+}
+
+.partner_wallet_credit_btn_danger:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.partner_details_page .partner_wallet_credit_panel .admin_wallet_credit_form {
+  margin-top: 0;
+}
+
 .partner_details_page .user_txn_tab_panel .tab_hint {
   margin-bottom: 1rem;
 }
