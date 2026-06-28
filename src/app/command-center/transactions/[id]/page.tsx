@@ -479,8 +479,7 @@ export default function TransactionDetailPage() {
               <p className="header_requery_hint">{requeryReason}</p>
             )}
             <TransactionCustomerCard
-              transaction={transaction}
-              userEmail={detail.user.email}
+              customer={detail.user}
               isInternalTestAccount={
                 showInternalTestBadge && detail.user.isInternalTestAccount
               }

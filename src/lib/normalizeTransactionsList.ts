@@ -86,6 +86,12 @@ export function normalizeApiTransactionListItem(raw: RawRecord): ApiTransactionL
     id: String(pick(raw, 'id', 'id') ?? ''),
     reference: String(pick(raw, 'reference', 'reference') ?? ''),
     userId: String(pick(raw, 'userId', 'user_id') ?? ''),
+    partnerId: pickString(raw, 'partnerId', 'partner_id'),
+    customerType:
+      (pickString(raw, 'customerType', 'customer_type') as ApiTransactionListItem['customerType']) ??
+      undefined,
+    customerEmail: pickString(raw, 'customerEmail', 'customer_email'),
+    customerPhone: pickString(raw, 'customerPhone', 'customer_phone'),
     userName: String(pick(raw, 'userName', 'user_name') ?? ''),
     type: normalizeTransactionType(pick(raw, 'type', 'type')),
     service: String(pick(raw, 'service', 'service') ?? ''),

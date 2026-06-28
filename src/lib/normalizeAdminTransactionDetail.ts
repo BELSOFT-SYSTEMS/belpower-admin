@@ -185,6 +185,13 @@ function normalizeUser(raw: RawRecord | undefined, fallback: TransactionUserInfo
     id,
     fullName,
     email: pickString(source, 'email', 'email') ?? fallback.email ?? null,
+    phone: pickString(source, 'phone', 'phone') ?? fallback.phone ?? null,
+    customerType:
+      (pickString(source, 'customerType', 'customer_type') ??
+        pickString(source, 'type', 'type')) as TransactionUserInfo['customerType'] ??
+      fallback.customerType,
+    partnerId:
+      pickString(source, 'partnerId', 'partner_id') ?? fallback.partnerId ?? null,
     isInternalTestAccount:
       pickBool(source, 'isInternalTestAccount', 'is_internal_test_account') ||
       fallback.isInternalTestAccount ||
@@ -204,9 +211,12 @@ export function normalizeAdminTransactionDetail(raw: RawRecord): TransactionDeta
   );
   const payment = normalizePayment(pick<RawRecord>(raw, 'payment', 'payment'), paymentMethod);
   const user = normalizeUser(pick<RawRecord>(raw, 'user', 'user'), {
-    id: base.userId,
+    id: base.userId || base.partnerId || '',
     fullName: base.userName,
-    email: null,
+    email: base.customerEmail ?? null,
+    phone: base.customerPhone ?? null,
+    customerType: base.customerType,
+    partnerId: base.partnerId ?? null,
     isInternalTestAccount: base.isInternalTestAccount,
   });
 

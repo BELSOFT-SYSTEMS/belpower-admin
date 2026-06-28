@@ -535,6 +535,55 @@
   transition: background 0.15s, border-color 0.15s;
 }
 
+.txn_overview_user_static {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #111827;
+}
+
+.txn_customer_fields {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.txn_customer_field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.txn_customer_label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.txn_customer_value {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #111827;
+  word-break: break-word;
+}
+
+.pill_partner {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.pill_guest {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
 .txn_overview_user_body {
   flex: 1 1 auto;
   min-width: 0;
@@ -545,7 +594,8 @@
   border-color: #93c5fd;
 }
 
-.txn_overview_user_link .txn_overview_user_avatar {
+.txn_overview_user_link .txn_overview_user_avatar,
+.txn_overview_user_static .txn_overview_user_avatar {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 9999px;

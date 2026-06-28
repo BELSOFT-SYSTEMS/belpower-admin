@@ -92,6 +92,10 @@ export type ApiTransactionListItem = {
   id: string;
   reference: string;
   userId: string;
+  partnerId?: string | null;
+  customerType?: TransactionCustomerType;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
   userName: string;
   type: TransactionType;
   service: string;
@@ -171,10 +175,15 @@ export type TransactionPaymentInfo = {
   providerReference?: string | null;
 };
 
+export type TransactionCustomerType = 'user' | 'partner' | 'guest' | 'anonymous';
+
 export type TransactionUserInfo = {
   id: string;
   fullName: string;
   email?: string | null;
+  phone?: string | null;
+  customerType?: TransactionCustomerType;
+  partnerId?: string | null;
   isInternalTestAccount?: boolean;
 };
 
