@@ -22,6 +22,7 @@ export function getPartnerQuickActionAvailability(partner: PartnerListItem) {
   return {
     canApprove: partner.status === 'pending_review',
     canReject: partner.status === 'pending_review',
+    canReopenReview: partner.status === 'rejected',
     canBlock: partner.status === 'active',
     canUnblock: partner.status === 'blocked',
     canDeactivate: partner.status === 'active',
@@ -30,7 +31,14 @@ export function getPartnerQuickActionAvailability(partner: PartnerListItem) {
 }
 
 export function getPartnerQuickActionDisabledTitle(
-  action: 'approve' | 'reject' | 'block' | 'unblock' | 'deactivate' | 'refundsUnblock',
+  action:
+    | 'approve'
+    | 'reject'
+    | 'reopenReview'
+    | 'block'
+    | 'unblock'
+    | 'deactivate'
+    | 'refundsUnblock',
   partner: PartnerListItem
 ): string {
   const availability = getPartnerQuickActionAvailability(partner);
@@ -40,6 +48,9 @@ export function getPartnerQuickActionDisabledTitle(
   }
   if (action === 'reject' && !availability.canReject) {
     return 'Only pending applications can be rejected';
+  }
+  if (action === 'reopenReview' && !availability.canReopenReview) {
+    return 'Only rejected applications can be reopened for review';
   }
   if (action === 'block' && !availability.canBlock) {
     return 'Only active partners can be blocked';

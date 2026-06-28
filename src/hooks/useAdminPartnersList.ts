@@ -13,6 +13,7 @@ import type {
 const DEFAULT_QUICK_ACTIONS: PartnersQuickActions = {
   approve: false,
   reject: false,
+  reopenReview: false,
   block: false,
   unblock: false,
   deactivate: false,

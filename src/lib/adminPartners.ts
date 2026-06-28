@@ -135,6 +135,14 @@ export async function rejectPartner(payload: PartnerActionPayload): Promise<unkn
   });
 }
 
+export async function reopenPartnerForReview(payload: PartnerActionPayload): Promise<PartnerDetail> {
+  return partnerRequest<PartnerDetail>('/reopen-review', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function blockPartner(payload: PartnerActionPayload): Promise<unknown> {
   return partnerRequest('/block', {
     method: 'POST',

@@ -33,6 +33,7 @@ import {
   blockPartner,
   deactivatePartner,
   rejectPartner,
+  reopenPartnerForReview,
   unblockPartner,
   unblockPartnerRefunds,
 } from '@/lib/adminPartners';
@@ -102,6 +103,9 @@ export default function PartnersPage() {
           reason: payload.reason || 'Application rejected',
         });
         toast.success(`${getPartnerDisplayName(partner)} rejected`);
+      } else if (type === 'reopenReview') {
+        await reopenPartnerForReview({ partnerId: partner.id, note: payload.note });
+        toast.success(`${getPartnerDisplayName(partner)} reopened for review`);
       } else if (type === 'block') {
         await blockPartner({ partnerId: partner.id, reason: payload.reason });
         toast.success(`${getPartnerDisplayName(partner)} blocked`);
@@ -339,6 +343,18 @@ export default function PartnersPage() {
                               onClick={() => openAction('reject', partner)}
                             >
                               <FaTimesCircle />
+                            </button>
+                          )}
+                          {quickActions.reopenReview && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_message"
+                              title={getPartnerQuickActionDisabledTitle('reopenReview', partner)}
+                              aria-label="Reopen for review"
+                              disabled={rowBusy || !actions.canReopenReview}
+                              onClick={() => openAction('reopenReview', partner)}
+                            >
+                              <FaClock />
                             </button>
                           )}
                           {quickActions.refundsUnblock && partner.refundsBlocked && (

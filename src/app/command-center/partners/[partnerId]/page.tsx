@@ -41,6 +41,7 @@ import {
   deactivatePartner,
   getPartnerDetail,
   rejectPartner,
+  reopenPartnerForReview,
   unblockPartner,
   unblockPartnerRefunds,
 } from '@/lib/adminPartners';
@@ -124,6 +125,9 @@ export default function PartnerDetailPage() {
           reason: payload.reason || 'Application rejected',
         });
         toast.success('Partner rejected');
+      } else if (pendingAction === 'reopenReview') {
+        await reopenPartnerForReview({ partnerId: partner.id, note: payload.note });
+        toast.success('Partner application reopened for review');
       } else if (pendingAction === 'block') {
         await blockPartner({ partnerId: partner.id, reason: payload.reason });
         toast.success('Partner blocked');
@@ -231,6 +235,7 @@ function PartnerDetailContent({
   const quickActions = partner.quickActions ?? {
     approve: false,
     reject: false,
+    reopenReview: false,
     block: false,
     unblock: false,
     deactivate: false,
@@ -317,6 +322,21 @@ function PartnerDetailContent({
           <FaTimesCircle /> Reject application
         </button>
       ) : null}
+      {quickActions.reopenReview ? (
+        <button
+          type="button"
+          className="security_action_btn action_message"
+          title={getPartnerQuickActionDisabledTitle('reopenReview', partner)}
+          disabled={isSubmitting || !actions.canReopenReview}
+          aria-disabled={isSubmitting || !actions.canReopenReview}
+          onClick={() => {
+            if (isSubmitting || !actions.canReopenReview) return;
+            onOpenAction('reopenReview');
+          }}
+        >
+          <FaClock /> Reopen for review
+        </button>
+      ) : null}
       {quickActions.refundsUnblock ? (
         <button
           type="button"
@@ -383,6 +403,7 @@ function PartnerDetailContent({
   const hasAdminReviewActions =
     quickActions.approve ||
     quickActions.reject ||
+    quickActions.reopenReview ||
     quickActions.refundsUnblock ||
     quickActions.block ||
     quickActions.unblock ||

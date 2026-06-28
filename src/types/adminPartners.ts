@@ -8,6 +8,7 @@ export type PartnerStatus =
 export type PartnersQuickActions = {
   approve: boolean;
   reject: boolean;
+  reopenReview: boolean;
   block: boolean;
   unblock: boolean;
   deactivate: boolean;

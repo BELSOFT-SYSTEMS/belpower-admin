@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 export type PartnerQuickActionType =
   | 'approve'
   | 'reject'
+  | 'reopenReview'
   | 'block'
   | 'unblock'
   | 'deactivate'
@@ -51,6 +52,15 @@ const ACTION_COPY: Record<
     reasonRequired: true,
     notePlaceholder:
       'Explain why the application was rejected. This is sent to the partner by email.',
+  },
+  reopenReview: {
+    title: 'Reopen for review',
+    message:
+      'This moves the application back to pending review after support follow-up. The partner will be notified and cannot submit a new application.',
+    confirmLabel: 'Reopen for review',
+    danger: false,
+    noteLabel: 'Internal note (optional)',
+    notePlaceholder: 'Summarize what support received or why the case is being reopened',
   },
   block: {
     title: 'Block partner',
