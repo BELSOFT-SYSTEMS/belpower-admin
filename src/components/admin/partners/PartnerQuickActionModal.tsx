@@ -30,6 +30,7 @@ const ACTION_COPY: Record<
     danger: boolean;
     noteLabel?: string;
     reasonRequired?: boolean;
+    notePlaceholder?: string;
   }
 > = {
   approve: {
@@ -38,14 +39,18 @@ const ACTION_COPY: Record<
     confirmLabel: 'Approve partner',
     danger: false,
     noteLabel: 'Internal note (optional)',
+    notePlaceholder: 'Add an internal note for the audit log',
   },
   reject: {
     title: 'Reject application',
-    message: 'The partner will be notified that their application was rejected.',
+    message:
+      'The partner will be notified by email and can sign in to view this reason on their status page.',
     confirmLabel: 'Reject partner',
     danger: true,
     noteLabel: 'Rejection reason',
     reasonRequired: true,
+    notePlaceholder:
+      'Explain why the application was rejected. This is sent to the partner by email.',
   },
   block: {
     title: 'Block partner',
@@ -53,6 +58,7 @@ const ACTION_COPY: Record<
     confirmLabel: 'Block partner',
     danger: true,
     noteLabel: 'Reason (optional)',
+    notePlaceholder: 'Add a note for the audit log',
   },
   unblock: {
     title: 'Unblock partner',
@@ -66,6 +72,7 @@ const ACTION_COPY: Record<
     confirmLabel: 'Deactivate partner',
     danger: true,
     noteLabel: 'Reason (optional)',
+    notePlaceholder: 'Add a note for the audit log',
   },
   refundsUnblock: {
     title: 'Unblock wallet refunds',
@@ -74,6 +81,7 @@ const ACTION_COPY: Record<
     confirmLabel: 'Unblock refunds',
     danger: false,
     noteLabel: 'Review note (optional)',
+    notePlaceholder: 'Add a note for the audit log',
   },
 };
 
@@ -99,6 +107,7 @@ export function PartnerQuickActionModal({
 
   const copy = ACTION_COPY[action];
   const textValue = action === 'reject' ? reason : note;
+  const fieldId = 'partner-action-note';
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -123,41 +132,48 @@ export function PartnerQuickActionModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form className="admin_modal_form" onSubmit={handleSubmit}>
           <div className="admin_modal_body">
-            <p className="admin_modal_message">{copy.message}</p>
-            <p className="admin_modal_target">
+            <p className="admin_confirm_message">
+              {copy.message}
+              <br />
               <strong>{partnerName}</strong>
             </p>
 
             {copy.noteLabel ? (
-              <label className="admin_modal_field">
-                <span>{copy.noteLabel}</span>
+              <div className="admin_form_row">
+                <label htmlFor={fieldId}>
+                  {copy.noteLabel}
+                  {copy.reasonRequired ? ' (required)' : ''}
+                </label>
                 <textarea
+                  id={fieldId}
+                  className="user_action_textarea"
                   value={textValue}
                   onChange={(e) =>
                     action === 'reject' ? setReason(e.target.value) : setNote(e.target.value)
                   }
-                  rows={3}
+                  rows={4}
                   required={copy.reasonRequired}
+                  placeholder={copy.notePlaceholder}
                 />
-              </label>
+              </div>
             ) : null}
           </div>
 
-          <div className="admin_modal_footer">
-            <button type="button" className="admin_modal_cancel" onClick={onClose} disabled={isSubmitting}>
+          <div className="admin_modal_actions">
+            <button type="button" className="btn_secondary" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </button>
             <button
               type="submit"
-              className={copy.danger ? 'admin_modal_confirm_danger' : 'admin_modal_confirm'}
+              className={copy.danger ? 'btn_danger' : 'btn_primary'}
               disabled={isSubmitting || (copy.reasonRequired && !reason.trim())}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin" size={16} aria-hidden />
-                  Working…
+                  <Loader2 className="inline-spinner" style={{ width: 14, height: 14 }} />
+                  Processing…
                 </>
               ) : (
                 copy.confirmLabel

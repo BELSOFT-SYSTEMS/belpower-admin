@@ -23,17 +23,18 @@
 }
 
 /* Detail page — partner-specific overrides on top of adminUserDetails.css */
-.partner_details_page .partner_refunds_alert {
-  margin-bottom: 1rem;
-}
-
-.partner_details_page .profile_actions .action_refunds_unblock {
+.partner_details_page .security_action_btn.action_refunds_unblock {
   color: #ea580c;
   border-color: #fdba74;
+  background: #fff;
 }
 
-.partner_details_page .profile_actions .action_refunds_unblock:hover {
+.partner_details_page .security_action_btn.action_refunds_unblock:hover:not(:disabled) {
   background: #fff7ed;
+}
+
+.partner_details_page .partner_refunds_alert {
+  margin-bottom: 1rem;
 }
 
 .partner_details_page .partner_wallet_credit_tab {

@@ -52,6 +52,7 @@ import { getPartnerAvatarBackground, getPartnerInitials } from '@/utils/partnerA
 import {
   getPartnerDisplayName,
   getPartnerQuickActionAvailability,
+  getPartnerQuickActionDisabledTitle,
   partnerStatusClass,
   formatPartnerStatusLabel,
 } from '@/utils/partnerQuickActionAvailability';
@@ -284,6 +285,109 @@ function PartnerDetailContent({
     ...(canCreditWallet ? [{ id: 'wallet-credit', label: 'Wallet credit' }] : []),
   ];
 
+  const renderPartnerAdminReviewActions = () => (
+    <>
+      {quickActions.approve ? (
+        <button
+          type="button"
+          className="security_action_btn action_activate"
+          title={getPartnerQuickActionDisabledTitle('approve', partner)}
+          disabled={isSubmitting || !actions.canApprove}
+          aria-disabled={isSubmitting || !actions.canApprove}
+          onClick={() => {
+            if (isSubmitting || !actions.canApprove) return;
+            onOpenAction('approve');
+          }}
+        >
+          <FaCheckCircle /> Approve application
+        </button>
+      ) : null}
+      {quickActions.reject ? (
+        <button
+          type="button"
+          className="security_action_btn action_block"
+          title={getPartnerQuickActionDisabledTitle('reject', partner)}
+          disabled={isSubmitting || !actions.canReject}
+          aria-disabled={isSubmitting || !actions.canReject}
+          onClick={() => {
+            if (isSubmitting || !actions.canReject) return;
+            onOpenAction('reject');
+          }}
+        >
+          <FaTimesCircle /> Reject application
+        </button>
+      ) : null}
+      {quickActions.refundsUnblock ? (
+        <button
+          type="button"
+          className="security_action_btn action_refunds_unblock"
+          title={getPartnerQuickActionDisabledTitle('refundsUnblock', partner)}
+          disabled={isSubmitting || !actions.canUnblockRefunds}
+          aria-disabled={isSubmitting || !actions.canUnblockRefunds}
+          onClick={() => {
+            if (isSubmitting || !actions.canUnblockRefunds) return;
+            onOpenAction('refundsUnblock');
+          }}
+        >
+          <FaUnlock /> Unblock refunds
+        </button>
+      ) : null}
+      {quickActions.block ? (
+        <button
+          type="button"
+          className="security_action_btn action_block"
+          title={getPartnerQuickActionDisabledTitle('block', partner)}
+          disabled={isSubmitting || !actions.canBlock}
+          aria-disabled={isSubmitting || !actions.canBlock}
+          onClick={() => {
+            if (isSubmitting || !actions.canBlock) return;
+            onOpenAction('block');
+          }}
+        >
+          <FaBan /> Block partner
+        </button>
+      ) : null}
+      {quickActions.unblock ? (
+        <button
+          type="button"
+          className="security_action_btn action_activate"
+          title={getPartnerQuickActionDisabledTitle('unblock', partner)}
+          disabled={isSubmitting || !actions.canUnblock}
+          aria-disabled={isSubmitting || !actions.canUnblock}
+          onClick={() => {
+            if (isSubmitting || !actions.canUnblock) return;
+            onOpenAction('unblock');
+          }}
+        >
+          <FaUserCheck /> Unblock partner
+        </button>
+      ) : null}
+      {quickActions.deactivate ? (
+        <button
+          type="button"
+          className="security_action_btn action_suspend"
+          title={getPartnerQuickActionDisabledTitle('deactivate', partner)}
+          disabled={isSubmitting || !actions.canDeactivate}
+          aria-disabled={isSubmitting || !actions.canDeactivate}
+          onClick={() => {
+            if (isSubmitting || !actions.canDeactivate) return;
+            onOpenAction('deactivate');
+          }}
+        >
+          <FaUserSlash /> Deactivate partner
+        </button>
+      ) : null}
+    </>
+  );
+
+  const hasAdminReviewActions =
+    quickActions.approve ||
+    quickActions.reject ||
+    quickActions.refundsUnblock ||
+    quickActions.block ||
+    quickActions.unblock ||
+    quickActions.deactivate;
+
   return (
     <div className="user_details_page partner_details_page">
       <AdminBackButton defaultHref="/command-center/partners" defaultLabel="Back to partners" />
@@ -315,71 +419,6 @@ function PartnerDetailContent({
             ) : null}
           </div>
         </div>
-
-        {canManage || quickActions.refundsUnblock ? (
-          <div className="profile_actions">
-            {quickActions.approve && actions.canApprove ? (
-              <button
-                type="button"
-                className="action_activate"
-                disabled={isSubmitting}
-                onClick={() => onOpenAction('approve')}
-              >
-                <FaCheckCircle /> Approve
-              </button>
-            ) : null}
-            {quickActions.reject && actions.canReject ? (
-              <button
-                type="button"
-                className="action_block"
-                disabled={isSubmitting}
-                onClick={() => onOpenAction('reject')}
-              >
-                <FaTimesCircle /> Reject
-              </button>
-            ) : null}
-            {quickActions.refundsUnblock && actions.canUnblockRefunds ? (
-              <button
-                type="button"
-                className="action_refunds_unblock"
-                disabled={isSubmitting}
-                onClick={() => onOpenAction('refundsUnblock')}
-              >
-                <FaUnlock /> Unblock refunds
-              </button>
-            ) : null}
-            {quickActions.block && actions.canBlock ? (
-              <button
-                type="button"
-                className="action_block"
-                disabled={isSubmitting}
-                onClick={() => onOpenAction('block')}
-              >
-                <FaBan /> Block
-              </button>
-            ) : null}
-            {quickActions.unblock && actions.canUnblock ? (
-              <button
-                type="button"
-                className="action_activate"
-                disabled={isSubmitting}
-                onClick={() => onOpenAction('unblock')}
-              >
-                <FaUserCheck /> Unblock
-              </button>
-            ) : null}
-            {quickActions.deactivate && actions.canDeactivate ? (
-              <button
-                type="button"
-                className="action_suspend"
-                disabled={isSubmitting}
-                onClick={() => onOpenAction('deactivate')}
-              >
-                <FaUserSlash /> Deactivate
-              </button>
-            ) : null}
-          </div>
-        ) : null}
       </header>
 
       {partner.refundsBlocked ? (
@@ -572,6 +611,13 @@ function PartnerDetailContent({
                 ) : null}
               </div>
             </section>
+
+            {hasAdminReviewActions ? (
+              <section className="detail_panel security_section security_actions_section">
+                <h3 className="security_section_title">Admin review</h3>
+                <div className="security_admin_actions">{renderPartnerAdminReviewActions()}</div>
+              </section>
+            ) : null}
           </div>
         ) : null}
 

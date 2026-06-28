@@ -112,10 +112,26 @@
 }
 
 .admin_form_row input:focus,
+.admin_form_row textarea:focus,
+.user_action_textarea:focus,
 .admin_dropdown .admin_dropdown_trigger:focus-visible {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.admin_form_row textarea,
+.user_action_textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #111827;
+  resize: vertical;
+  min-height: 4.5rem;
+  box-sizing: border-box;
+  font-family: inherit;
 }
 
 .admin_form_hint {
