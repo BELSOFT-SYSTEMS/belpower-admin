@@ -96,7 +96,7 @@ export function TransactionPaymentReferences({ transaction, payment }: Props) {
             <div>
               <span className="payment_ref_timeline_label">Completed</span>
               <span className="payment_ref_timeline_value">
-                {formatAdminDateTime(transaction.completed_at)}
+                {formatRecordAdminDateTime(transaction, 'completedAt', 'completed_at')}
               </span>
             </div>
           </div>
