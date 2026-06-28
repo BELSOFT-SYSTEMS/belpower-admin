@@ -2,6 +2,8 @@
  * Transaction / provider icons — ported from belpower-frontend iconUtils
  */
 
+import { getDiscoLogoPath } from '@/utils/discoLogoMap';
+
 export type TransactionIconInput = {
   type: string;
   provider?: string;
@@ -41,28 +43,13 @@ export function getTransactionIcon(transaction: TransactionIconInput): string {
       dstv: '/dstv.svg',
       gotv: '/gotv.jpg',
       startimes: '/startimes.svg',
+      showmax: '/showmax.png',
     };
     return cableMap[providerLower] || '/Tv.png';
   }
 
   if (type === 'electricity') {
-    const providerLower = (transaction.provider || '').toLowerCase();
-    // Only map to assets that exist in /public — everything else uses electricity.png
-    const discoMap: Record<string, string> = {
-      aedc: '/aedc.png',
-      abuja: '/aedc.png',
-      ekedc: '/ekedc.png',
-      eko: '/ekedc.png',
-      ikedc: '/ikedc.png',
-      ikeja: '/ikedc.png',
-      kaduna: '/kaedc.png',
-      kaedc: '/kaedc.png',
-      kaedco: '/kaedc.png',
-      ph: '/phedc.jpeg',
-      phedc: '/phedc.jpeg',
-      phed: '/phedc.jpeg',
-    };
-    return discoMap[providerLower] || '/electricity.png';
+    return getDiscoLogoPath(transaction.provider || '');
   }
 
   const typeMap: Record<string, string> = {
@@ -90,6 +77,11 @@ export function getProviderDisplayName(provider: string): string {
     phed: 'PHED',
     phedc: 'PHED',
     kaedc: 'KAEDC',
+    bedc: 'BEDC',
+    eedc: 'EEDC',
+    jedc: 'JEDC',
+    kedco: 'KEDCO',
+    yedc: 'YEDC',
   };
   return map[provider?.toLowerCase()] ?? provider?.toUpperCase() ?? 'N/A';
 }
