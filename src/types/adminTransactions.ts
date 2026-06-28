@@ -149,6 +149,7 @@ export type TransactionsListParams = {
   status?: TransactionStatus;
   flagged?: boolean;
   userId?: string;
+  partnerId?: string;
   paymentMethod?: string;
   walletActivity?: boolean;
   sort?: string;

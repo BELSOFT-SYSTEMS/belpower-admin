@@ -94,7 +94,15 @@ export function buildPartnersListQuery(params: PartnersListParams): URLSearchPar
   }
 
   if (params.status && params.status !== '__all__') {
-    query.set('status', params.status);
+    if (params.status === 'refunds_blocked') {
+      query.set('refundsBlocked', 'true');
+    } else {
+      query.set('status', params.status);
+    }
+  }
+
+  if (params.includeStats === false) {
+    query.set('includeStats', 'false');
   }
 
   return query;
@@ -148,6 +156,17 @@ export async function deactivatePartner(payload: PartnerActionPayload): Promise<
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+  });
+}
+
+export async function unblockPartnerRefunds(
+  partnerId: string,
+  note?: string
+): Promise<PartnerDetail> {
+  return partnerRequest<PartnerDetail>(`/${encodeURIComponent(partnerId)}/refunds/unblock`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ note: note?.trim() || undefined }),
   });
 }
 

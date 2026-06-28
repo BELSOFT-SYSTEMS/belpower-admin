@@ -2,225 +2,438 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaHandshake, FaSearch } from 'react-icons/fa';
+import {
+  FaHandshake,
+  FaSearch,
+  FaUserCheck,
+  FaBan,
+  FaExclamationTriangle,
+  FaClock,
+  FaUnlock,
+  FaTimesCircle,
+  FaUserSlash,
+  FaCheckCircle,
+} from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import '@/styles/adminUsers.css';
+import '@/styles/adminPartners.css';
 import '@/styles/adminShared.css';
+import { AdminDropdown } from '@/components/admin/ui/AdminDropdown';
+import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
+import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
+import {
+  PartnerQuickActionModal,
+  type PartnerQuickActionType,
+} from '@/components/admin/partners/PartnerQuickActionModal';
 import { useAdminAuth } from '@/context/AdminAuthContext';
-import { getPartnersList } from '@/lib/adminPartners';
+import { useAdminPartnersList } from '@/hooks/useAdminPartnersList';
+import {
+  approvePartner,
+  blockPartner,
+  deactivatePartner,
+  rejectPartner,
+  unblockPartner,
+  unblockPartnerRefunds,
+} from '@/lib/adminPartners';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
-import type { PartnerListItem, PartnerStatus } from '@/types/adminPartners';
+import { formatPrice } from '@/utils/FormatPrice';
+import { getPartnerAvatarBackground, getPartnerInitials } from '@/utils/partnerAvatar';
+import { buildPartnersStatusFilterOptions } from '@/utils/partnerListFilters';
+import {
+  getPartnerDisplayName,
+  getPartnerQuickActionAvailability,
+  getPartnerQuickActionDisabledTitle,
+  partnerStatusClass,
+  formatPartnerStatusLabel,
+} from '@/utils/partnerQuickActionAvailability';
+import type { PartnerListItem } from '@/types/adminPartners';
 
-const STATUS_OPTIONS: Array<{ value: PartnerStatus | '__all__'; label: string }> = [
-  { value: '__all__', label: 'All statuses' },
-  { value: 'pending_review', label: 'Pending review' },
-  { value: 'active', label: 'Active' },
-  { value: 'rejected', label: 'Rejected' },
-  { value: 'blocked', label: 'Blocked' },
-  { value: 'deactivated', label: 'Deactivated' },
-];
-
-function statusClass(status: PartnerStatus): string {
-  if (status === 'active') return 'pill pill_active';
-  if (status === 'pending_review') return 'pill pill_pending';
-  if (status === 'rejected' || status === 'blocked') return 'pill pill_blocked';
-  return 'pill pill_inactive';
-}
-
-function formatStatusLabel(status: PartnerStatus): string {
-  return status.replace(/_/g, ' ');
-}
+type PendingAction = {
+  type: PartnerQuickActionType;
+  partners: PartnerListItem[];
+};
 
 export default function PartnersPage() {
   const { canAccess } = useAdminAuth();
-  const canView = canAccess('partners.list');
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<PartnerStatus | '__all__'>('pending_review');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('pending_review');
   const [page, setPage] = useState(1);
-  const [partners, setPartners] = useState<PartnerListItem[]>([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [actingPartnerId, setActingPartnerId] = useState<string | null>(null);
+
+  const { partners, quickActions, filters, stats, pagination, isLoading, error, refresh } =
+    useAdminPartnersList({
+      search: searchTerm,
+      statusFilter,
+      page,
+    });
 
   useEffect(() => {
     setPage(1);
-  }, [search, statusFilter]);
+  }, [searchTerm, statusFilter]);
 
-  useEffect(() => {
-    if (!canView) {
-      setIsLoading(false);
-      return;
-    }
+  const openAction = (type: PartnerQuickActionType, partner: PartnerListItem) => {
+    setPendingAction({ type, partners: [partner] });
+  };
 
-    let cancelled = false;
+  const closeAction = () => {
+    if (!isSubmitting) setPendingAction(null);
+  };
 
-    async function load() {
-      setIsLoading(true);
-      setError(null);
+  const handleConfirmAction = async (payload: { note?: string; reason?: string }) => {
+    if (!pendingAction) return;
 
-      try {
-        const data = await getPartnersList({
-          page,
-          search,
-          status: statusFilter,
+    const { type, partners: actionPartners } = pendingAction;
+    const partner = actionPartners[0];
+    if (!partner) return;
+
+    setIsSubmitting(true);
+    setActingPartnerId(partner.id);
+
+    try {
+      if (type === 'approve') {
+        await approvePartner({ partnerId: partner.id, note: payload.note });
+        toast.success(`${getPartnerDisplayName(partner)} approved`);
+      } else if (type === 'reject') {
+        await rejectPartner({
+          partnerId: partner.id,
+          reason: payload.reason || 'Application rejected',
         });
-
-        if (cancelled) return;
-        setPartners(data.partners);
-        setPagination(data.pagination);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Failed to load partners');
-      } finally {
-        if (!cancelled) setIsLoading(false);
+        toast.success(`${getPartnerDisplayName(partner)} rejected`);
+      } else if (type === 'block') {
+        await blockPartner({ partnerId: partner.id, reason: payload.reason });
+        toast.success(`${getPartnerDisplayName(partner)} blocked`);
+      } else if (type === 'unblock') {
+        await unblockPartner(partner.id);
+        toast.success(`${getPartnerDisplayName(partner)} unblocked`);
+      } else if (type === 'deactivate') {
+        await deactivatePartner({ partnerId: partner.id, reason: payload.reason });
+        toast.success(`${getPartnerDisplayName(partner)} deactivated`);
+      } else if (type === 'refundsUnblock') {
+        await unblockPartnerRefunds(partner.id, payload.note);
+        toast.success(`Refunds restored for ${getPartnerDisplayName(partner)}`);
       }
+
+      setPendingAction(null);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Action failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+      setActingPartnerId(null);
     }
+  };
 
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [canView, page, search, statusFilter]);
-
-  if (!canView) {
+  if (!canAccess('partners.list')) {
     return (
-      <div className="pb-10">
-        <h1 className="text-2xl font-semibold text-black mb-4">Partners</h1>
-        <p className="text-gray-500">You do not have permission to view partner applications.</p>
+      <div className="users_page partners_page">
+        <h1>Partners</h1>
+        <p className="empty_fallback">You do not have permission to view partner applications.</p>
       </div>
     );
   }
 
-  return (
-    <div className="pb-10">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-black flex items-center gap-2">
-          <FaHandshake className="text-blue-600" />
-          Partners
-        </h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Review partner onboarding applications and manage account status.
-        </p>
-      </div>
+  const statCards = stats
+    ? [
+        {
+          key: 'total',
+          icon: <FaHandshake className="text-indigo-500 text-xl" />,
+          label: 'Total partners',
+          value: stats.totalPartners.count.toLocaleString(),
+          sub: stats.totalPartners.definition,
+          border: 'border-indigo-200',
+        },
+        {
+          key: 'pending',
+          icon: <FaClock className="text-amber-500 text-xl" />,
+          label: 'Pending review',
+          value: stats.pendingReview.count.toLocaleString(),
+          sub: stats.pendingReview.definition,
+          border: 'border-amber-200',
+        },
+        {
+          key: 'active',
+          icon: <FaUserCheck className="text-green-500 text-xl" />,
+          label: 'Active partners',
+          value: stats.activePartners.count.toLocaleString(),
+          sub: stats.activePartners.definition,
+          border: 'border-green-200',
+        },
+        {
+          key: 'refunds',
+          icon: <FaExclamationTriangle className="text-orange-500 text-xl" />,
+          label: 'Refunds blocked',
+          value: stats.refundsBlocked.count.toLocaleString(),
+          sub: stats.refundsBlocked.definition,
+          border: 'border-orange-200',
+        },
+        {
+          key: 'blocked',
+          icon: <FaBan className="text-red-500 text-xl" />,
+          label: 'Blocked partners',
+          value: stats.blockedPartners.count.toLocaleString(),
+          sub: stats.blockedPartners.definition,
+          border: 'border-red-200',
+        },
+        {
+          key: 'deactivated',
+          icon: <FaUserSlash className="text-gray-500 text-xl" />,
+          label: 'Deactivated',
+          value: stats.deactivatedPartners.count.toLocaleString(),
+          sub: stats.deactivatedPartners.definition,
+          border: 'border-gray-200',
+        },
+      ]
+    : [];
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center mb-4">
-        <div className="relative flex-1">
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search trading name, business, agent, email, phone, CAC..."
-            aria-label="Search partners"
-            className="w-full rounded-md border border-gray-300 py-2 pl-9 pr-3 text-sm"
+  const statusFilterOptions = buildPartnersStatusFilterOptions(filters);
+  const refundsBlockedCount = stats?.refundsBlocked?.count ?? 0;
+  const refundsBlockedOnPage = partners.filter((partner) => partner.refundsBlocked).length;
+  const refundsSeverity = resolveCriticalSeverity(refundsBlockedCount, refundsBlockedOnPage);
+  const totalPages = pagination?.totalPages ?? 1;
+  const isRowBusy = (partnerId: string) => actingPartnerId === partnerId;
+
+  return (
+    <div className="users_page partners_page">
+      <h1>Partners</h1>
+
+      {statCards.length > 0 && (
+        <section className="stats_section">
+          {statCards.map((stat) => (
+            <div key={stat.key} className={`${stat.border} stats_card`}>
+              <div className="stats_header">
+                <p>{stat.label}</p>
+                {stat.icon}
+              </div>
+              <div className="stats_bottom">
+                <h2>{stat.value}</h2>
+                <p>{stat.sub}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {refundsSeverity && (
+        <AdminCriticalAlert
+          severity={refundsSeverity}
+          title={`${refundsBlockedCount} partner${refundsBlockedCount === 1 ? '' : 's'} with refunds blocked`}
+          message={
+            refundsBlockedOnPage > 0
+              ? `${refundsBlockedOnPage} on this page. Filter by Refunds blocked to review audit holds.`
+              : 'Partner wallet refunds are paused pending ops review. Filter by Refunds blocked to investigate.'
+          }
+        />
+      )}
+
+      <section>
+        <div className="manage_header">
+          <h2>All partners</h2>
+          <div className="search_container">
+            <input
+              type="text"
+              placeholder="Search trading name, business, agent, email, phone, CAC..."
+              value={searchTerm}
+              maxLength={128}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <FaSearch />
+          </div>
+        </div>
+
+        <div className="partners_list_filters">
+          <AdminDropdown
+            variant="filter"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            aria-label="Filter by status"
+            options={statusFilterOptions}
           />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as PartnerStatus | '__all__')}
-          aria-label="Filter by status"
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
 
-      {error ? (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      ) : null}
+        {isLoading ? (
+          <div className="users_page_loading">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <p>Loading partners…</p>
+          </div>
+        ) : error ? (
+          <div className="users_page_error">
+            <p>{error}</p>
+            <button type="button" className="users_page_retry" onClick={refresh}>
+              Try again
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="admin_txn_list">
+              {partners.length > 0 ? (
+                partners.map((partner) => {
+                  const actions = getPartnerQuickActionAvailability(partner);
+                  const rowBusy = isRowBusy(partner.id);
+                  const displayName = getPartnerDisplayName(partner);
 
-      {isLoading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        </div>
-      ) : (
-        <>
-          <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 text-left text-gray-600">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Business</th>
-                  <th className="px-4 py-3 font-medium">Agent</th>
-                  <th className="px-4 py-3 font-medium">Contact</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Applied</th>
-                  <th className="px-4 py-3 font-medium" />
-                </tr>
-              </thead>
-              <tbody>
-                {partners.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                      No partners found for the current filters.
-                    </td>
-                  </tr>
-                ) : (
-                  partners.map((partner) => (
-                    <tr key={partner.id} className="border-t border-gray-100">
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">
-                          {partner.tradingName || partner.businessName}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {partner.tradingName ? `${partner.businessName} · ` : ''}
-                          {partner.cacRegistrationNumber}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">{partner.agentFullName}</td>
-                      <td className="px-4 py-3">
-                        <div>{partner.email}</div>
-                        <div className="text-xs text-gray-500">{partner.phone}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={statusClass(partner.status)}>
-                          {formatStatusLabel(partner.status)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">{formatAdminDateTime(partner.createdAt)}</td>
-                      <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/command-center/partners/${partner.id}`}
-                          className="text-blue-600 hover:underline font-medium"
+                  return (
+                    <div key={partner.id} className="admin_user_row">
+                      <Link
+                        href={`/command-center/partners/${partner.id}`}
+                        className="admin_user_row_link"
+                      >
+                        <div
+                          className="admin_user_avatar_initials"
+                          aria-hidden
+                          style={{ backgroundColor: getPartnerAvatarBackground(partner.id) }}
                         >
-                          View
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                          {getPartnerInitials(partner)}
+                        </div>
+                        <div className="admin_user_info">
+                          <div className="admin_user_name">
+                            {displayName}
+                            <span className={partnerStatusClass(partner.status)}>
+                              {formatPartnerStatusLabel(partner.status)}
+                            </span>
+                            {partner.refundsBlocked ? (
+                              <span className="pill pill_fraud" title={partner.refundsBlockedReason || 'Refunds blocked'}>
+                                <FaExclamationTriangle style={{ marginRight: 4 }} />
+                                Refunds blocked
+                              </span>
+                            ) : null}
+                          </div>
+                          <div className="admin_user_email">
+                            {partner.agentFullName} · {partner.email}
+                          </div>
+                        </div>
+                      </Link>
 
-          <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-            <button
-              type="button"
-              disabled={page <= 1}
-              onClick={() => setPage((current) => Math.max(current - 1, 1))}
-              className="rounded-md border border-gray-300 px-3 py-1.5 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span>
-              Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
-            </span>
-            <button
-              type="button"
-              disabled={page >= pagination.totalPages}
-              onClick={() => setPage((current) => current + 1)}
-              className="rounded-md border border-gray-300 px-3 py-1.5 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+                      <div className="admin_user_meta">
+                        <div className="partner_list_meta_values">
+                          <span>{formatPrice(partner.walletBalance)}</span>
+                          <span>{formatAdminDateTime(partner.createdAt)}</span>
+                        </div>
+
+                        <div
+                          className="user_list_quick_actions"
+                          role="group"
+                          aria-label={`Quick actions for ${displayName}`}
+                        >
+                          {quickActions.approve && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_activate"
+                              title={getPartnerQuickActionDisabledTitle('approve', partner)}
+                              aria-label="Approve"
+                              disabled={rowBusy || !actions.canApprove}
+                              onClick={() => openAction('approve', partner)}
+                            >
+                              <FaCheckCircle />
+                            </button>
+                          )}
+                          {quickActions.reject && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_block"
+                              title={getPartnerQuickActionDisabledTitle('reject', partner)}
+                              aria-label="Reject"
+                              disabled={rowBusy || !actions.canReject}
+                              onClick={() => openAction('reject', partner)}
+                            >
+                              <FaTimesCircle />
+                            </button>
+                          )}
+                          {quickActions.refundsUnblock && partner.refundsBlocked && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_suspend"
+                              title={getPartnerQuickActionDisabledTitle('refundsUnblock', partner)}
+                              aria-label="Unblock refunds"
+                              disabled={rowBusy || !actions.canUnblockRefunds}
+                              onClick={() => openAction('refundsUnblock', partner)}
+                            >
+                              <FaUnlock />
+                            </button>
+                          )}
+                          {quickActions.block && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_block"
+                              title={getPartnerQuickActionDisabledTitle('block', partner)}
+                              aria-label="Block"
+                              disabled={rowBusy || !actions.canBlock}
+                              onClick={() => openAction('block', partner)}
+                            >
+                              <FaBan />
+                            </button>
+                          )}
+                          {quickActions.unblock && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_activate"
+                              title={getPartnerQuickActionDisabledTitle('unblock', partner)}
+                              aria-label="Unblock"
+                              disabled={rowBusy || !actions.canUnblock}
+                              onClick={() => openAction('unblock', partner)}
+                            >
+                              <FaUserCheck />
+                            </button>
+                          )}
+                          {quickActions.deactivate && (
+                            <button
+                              type="button"
+                              className="user_quick_action action_suspend"
+                              title={getPartnerQuickActionDisabledTitle('deactivate', partner)}
+                              aria-label="Deactivate"
+                              disabled={rowBusy || !actions.canDeactivate}
+                              onClick={() => openAction('deactivate', partner)}
+                            >
+                              <FaUserSlash />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="empty_fallback">No partners found for the current filters.</p>
+              )}
+            </div>
+
+            <div className="users_page_pagination">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((current) => Math.max(current - 1, 1))}
+              >
+                Previous
+              </button>
+              <span>
+                Page {pagination?.page ?? page} of {totalPages} ({pagination?.total ?? 0} total)
+              </span>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((current) => current + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
+      </section>
+
+      <PartnerQuickActionModal
+        open={Boolean(pendingAction)}
+        action={pendingAction?.type ?? null}
+        partnerName={
+          pendingAction?.partners[0]
+            ? getPartnerDisplayName(pendingAction.partners[0])
+            : 'Partner'
+        }
+        isSubmitting={isSubmitting}
+        onClose={closeAction}
+        onConfirm={handleConfirmAction}
+      />
     </div>
   );
 }

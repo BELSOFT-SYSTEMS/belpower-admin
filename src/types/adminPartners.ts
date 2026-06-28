@@ -5,6 +5,32 @@ export type PartnerStatus =
   | 'blocked'
   | 'deactivated';
 
+export type PartnersQuickActions = {
+  approve: boolean;
+  reject: boolean;
+  block: boolean;
+  unblock: boolean;
+  deactivate: boolean;
+  walletCreditManual: boolean;
+  refundsUnblock: boolean;
+};
+
+export type PartnersPageStats = {
+  totalPartners: { count: number; definition: string };
+  pendingReview: { count: number; definition: string };
+  activePartners: { count: number; definition: string };
+  blockedPartners: { count: number; definition: string };
+  refundsBlocked: { count: number; definition: string };
+  deactivatedPartners: { count: number; definition: string };
+  rejectedPartners: { count: number; definition: string };
+};
+
+export type PartnersListFilters = {
+  statuses: PartnerStatus[];
+  appliedStatus: string | null;
+  refundsBlocked: boolean;
+};
+
 export type PartnerListItem = {
   id: string;
   agentFullName: string;
@@ -17,6 +43,10 @@ export type PartnerListItem = {
   emailVerified: boolean;
   walletBalance: number;
   canAccessDashboard: boolean;
+  refundsBlocked?: boolean;
+  refundsBlockedAt?: string | null;
+  refundsBlockedReason?: string | null;
+  refundsUnblockedAt?: string | null;
   createdAt: string;
   lastLoginAt?: string | null;
 };
@@ -33,13 +63,19 @@ export type PartnerApiKeySummary = {
 export type PartnerDetail = PartnerListItem & {
   agreedToTerms: boolean;
   notifyDiscoOutages: boolean;
+  notifyLowBalance?: boolean;
+  notifyNewsUpdates?: boolean;
   approvedAt?: string | null;
   rejectedAt?: string | null;
   rejectionReason?: string | null;
   apiKeys: PartnerApiKeySummary[];
+  quickActions: PartnersQuickActions;
 };
 
 export type PartnersListData = {
+  stats: PartnersPageStats | null;
+  quickActions: PartnersQuickActions;
+  filters: PartnersListFilters;
   partners: PartnerListItem[];
   pagination: {
     page: number;
@@ -47,13 +83,15 @@ export type PartnersListData = {
     total: number;
     totalPages: number;
   };
+  generatedAt?: string;
 };
 
 export type PartnersListParams = {
   page?: number;
   limit?: number;
   search?: string;
-  status?: PartnerStatus | '__all__';
+  status?: PartnerStatus | '__all__' | 'refunds_blocked';
+  includeStats?: boolean;
 };
 
 export type PartnerActionPayload = {

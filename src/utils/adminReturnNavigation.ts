@@ -101,6 +101,27 @@ export function buildWalletReturn(): AdminReturnContext {
   return { href: '/command-center/wallet', label: 'Back to wallet' };
 }
 
+export function buildPartnerDetailReturn(
+  partnerId: string,
+  partnerName?: string | null,
+  options?: { tab?: string }
+): AdminReturnContext {
+  const params = new URLSearchParams();
+  if (options?.tab) params.set('tab', options.tab);
+  const query = params.toString();
+
+  return {
+    href: query
+      ? `/command-center/partners/${partnerId}?${query}`
+      : `/command-center/partners/${partnerId}`,
+    label: partnerName?.trim() ? `Back to ${partnerName.trim()}` : 'Back to partner',
+  };
+}
+
+export function buildPartnersListReturn(): AdminReturnContext {
+  return { href: '/command-center/partners', label: 'Back to partners' };
+}
+
 export function buildDashboardReturn(): AdminReturnContext {
   return { href: '/command-center', label: 'Back to dashboard' };
 }

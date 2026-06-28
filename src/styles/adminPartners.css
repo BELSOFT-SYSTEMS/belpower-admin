@@ -1,0 +1,83 @@
+@import "../app/globals.css";
+
+.partners_page .partners_list_filters {
+  margin-bottom: 1rem;
+}
+
+.partners_page .partner_list_meta_values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  min-width: 7rem;
+}
+
+.partners_page .partner_list_meta_values span:first-child {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.8125rem;
+}
+
+.partner_details_page .partner_refunds_alert {
+  margin-bottom: 1rem;
+}
+
+.partner_details_page .partner_refunds_alert p {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  color: #7c2d12;
+}
+
+.partner_details_page .partner_overview_grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .partner_details_page .partner_overview_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.partner_details_page .partner_panel_card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.partner_details_page .partner_panel_card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: #111827;
+}
+
+.partner_details_page .partner_detail_dl {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.partner_details_page .partner_detail_dl dt {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.partner_details_page .partner_detail_dl dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.partner_details_page .profile_actions .action_refunds_unblock {
+  color: #ea580c;
+  border-color: #fdba74;
+}
+
+.partner_details_page .profile_actions .action_refunds_unblock:hover {
+  background: #fff7ed;
+}

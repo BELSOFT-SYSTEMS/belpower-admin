@@ -1,12 +1,38 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { FaArrowLeft, FaHandshake } from 'react-icons/fa';
+import {
+  FaHandshake,
+  FaBan,
+  FaUserCheck,
+  FaUserSlash,
+  FaExclamationTriangle,
+  FaUnlock,
+  FaWallet,
+  FaClock,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaKey,
+} from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import '@/styles/adminUserDetails.css';
+import '@/styles/adminTransactions.css';
+import '@/styles/adminPartners.css';
 import '@/styles/adminShared.css';
+import { AdminTabs } from '@/components/admin/ui/AdminTabs';
+import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
+import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
+import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
+import { AdminTransactionsListPanel } from '@/components/admin/transactions/AdminTransactionsListPanel';
+import { PartnerApiKeysAdminPanel } from '@/components/admin/partners/PartnerApiKeysAdminPanel';
+import { ManualPartnerWalletCreditPanel } from '@/components/admin/partners/walletCredit/ManualPartnerWalletCreditPanel';
+import { PartnerDepositRequestsPanel } from '@/components/admin/partners/walletCredit/PartnerDepositRequestsPanel';
+import {
+  PartnerQuickActionModal,
+  type PartnerQuickActionType,
+} from '@/components/admin/partners/PartnerQuickActionModal';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import {
   approvePartner,
@@ -15,39 +41,35 @@ import {
   getPartnerDetail,
   rejectPartner,
   unblockPartner,
+  unblockPartnerRefunds,
 } from '@/lib/adminPartners';
+import type { PartnerDetail } from '@/types/adminPartners';
+import { buildPartnerDetailReturn } from '@/utils/adminReturnNavigation';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
-import type { PartnerDetail, PartnerStatus } from '@/types/adminPartners';
-import { ManualPartnerWalletCreditPanel } from '@/components/admin/partners/walletCredit/ManualPartnerWalletCreditPanel';
-import { PartnerDepositRequestsPanel } from '@/components/admin/partners/walletCredit/PartnerDepositRequestsPanel';
-import { PartnerTransactionsPanel } from '@/components/admin/partners/PartnerTransactionsPanel';
-import { PartnerApiKeysAdminPanel } from '@/components/admin/partners/PartnerApiKeysAdminPanel';
+import { formatPrice } from '@/utils/FormatPrice';
+import { getPartnerAvatarBackground, getPartnerInitials } from '@/utils/partnerAvatar';
+import {
+  getPartnerDisplayName,
+  getPartnerQuickActionAvailability,
+  partnerStatusClass,
+  formatPartnerStatusLabel,
+} from '@/utils/partnerQuickActionAvailability';
 
 type PartnerTab = 'overview' | 'transactions' | 'api' | 'wallet-credit';
 
-function statusClass(status: PartnerStatus): string {
-  if (status === 'active') return 'pill pill_active';
-  if (status === 'pending_review') return 'pill pill_pending';
-  if (status === 'rejected' || status === 'blocked') return 'pill pill_blocked';
-  return 'pill pill_inactive';
-}
-
 export default function PartnerDetailPage() {
   const params = useParams<{ partnerId: string }>();
+  const partnerId = params.partnerId;
   const { canAccess } = useAdminAuth();
   const canView = canAccess('partners.detail');
-  const canManage = canAccess('partners.approve');
-  const canCreditWallet = canAccess('partners.wallet_credit_manual');
-  const partnerId = params.partnerId;
 
   const [activeTab, setActiveTab] = useState<PartnerTab>('overview');
-
   const [partner, setPartner] = useState<PartnerDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [note, setNote] = useState('');
-  const [reason, setReason] = useState('');
-  const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<PartnerQuickActionType | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transactionsTabCount, setTransactionsTabCount] = useState(0);
 
   const refresh = async () => {
     const data = await getPartnerDetail(partnerId);
@@ -85,337 +107,447 @@ export default function PartnerDetailPage() {
     };
   }, [canView, partnerId]);
 
-  const runAction = async (
-    actionKey: string,
-    action: () => Promise<unknown>,
-    successMessage: string
-  ) => {
-    setBusyAction(actionKey);
+  const handleConfirmAction = async (payload: { note?: string; reason?: string }) => {
+    if (!partner || !pendingAction) return;
+
+    setIsSubmitting(true);
+
     try {
-      await action();
-      toast.success(successMessage);
+      if (pendingAction === 'approve') {
+        await approvePartner({ partnerId: partner.id, note: payload.note });
+        toast.success('Partner approved successfully');
+      } else if (pendingAction === 'reject') {
+        await rejectPartner({
+          partnerId: partner.id,
+          reason: payload.reason || 'Application rejected',
+        });
+        toast.success('Partner rejected');
+      } else if (pendingAction === 'block') {
+        await blockPartner({ partnerId: partner.id, reason: payload.reason });
+        toast.success('Partner blocked');
+      } else if (pendingAction === 'unblock') {
+        await unblockPartner(partner.id);
+        toast.success('Partner unblocked');
+      } else if (pendingAction === 'deactivate') {
+        await deactivatePartner({ partnerId: partner.id, reason: payload.reason });
+        toast.success('Partner deactivated');
+      } else if (pendingAction === 'refundsUnblock') {
+        await unblockPartnerRefunds(partner.id, payload.note);
+        toast.success('Partner refunds unblocked');
+      }
+
+      setPendingAction(null);
       await refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Action failed');
     } finally {
-      setBusyAction(null);
+      setIsSubmitting(false);
     }
-  };
-
-  const handleApprove = (event: FormEvent) => {
-    event.preventDefault();
-    if (!partner) return;
-
-    runAction(
-      'approve',
-      () => approvePartner({ partnerId: partner.id, note: note.trim() || undefined }),
-      'Partner approved successfully'
-    );
-  };
-
-  const handleReject = (event: FormEvent) => {
-    event.preventDefault();
-    if (!partner) return;
-
-    runAction(
-      'reject',
-      () =>
-        rejectPartner({
-          partnerId: partner.id,
-          reason: reason.trim() || 'Application rejected',
-        }),
-      'Partner rejected'
-    );
   };
 
   if (!canView) {
     return (
-      <div className="pb-10">
-        <h1 className="text-2xl font-semibold text-black mb-4">Partner detail</h1>
-        <p className="text-gray-500">You do not have permission to view this page.</p>
+      <div className="user_details_page partner_details_page">
+        <h1>Partner detail</h1>
+        <p className="empty_fallback">You do not have permission to view this page.</p>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="user_details_page partner_details_page">
+        <AdminBackButton defaultHref="/command-center/partners" defaultLabel="Back to partners" />
+        <div className="users_page_loading" style={{ padding: '4rem 0' }}>
+          <Loader2 className="animate-spin" size={32} aria-hidden />
+          <p>Loading partner…</p>
+        </div>
       </div>
     );
   }
 
   if (error || !partner) {
     return (
-      <div className="pb-10">
-        <Link
-          href="/command-center/partners"
-          className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline mb-4"
-        >
-          <FaArrowLeft /> Back to partners
-        </Link>
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error || 'Partner not found'}
+      <div className="user_details_page partner_details_page">
+        <AdminBackButton defaultHref="/command-center/partners" defaultLabel="Back to partners" />
+        <div className="admin_panel_card not_found">
+          <p>{error || 'Partner not found.'}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pb-10">
-      <Link
-        href="/command-center/partners"
-        className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline mb-4"
-      >
-        <FaArrowLeft /> Back to partners
-      </Link>
+    <PartnerDetailContent
+      partner={partner}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      pendingAction={pendingAction}
+      isSubmitting={isSubmitting}
+      transactionsTabCount={transactionsTabCount}
+      onOpenAction={setPendingAction}
+      onCloseAction={() => {
+        if (!isSubmitting) setPendingAction(null);
+      }}
+      onConfirmAction={handleConfirmAction}
+      onTransactionsCountChange={setTransactionsTabCount}
+      onRefresh={() => void refresh()}
+    />
+  );
+}
 
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-black flex items-center gap-2">
-            <FaHandshake className="text-blue-600" />
-            {partner.tradingName || partner.businessName}
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            {partner.agentFullName}
-            {partner.tradingName ? (
-              <span className="text-gray-500"> · {partner.businessName}</span>
+type PartnerDetailContentProps = {
+  partner: PartnerDetail;
+  activeTab: PartnerTab;
+  onTabChange: (tab: PartnerTab) => void;
+  pendingAction: PartnerQuickActionType | null;
+  isSubmitting: boolean;
+  transactionsTabCount: number;
+  onOpenAction: (action: PartnerQuickActionType) => void;
+  onCloseAction: () => void;
+  onConfirmAction: (payload: { note?: string; reason?: string }) => void;
+  onTransactionsCountChange: (count: number) => void;
+  onRefresh: () => void;
+};
+
+function PartnerDetailContent({
+  partner,
+  activeTab,
+  onTabChange,
+  pendingAction,
+  isSubmitting,
+  transactionsTabCount,
+  onOpenAction,
+  onCloseAction,
+  onConfirmAction,
+  onTransactionsCountChange,
+  onRefresh,
+}: PartnerDetailContentProps) {
+  const { canAccess } = useAdminAuth();
+  const displayName = getPartnerDisplayName(partner);
+  const actions = getPartnerQuickActionAvailability(partner);
+  const quickActions = partner.quickActions ?? {
+    approve: false,
+    reject: false,
+    block: false,
+    unblock: false,
+    deactivate: false,
+    walletCreditManual: false,
+    refundsUnblock: false,
+  };
+  const canCreditWallet =
+    canAccess('partners.wallet_credit_manual') || quickActions.walletCreditManual;
+  const canManage = canAccess('partners.approve') || quickActions.approve;
+
+  const partnerReturn = useMemo(
+    () =>
+      buildPartnerDetailReturn(partner.id, displayName, {
+        tab: activeTab !== 'overview' ? activeTab : undefined,
+      }),
+    [partner.id, displayName, activeTab]
+  );
+
+  const transactionsTabReturn = useMemo(
+    () => buildPartnerDetailReturn(partner.id, displayName, { tab: 'transactions' }),
+    [partner.id, displayName]
+  );
+
+  const detailStats = [
+    {
+      icon: <FaWallet className="text-blue-500 text-2xl" />,
+      label: 'Wallet balance',
+      value: formatPrice(partner.walletBalance),
+      border: 'border-blue-200',
+    },
+    {
+      icon: <FaHandshake className="text-green-500 text-2xl" />,
+      label: 'Account status',
+      value: formatPartnerStatusLabel(partner.status),
+      border: 'border-green-200',
+    },
+    {
+      icon: <FaClock className="text-yellow-500 text-2xl" />,
+      label: 'Last login',
+      value: partner.lastLoginAt ? formatAdminDateTime(partner.lastLoginAt) : 'Never',
+      border: 'border-yellow-200',
+      compact: true,
+    },
+    {
+      icon: <FaKey className="text-purple-500 text-2xl" />,
+      label: 'API keys',
+      value: String(partner.apiKeys?.length ?? 0),
+      border: 'border-purple-200',
+    },
+  ];
+
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+    {
+      id: 'transactions',
+      label: 'Transactions',
+      badge: transactionsTabCount > 0 ? transactionsTabCount : undefined,
+    },
+    { id: 'api', label: 'API keys', badge: partner.apiKeys?.length || undefined },
+    ...(canCreditWallet ? [{ id: 'wallet-credit', label: 'Wallet credit' }] : []),
+  ];
+
+  return (
+    <div className="user_details_page partner_details_page">
+      <AdminBackButton defaultHref="/command-center/partners" defaultLabel="Back to partners" />
+
+      <div className="profile_header">
+        <div className="profile_main">
+          <div
+            className="admin_user_avatar_initials"
+            aria-hidden
+            style={{
+              backgroundColor: getPartnerAvatarBackground(partner.id),
+              width: '4.5rem',
+              height: '4.5rem',
+              borderRadius: '9999px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '1.25rem',
+            }}
+          >
+            {getPartnerInitials(partner)}
+          </div>
+          <div>
+            <h1>{displayName}</h1>
+            <p>
+              {partner.agentFullName}
+              {partner.tradingName ? ` · ${partner.businessName}` : null}
+            </p>
+            <span className={partnerStatusClass(partner.status)}>
+              {formatPartnerStatusLabel(partner.status)}
+            </span>
+            {partner.refundsBlocked ? (
+              <span className="pill pill_fraud" title={partner.refundsBlockedReason || 'Refunds blocked'}>
+                <FaExclamationTriangle style={{ marginRight: 4 }} />
+                Refunds blocked
+              </span>
             ) : null}
-          </p>
+          </div>
         </div>
-        <span className={statusClass(partner.status)}>{partner.status.replace(/_/g, ' ')}</span>
+
+        {canManage || quickActions.refundsUnblock ? (
+          <div className="profile_actions">
+            {quickActions.approve && actions.canApprove ? (
+              <button
+                type="button"
+                className="action_activate"
+                disabled={isSubmitting}
+                onClick={() => onOpenAction('approve')}
+              >
+                <FaCheckCircle /> Approve
+              </button>
+            ) : null}
+            {quickActions.reject && actions.canReject ? (
+              <button
+                type="button"
+                className="action_block"
+                disabled={isSubmitting}
+                onClick={() => onOpenAction('reject')}
+              >
+                <FaTimesCircle /> Reject
+              </button>
+            ) : null}
+            {quickActions.refundsUnblock && actions.canUnblockRefunds ? (
+              <button
+                type="button"
+                className="action_refunds_unblock"
+                disabled={isSubmitting}
+                onClick={() => onOpenAction('refundsUnblock')}
+              >
+                <FaUnlock /> Unblock refunds
+              </button>
+            ) : null}
+            {quickActions.block && actions.canBlock ? (
+              <button
+                type="button"
+                className="action_block"
+                disabled={isSubmitting}
+                onClick={() => onOpenAction('block')}
+              >
+                <FaBan /> Block
+              </button>
+            ) : null}
+            {quickActions.unblock && actions.canUnblock ? (
+              <button
+                type="button"
+                className="action_activate"
+                disabled={isSubmitting}
+                onClick={() => onOpenAction('unblock')}
+              >
+                <FaUserCheck /> Unblock
+              </button>
+            ) : null}
+            {quickActions.deactivate && actions.canDeactivate ? (
+              <button
+                type="button"
+                className="action_suspend"
+                disabled={isSubmitting}
+                onClick={() => onOpenAction('deactivate')}
+              >
+                <FaUserSlash /> Deactivate
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
-      {canCreditWallet || canView ? (
-        <div className="mb-6 flex flex-wrap gap-2 border-b border-gray-200">
-          {(
-            [
-              ['overview', 'Overview'],
-              ['transactions', 'Transactions'],
-              ['api', 'API'],
-              ...(canCreditWallet ? [['wallet-credit', 'Wallet credit'] as const] : []),
-            ] as const
-          ).map(([tab, label]) => (
-            <button
-              key={tab}
-              type="button"
-              className={`px-4 py-2 text-sm font-medium ${
-                activeTab === tab
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600'
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {label}
-            </button>
-          ))}
+      {partner.refundsBlocked ? (
+        <AdminCriticalAlert
+          severity={resolveCriticalSeverity(1, 1) ?? 'danger'}
+          title="Wallet refunds are blocked"
+          message={
+            partner.refundsBlockedReason ||
+            'This partner cannot receive automatic refunds until ops clears the audit hold.'
+          }
+          className="partner_refunds_alert"
+        />
+      ) : null}
+
+      <section className="stats_section">
+        {detailStats.map((stat) => (
+          <div key={stat.label} className={`${stat.border} stats_card`}>
+            <div className="stats_header">
+              <p>{stat.label}</p>
+              {stat.icon}
+            </div>
+            <div className="stats_bottom">
+              <h2>{stat.value}</h2>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <AdminTabs tabs={tabs} activeTab={activeTab} onChange={(tab) => onTabChange(tab as PartnerTab)} />
+
+      {activeTab === 'overview' ? (
+        <div className="partner_overview_grid">
+          <section className="partner_panel_card">
+            <h3>Business details</h3>
+            <dl className="partner_detail_dl">
+              <div>
+                <dt>Trading name</dt>
+                <dd>{partner.tradingName || '—'}</dd>
+              </div>
+              <div>
+                <dt>Business name (CAC)</dt>
+                <dd>{partner.businessName}</dd>
+              </div>
+              <div>
+                <dt>CAC number</dt>
+                <dd>{partner.cacRegistrationNumber}</dd>
+              </div>
+              <div>
+                <dt>Email</dt>
+                <dd>{partner.email}</dd>
+              </div>
+              <div>
+                <dt>Phone</dt>
+                <dd>{partner.phone}</dd>
+              </div>
+              <div>
+                <dt>Applied</dt>
+                <dd>{formatAdminDateTime(partner.createdAt)}</dd>
+              </div>
+              {partner.approvedAt ? (
+                <div>
+                  <dt>Approved</dt>
+                  <dd>{formatAdminDateTime(partner.approvedAt)}</dd>
+                </div>
+              ) : null}
+            </dl>
+          </section>
+
+          <section className="partner_panel_card">
+            <h3>Account &amp; notifications</h3>
+            <dl className="partner_detail_dl">
+              <div>
+                <dt>Email verified</dt>
+                <dd>{partner.emailVerified ? 'Yes' : 'No'}</dd>
+              </div>
+              <div>
+                <dt>Disco outage alerts</dt>
+                <dd>{partner.notifyDiscoOutages ? 'Enabled' : 'Disabled'}</dd>
+              </div>
+              <div>
+                <dt>Low balance alerts</dt>
+                <dd>{partner.notifyLowBalance !== false ? 'Enabled' : 'Disabled'}</dd>
+              </div>
+              <div>
+                <dt>News updates</dt>
+                <dd>{partner.notifyNewsUpdates !== false ? 'Enabled' : 'Disabled'}</dd>
+              </div>
+              {partner.refundsBlocked ? (
+                <>
+                  <div>
+                    <dt>Refunds blocked since</dt>
+                    <dd>
+                      {partner.refundsBlockedAt
+                        ? formatAdminDateTime(partner.refundsBlockedAt)
+                        : '—'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Block reason</dt>
+                    <dd>{partner.refundsBlockedReason || 'Pending admin review'}</dd>
+                  </div>
+                </>
+              ) : null}
+              {partner.rejectionReason ? (
+                <div>
+                  <dt>Rejection reason</dt>
+                  <dd>{partner.rejectionReason}</dd>
+                </div>
+              ) : null}
+            </dl>
+          </section>
         </div>
       ) : null}
 
-      {activeTab === 'wallet-credit' && canCreditWallet ? (
-        <div className="space-y-4">
-          <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={() => void refresh()} />
-          <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={() => void refresh()} />
-        </div>
-      ) : activeTab === 'transactions' ? (
-        <PartnerTransactionsPanel partnerId={partner.id} />
-      ) : activeTab === 'api' ? (
+      {activeTab === 'transactions' ? (
+        <AdminTransactionsListPanel
+          partnerId={partner.id}
+          showUser={false}
+          enabled={activeTab === 'transactions'}
+          listTitle="Partner transactions"
+          searchPlaceholder="Search reference, order ID, provider…"
+          detailReturnContext={transactionsTabReturn}
+          onPaginationTotalChange={onTransactionsCountChange}
+          onActionComplete={onRefresh}
+        />
+      ) : null}
+
+      {activeTab === 'api' ? (
         <PartnerApiKeysAdminPanel
           partnerId={partner.id}
           apiKeys={partner.apiKeys}
           canManage={canManage}
-          onUpdated={() => void refresh()}
+          onUpdated={onRefresh}
         />
-      ) : (
-      <>
-      <div className="grid gap-4 lg:grid-cols-2 mb-6">
-        <section className="rounded-lg border border-gray-200 bg-white p-4">
-          <h2 className="text-lg font-semibold text-black mb-3">Business details</h2>
-          <dl className="grid gap-3 text-sm">
-            <div>
-              <dt className="text-gray-500">Trading name</dt>
-              <dd className="font-medium text-gray-900">{partner.tradingName || '—'}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Business name (CAC)</dt>
-              <dd className="font-medium text-gray-900">{partner.businessName}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">CAC number</dt>
-              <dd className="font-medium text-gray-900">{partner.cacRegistrationNumber}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Email</dt>
-              <dd className="font-medium text-gray-900">{partner.email}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Phone</dt>
-              <dd className="font-medium text-gray-900">{partner.phone}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Applied</dt>
-              <dd className="font-medium text-gray-900">{formatAdminDateTime(partner.createdAt)}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Last login</dt>
-              <dd className="font-medium text-gray-900">
-                {partner.lastLoginAt ? formatAdminDateTime(partner.lastLoginAt) : 'Never'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Wallet balance</dt>
-              <dd className="font-medium text-gray-900">
-                ₦{partner.walletBalance.toLocaleString()}
-              </dd>
-            </div>
-          </dl>
-        </section>
+      ) : null}
 
-        <section className="rounded-lg border border-gray-200 bg-white p-4">
-          <h2 className="text-lg font-semibold text-black mb-3">Quick links</h2>
-          <p className="text-sm text-gray-600">
-            View API keys and rotate them from the <strong>API</strong> tab. Purchase history is under{' '}
-            <strong>Transactions</strong>.
-          </p>
-        </section>
-      </div>
-
-      {canManage ? (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {partner.status === 'pending_review' ? (
-            <>
-              <section className="rounded-lg border border-gray-200 bg-white p-4">
-                <h2 className="text-lg font-semibold text-black mb-3">Approve application</h2>
-                <form onSubmit={handleApprove} className="space-y-3">
-                  <label htmlFor="approval-note" className="block text-sm text-gray-700">
-                    Internal note (optional)
-                  </label>
-                  <textarea
-                    id="approval-note"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    rows={3}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-                    disabled={busyAction !== null}
-                  >
-                    {busyAction === 'approve' ? 'Approving…' : 'Approve partner'}
-                  </button>
-                </form>
-              </section>
-
-              <section className="rounded-lg border border-gray-200 bg-white p-4">
-                <h2 className="text-lg font-semibold text-black mb-3">Reject application</h2>
-                <form onSubmit={handleReject} className="space-y-3">
-                  <label htmlFor="reject-reason" className="block text-sm text-gray-700">
-                    Reason
-                  </label>
-                  <textarea
-                    id="reject-reason"
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    rows={3}
-                    required
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-                    disabled={busyAction !== null}
-                  >
-                    {busyAction === 'reject' ? 'Rejecting…' : 'Reject partner'}
-                  </button>
-                </form>
-              </section>
-            </>
-          ) : null}
-
-          {partner.status === 'active' ? (
-            <section className="rounded-lg border border-gray-200 bg-white p-4 lg:col-span-2">
-              <h2 className="text-lg font-semibold text-black mb-3">Account controls</h2>
-              <div className="space-y-3">
-                <textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  rows={3}
-                  placeholder="Reason for block or deactivation"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                />
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-                    disabled={busyAction !== null}
-                    onClick={() =>
-                      runAction(
-                        'block',
-                        () =>
-                          blockPartner({
-                            partnerId: partner.id,
-                            reason: reason.trim() || undefined,
-                          }),
-                        'Partner blocked'
-                      )
-                    }
-                  >
-                    Block
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-                    disabled={busyAction !== null}
-                    onClick={() =>
-                      runAction(
-                        'deactivate',
-                        () =>
-                          deactivatePartner({
-                            partnerId: partner.id,
-                            reason: reason.trim() || undefined,
-                          }),
-                        'Partner deactivated'
-                      )
-                    }
-                  >
-                    Deactivate
-                  </button>
-                </div>
-              </div>
-            </section>
-          ) : null}
-
-          {partner.status === 'blocked' ? (
-            <section className="rounded-lg border border-gray-200 bg-white p-4">
-              <h2 className="text-lg font-semibold text-black mb-3">Unblock partner</h2>
-              <button
-                type="button"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-                disabled={busyAction !== null}
-                onClick={() =>
-                  runAction(
-                    'unblock',
-                    () => unblockPartner(partner.id),
-                    'Partner unblocked'
-                  )
-                }
-              >
-                {busyAction === 'unblock' ? 'Unblocking…' : 'Unblock partner'}
-              </button>
-            </section>
-          ) : null}
+      {activeTab === 'wallet-credit' && canCreditWallet ? (
+        <div className="space-y-4">
+          <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={onRefresh} />
+          <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={onRefresh} />
         </div>
       ) : null}
 
-      {partner.rejectionReason ? (
-        <section className="rounded-lg border border-gray-200 bg-white p-4 mt-4">
-          <h2 className="text-lg font-semibold text-black mb-2">Rejection reason</h2>
-          <p className="text-sm text-gray-700">{partner.rejectionReason}</p>
-        </section>
-      ) : null}
-      </>
-      )}
+      <PartnerQuickActionModal
+        open={Boolean(pendingAction)}
+        action={pendingAction}
+        partnerName={displayName}
+        isSubmitting={isSubmitting}
+        onClose={onCloseAction}
+        onConfirm={onConfirmAction}
+      />
     </div>
   );
 }

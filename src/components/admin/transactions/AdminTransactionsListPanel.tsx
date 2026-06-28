@@ -10,6 +10,7 @@ import type { AdminReturnContext } from '@/utils/adminReturnNavigation';
 
 type AdminTransactionsListPanelProps = {
   userId?: string;
+  partnerId?: string;
   showUser?: boolean;
   enabled?: boolean;
   listTitle?: string;
@@ -23,6 +24,7 @@ type AdminTransactionsListPanelProps = {
 
 export function AdminTransactionsListPanel({
   userId,
+  partnerId,
   showUser = true,
   enabled = true,
   listTitle = 'All transactions',
@@ -55,6 +57,7 @@ export function AdminTransactionsListPanel({
     statusFilter,
     page,
     userId,
+    partnerId,
     enabled,
   });
 
@@ -63,7 +66,7 @@ export function AdminTransactionsListPanel({
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, categoryFilter, statusFilter, userId]);
+  }, [searchTerm, categoryFilter, statusFilter, userId, partnerId]);
 
   useEffect(() => {
     if (!enabled || !onPaginationTotalChange) return;
@@ -94,7 +97,7 @@ export function AdminTransactionsListPanel({
       categoryFilter={categoryFilter}
       statusFilter={statusFilter}
       page={page}
-      showUser={showUser}
+      showUser={partnerId ? false : showUser}
       showQuickActions={canUseQuickActions}
       showInternalTestBadge={canViewInternalTestTransactions}
       isInternalTestAccount={isInternalTestAccount}
