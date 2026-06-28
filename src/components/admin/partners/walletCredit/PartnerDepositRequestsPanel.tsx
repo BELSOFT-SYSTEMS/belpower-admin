@@ -54,7 +54,11 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
         bankReference,
         adminNote: 'Approved partner bank transfer deposit',
       });
-      toast.success('Deposit approved and wallet credited');
+      toast.success(
+        `Deposit approved. Wallet credited ${formatPrice(
+          item.expectedWalletCredit ?? Math.max(0, item.amount - (item.platformDepositFee ?? 50))
+        )}`
+      );
       await load();
       onUpdated?.();
     } catch (error) {
@@ -106,7 +110,11 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="font-medium text-gray-900">
-                  {item.partner?.businessName || 'Partner'} · {formatPrice(item.amount)}
+                  {item.partner?.businessName || 'Partner'} · {formatPrice(item.amount)} received
+                </p>
+                <p className="text-sm text-gray-600">
+                  Credits {formatPrice(item.expectedWalletCredit ?? Math.max(0, item.amount - 50))} after ₦
+                  {(item.platformDepositFee ?? 50).toLocaleString('en-NG')} deposit charge
                 </p>
                 <p className="text-sm text-gray-600">
                   {item.partner?.email} · {formatAdminDateTime(item.createdAt)}
@@ -134,7 +142,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                 disabled={busyId === item.id}
                 onClick={() => void handleApprove(item)}
               >
-                Approve & credit
+                Approve & credit wallet
               </button>
               <button
                 type="button"
