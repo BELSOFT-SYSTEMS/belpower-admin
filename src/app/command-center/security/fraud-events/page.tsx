@@ -10,6 +10,7 @@ import '@/styles/adminShared.css';
 import '@/styles/adminFraudEvents.css';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
 import { RunFraudScanModal } from '@/components/admin/fraud/RunFraudScanModal';
+import { IpAddressesTab } from '@/components/admin/fraud/IpAddressesTab';
 import {
   AdminBulkSelectToolbar,
   type AdminBulkAction,
@@ -55,7 +56,7 @@ function actionLabel(action: FraudEvent['actionTaken']): string {
   return 'Blocked';
 }
 
-function FraudEventsContent() {
+function FraudEventsContent({ hidePageHeader = false }: { hidePageHeader?: boolean }) {
   const searchParams = useSearchParams();
   const { canAccess, admin } = useAdminAuth();
   const isSuperAdmin = Boolean(admin?.allAccess || admin?.role === 'super_admin');
@@ -267,6 +268,7 @@ function FraudEventsContent() {
 
   return (
     <div className="fraud_events_page">
+      {!hidePageHeader && (
       <header className="fraud_events_header">
         <div>
           <h1>Fraud Events</h1>
@@ -292,6 +294,25 @@ function FraudEventsContent() {
           </div>
         )}
       </header>
+      )}
+
+      {isSuperAdmin && hidePageHeader && (
+        <div className="fraud_events_header_actions fraud_events_header_actions_inline">
+          <button
+            type="button"
+            className="fraud_run_scan_btn"
+            onClick={openScanModal}
+            disabled={scanBusy}
+          >
+            {scanBusy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FaSync className="h-4 w-4" />
+            )}
+            Run fraud scan
+          </button>
+        </div>
+      )}
 
       {userIdFilter && (
         <p className="fraud_events_filter_note">
@@ -623,10 +644,52 @@ function FraudEventsContent() {
   );
 }
 
+type SecurityTab = 'events' | 'ips';
+
+function SecurityFraudPage() {
+  const [activeTab, setActiveTab] = useState<SecurityTab>('events');
+
+  return (
+    <div className="fraud_events_page">
+      <header className="fraud_events_header">
+        <div>
+          <h1>Fraud Events</h1>
+          <p className="fraud_events_subtitle">
+            Review suspicious activity, manage blocked IPs, and maintain whitelist entries
+          </p>
+        </div>
+      </header>
+
+      <div className="fraud_security_tabs" role="tablist" aria-label="Fraud security sections">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'events'}
+          className={`fraud_security_tab ${activeTab === 'events' ? 'active' : ''}`}
+          onClick={() => setActiveTab('events')}
+        >
+          Fraud Events
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'ips'}
+          className={`fraud_security_tab ${activeTab === 'ips' ? 'active' : ''}`}
+          onClick={() => setActiveTab('ips')}
+        >
+          IP Addresses
+        </button>
+      </div>
+
+      {activeTab === 'events' ? <FraudEventsContent hidePageHeader /> : <IpAddressesTab />}
+    </div>
+  );
+}
+
 export default function FraudEventsPage() {
   return (
     <ProtectedRoute>
-      <FraudEventsContent />
+      <SecurityFraudPage />
     </ProtectedRoute>
   );
 }
