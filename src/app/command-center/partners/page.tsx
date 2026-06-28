@@ -399,24 +399,30 @@ export default function PartnersPage() {
               )}
             </div>
 
-            <div className="users_page_pagination">
-              <button
-                type="button"
-                disabled={page <= 1}
-                onClick={() => setPage((current) => Math.max(current - 1, 1))}
-              >
-                Previous
-              </button>
-              <span>
-                Page {pagination?.page ?? page} of {totalPages} ({pagination?.total ?? 0} total)
-              </span>
-              <button
-                type="button"
-                disabled={page >= totalPages}
-                onClick={() => setPage((current) => current + 1)}
-              >
-                Next
-              </button>
+            <div className="users_pagination_bar">
+              <p className="users_pagination_meta">
+                Page {pagination?.page ?? page} of {totalPages} ·{' '}
+                {(pagination?.total ?? 0).toLocaleString()} partners
+              </p>
+              <div className="pagination_section">
+                <button
+                  type="button"
+                  className="pagination_btn"
+                  disabled={page <= 1}
+                  onClick={() => setPage((current) => Math.max(current - 1, 1))}
+                >
+                  Previous
+                </button>
+                <span className="current btn_active">{page}</span>
+                <button
+                  type="button"
+                  className="pagination_btn"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((current) => current + 1)}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </>
         )}
