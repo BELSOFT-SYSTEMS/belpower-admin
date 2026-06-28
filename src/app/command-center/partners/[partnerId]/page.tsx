@@ -23,6 +23,7 @@ import '@/styles/adminPartners.css';
 import '@/styles/adminShared.css';
 import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
+import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { AdminCriticalAlert } from '@/components/admin/ui/AdminCriticalAlert';
 import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
 import { AdminTransactionsListPanel } from '@/components/admin/transactions/AdminTransactionsListPanel';
@@ -45,7 +46,7 @@ import {
 } from '@/lib/adminPartners';
 import type { PartnerDetail } from '@/types/adminPartners';
 import { buildPartnerDetailReturn } from '@/utils/adminReturnNavigation';
-import { formatAdminDateTime } from '@/utils/formatAdminDate';
+import { formatAdminDate, formatAdminDateTime } from '@/utils/formatAdminDate';
 import { formatPrice } from '@/utils/FormatPrice';
 import { getPartnerAvatarBackground, getPartnerInitials } from '@/utils/partnerAvatar';
 import {
@@ -411,84 +412,166 @@ function PartnerDetailContent({
         <AdminTabs tabs={tabs} activeTab={activeTab} onChange={(tab) => onTabChange(tab as PartnerTab)} />
 
         {activeTab === 'overview' ? (
-          <div className="tab_panel">
-            <div className="detail_grid">
-              <section className="detail_panel">
-                <h2>Business details</h2>
-                <dl className="info_list">
-                  <div className="info_row">
-                    <dt>Trading name</dt>
-                    <dd>{partner.tradingName || '—'}</dd>
+          <div className="tab_panel overview_tab">
+            <section className="detail_panel overview_account_panel">
+              <h2 className="overview_section_title">Account overview</h2>
+              <div className="overview_fields_grid">
+                <div className="overview_field">
+                  <span className="overview_label">Partner ID</span>
+                  <AdminCopyableValue
+                    value={partner.id}
+                    variant="inline"
+                    className="overview_value overview_value_copyable"
+                  />
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Agent</span>
+                  <span className="overview_value">{partner.agentFullName}</span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Email</span>
+                  <span className="overview_value">{partner.email}</span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Phone</span>
+                  <span className="overview_value">{partner.phone}</span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Status</span>
+                  <span className="overview_value">
+                    <span className={partnerStatusClass(partner.status)}>
+                      {formatPartnerStatusLabel(partner.status)}
+                    </span>
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Applied</span>
+                  <span className="overview_value">{formatAdminDate(partner.createdAt)}</span>
+                </div>
+                {partner.approvedAt ? (
+                  <div className="overview_field">
+                    <span className="overview_label">Approved</span>
+                    <span className="overview_value">{formatAdminDate(partner.approvedAt)}</span>
                   </div>
-                  <div className="info_row">
-                    <dt>Business name (CAC)</dt>
-                    <dd>{partner.businessName}</dd>
+                ) : null}
+                <div className="overview_field">
+                  <span className="overview_label">Last login</span>
+                  <span className="overview_value">
+                    {partner.lastLoginAt ? formatAdminDateTime(partner.lastLoginAt) : 'Never'}
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Email verified</span>
+                  <span className="overview_value">
+                    {partner.emailVerified ? (
+                      <span className="pill pill_success">Verified</span>
+                    ) : (
+                      'No'
+                    )}
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Wallet balance</span>
+                  <span className="overview_value overview_value_emphasis">
+                    {formatPrice(partner.walletBalance)}
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Transactions</span>
+                  <span className="overview_value">{transactionsTabCount}</span>
+                </div>
+                {partner.refundsBlocked ? (
+                  <div className="overview_field">
+                    <span className="overview_label">Refunds</span>
+                    <span className="overview_value">
+                      <span className="pill pill_fraud">Blocked</span>
+                    </span>
                   </div>
-                  <div className="info_row">
-                    <dt>CAC number</dt>
-                    <dd>{partner.cacRegistrationNumber}</dd>
-                  </div>
-                  <div className="info_row">
-                    <dt>Phone</dt>
-                    <dd>{partner.phone}</dd>
-                  </div>
-                  <div className="info_row">
-                    <dt>Applied</dt>
-                    <dd>{formatAdminDateTime(partner.createdAt)}</dd>
-                  </div>
-                  {partner.approvedAt ? (
-                    <div className="info_row">
-                      <dt>Approved</dt>
-                      <dd>{formatAdminDateTime(partner.approvedAt)}</dd>
-                    </div>
-                  ) : null}
-                </dl>
-              </section>
+                ) : null}
+              </div>
+            </section>
 
-              <section className="detail_panel">
-                <h2>Account &amp; notifications</h2>
-                <dl className="info_list">
-                  <div className="info_row">
-                    <dt>Email verified</dt>
-                    <dd>{partner.emailVerified ? 'Yes' : 'No'}</dd>
-                  </div>
-                  <div className="info_row">
-                    <dt>Disco outage alerts</dt>
-                    <dd>{partner.notifyDiscoOutages ? 'Enabled' : 'Disabled'}</dd>
-                  </div>
-                  <div className="info_row">
-                    <dt>Low balance alerts</dt>
-                    <dd>{partner.notifyLowBalance !== false ? 'Enabled' : 'Disabled'}</dd>
-                  </div>
-                  <div className="info_row">
-                    <dt>News updates</dt>
-                    <dd>{partner.notifyNewsUpdates !== false ? 'Enabled' : 'Disabled'}</dd>
-                  </div>
-                  {partner.refundsBlocked ? (
-                    <>
-                      <div className="info_row">
-                        <dt>Refunds blocked since</dt>
-                        <dd>
-                          {partner.refundsBlockedAt
-                            ? formatAdminDateTime(partner.refundsBlockedAt)
-                            : '—'}
-                        </dd>
-                      </div>
-                      <div className="info_row">
-                        <dt>Block reason</dt>
-                        <dd>{partner.refundsBlockedReason || 'Pending admin review'}</dd>
-                      </div>
-                    </>
-                  ) : null}
-                  {partner.rejectionReason ? (
-                    <div className="info_row">
-                      <dt>Rejection reason</dt>
-                      <dd>{partner.rejectionReason}</dd>
+            <section className="detail_panel overview_account_panel">
+              <h2 className="overview_section_title">Business registration</h2>
+              <div className="overview_fields_grid">
+                <div className="overview_field">
+                  <span className="overview_label">Trading name</span>
+                  <span className="overview_value">{partner.tradingName || '—'}</span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Business name (CAC)</span>
+                  <span className="overview_value">{partner.businessName}</span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">CAC number</span>
+                  <AdminCopyableValue
+                    value={partner.cacRegistrationNumber}
+                    variant="inline"
+                    className="overview_value overview_value_copyable"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="detail_panel overview_account_panel">
+              <h2 className="overview_section_title">Notifications &amp; alerts</h2>
+              <div className="overview_fields_grid">
+                <div className="overview_field">
+                  <span className="overview_label">Disco outages</span>
+                  <span className="overview_value">
+                    {partner.notifyDiscoOutages ? (
+                      <span className="pill pill_success">Enabled</span>
+                    ) : (
+                      'Disabled'
+                    )}
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Low balance</span>
+                  <span className="overview_value">
+                    {partner.notifyLowBalance !== false ? (
+                      <span className="pill pill_success">Enabled</span>
+                    ) : (
+                      'Disabled'
+                    )}
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">News updates</span>
+                  <span className="overview_value">
+                    {partner.notifyNewsUpdates !== false ? (
+                      <span className="pill pill_success">Enabled</span>
+                    ) : (
+                      'Disabled'
+                    )}
+                  </span>
+                </div>
+                {partner.refundsBlocked ? (
+                  <>
+                    <div className="overview_field">
+                      <span className="overview_label">Refunds blocked since</span>
+                      <span className="overview_value">
+                        {partner.refundsBlockedAt
+                          ? formatAdminDateTime(partner.refundsBlockedAt)
+                          : '—'}
+                      </span>
                     </div>
-                  ) : null}
-                </dl>
-              </section>
-            </div>
+                    <div className="overview_field">
+                      <span className="overview_label">Block reason</span>
+                      <span className="overview_value">
+                        {partner.refundsBlockedReason || 'Pending admin review'}
+                      </span>
+                    </div>
+                  </>
+                ) : null}
+                {partner.rejectionReason ? (
+                  <div className="overview_field">
+                    <span className="overview_label">Rejection reason</span>
+                    <span className="overview_value">{partner.rejectionReason}</span>
+                  </div>
+                ) : null}
+              </div>
+            </section>
           </div>
         ) : null}
 
