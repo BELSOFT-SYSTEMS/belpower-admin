@@ -19,6 +19,13 @@ const TRANSACTION_TYPES: TransactionType[] = [
   'cashback',
 ];
 
+const DEPOSIT_TYPE_ALIASES = new Set([
+  'deposit',
+  'wallet_funding',
+  'wallet_credit',
+  'partner_wallet_funding',
+]);
+
 const TRANSACTION_STATUSES: TransactionStatus[] = [
   'completed',
   'pending',
@@ -52,6 +59,7 @@ function pickNumber(raw: RawRecord, camel: string, snake: string, fallback = 0):
 
 function normalizeTransactionType(value: unknown): TransactionType {
   const text = String(value ?? 'electricity').toLowerCase();
+  if (DEPOSIT_TYPE_ALIASES.has(text)) return 'deposit';
   return TRANSACTION_TYPES.includes(text as TransactionType)
     ? (text as TransactionType)
     : 'electricity';
