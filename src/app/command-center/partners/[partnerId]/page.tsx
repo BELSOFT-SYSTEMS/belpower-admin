@@ -239,14 +239,6 @@ function PartnerDetailContent({
     canAccess('partners.wallet_credit_manual') || quickActions.walletCreditManual;
   const canManage = canAccess('partners.approve') || quickActions.approve;
 
-  const partnerReturn = useMemo(
-    () =>
-      buildPartnerDetailReturn(partner.id, displayName, {
-        tab: activeTab !== 'overview' ? activeTab : undefined,
-      }),
-    [partner.id, displayName, activeTab]
-  );
-
   const transactionsTabReturn = useMemo(
     () => buildPartnerDetailReturn(partner.id, displayName, { tab: 'transactions' }),
     [partner.id, displayName]
@@ -295,23 +287,12 @@ function PartnerDetailContent({
     <div className="user_details_page partner_details_page">
       <AdminBackButton defaultHref="/command-center/partners" defaultLabel="Back to partners" />
 
-      <div className="profile_header">
+      <header className="profile_header">
         <div className="profile_main">
           <div
             className="admin_user_avatar_initials"
             aria-hidden
-            style={{
-              backgroundColor: getPartnerAvatarBackground(partner.id),
-              width: '4.5rem',
-              height: '4.5rem',
-              borderRadius: '9999px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontWeight: 600,
-              fontSize: '1.25rem',
-            }}
+            style={{ backgroundColor: getPartnerAvatarBackground(partner.id) }}
           >
             {getPartnerInitials(partner)}
           </div>
@@ -321,6 +302,7 @@ function PartnerDetailContent({
               {partner.agentFullName}
               {partner.tradingName ? ` · ${partner.businessName}` : null}
             </p>
+            <p>{partner.email}</p>
             <span className={partnerStatusClass(partner.status)}>
               {formatPartnerStatusLabel(partner.status)}
             </span>
@@ -397,7 +379,7 @@ function PartnerDetailContent({
             ) : null}
           </div>
         ) : null}
-      </div>
+      </header>
 
       {partner.refundsBlocked ? (
         <AdminCriticalAlert
@@ -411,134 +393,142 @@ function PartnerDetailContent({
         />
       ) : null}
 
-      <section className="stats_section">
+      <section className="user_detail_stats_section stats_section">
         {detailStats.map((stat) => (
-          <div key={stat.label} className={`${stat.border} stats_card`}>
+          <div key={stat.label} className={`stats_card ${stat.border}`}>
             <div className="stats_header">
               <p>{stat.label}</p>
               {stat.icon}
             </div>
             <div className="stats_bottom">
-              <h2>{stat.value}</h2>
+              <h2 className={stat.compact ? 'stat_value_compact' : undefined}>{stat.value}</h2>
             </div>
           </div>
         ))}
       </section>
 
-      <AdminTabs tabs={tabs} activeTab={activeTab} onChange={(tab) => onTabChange(tab as PartnerTab)} />
+      <div className="admin_panel_card tabs_container">
+        <AdminTabs tabs={tabs} activeTab={activeTab} onChange={(tab) => onTabChange(tab as PartnerTab)} />
 
-      {activeTab === 'overview' ? (
-        <div className="partner_overview_grid">
-          <section className="partner_panel_card">
-            <h3>Business details</h3>
-            <dl className="partner_detail_dl">
-              <div>
-                <dt>Trading name</dt>
-                <dd>{partner.tradingName || '—'}</dd>
-              </div>
-              <div>
-                <dt>Business name (CAC)</dt>
-                <dd>{partner.businessName}</dd>
-              </div>
-              <div>
-                <dt>CAC number</dt>
-                <dd>{partner.cacRegistrationNumber}</dd>
-              </div>
-              <div>
-                <dt>Email</dt>
-                <dd>{partner.email}</dd>
-              </div>
-              <div>
-                <dt>Phone</dt>
-                <dd>{partner.phone}</dd>
-              </div>
-              <div>
-                <dt>Applied</dt>
-                <dd>{formatAdminDateTime(partner.createdAt)}</dd>
-              </div>
-              {partner.approvedAt ? (
-                <div>
-                  <dt>Approved</dt>
-                  <dd>{formatAdminDateTime(partner.approvedAt)}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </section>
-
-          <section className="partner_panel_card">
-            <h3>Account &amp; notifications</h3>
-            <dl className="partner_detail_dl">
-              <div>
-                <dt>Email verified</dt>
-                <dd>{partner.emailVerified ? 'Yes' : 'No'}</dd>
-              </div>
-              <div>
-                <dt>Disco outage alerts</dt>
-                <dd>{partner.notifyDiscoOutages ? 'Enabled' : 'Disabled'}</dd>
-              </div>
-              <div>
-                <dt>Low balance alerts</dt>
-                <dd>{partner.notifyLowBalance !== false ? 'Enabled' : 'Disabled'}</dd>
-              </div>
-              <div>
-                <dt>News updates</dt>
-                <dd>{partner.notifyNewsUpdates !== false ? 'Enabled' : 'Disabled'}</dd>
-              </div>
-              {partner.refundsBlocked ? (
-                <>
-                  <div>
-                    <dt>Refunds blocked since</dt>
-                    <dd>
-                      {partner.refundsBlockedAt
-                        ? formatAdminDateTime(partner.refundsBlockedAt)
-                        : '—'}
-                    </dd>
+        {activeTab === 'overview' ? (
+          <div className="tab_panel">
+            <div className="detail_grid">
+              <section className="detail_panel">
+                <h2>Business details</h2>
+                <dl className="info_list">
+                  <div className="info_row">
+                    <dt>Trading name</dt>
+                    <dd>{partner.tradingName || '—'}</dd>
                   </div>
-                  <div>
-                    <dt>Block reason</dt>
-                    <dd>{partner.refundsBlockedReason || 'Pending admin review'}</dd>
+                  <div className="info_row">
+                    <dt>Business name (CAC)</dt>
+                    <dd>{partner.businessName}</dd>
                   </div>
-                </>
-              ) : null}
-              {partner.rejectionReason ? (
-                <div>
-                  <dt>Rejection reason</dt>
-                  <dd>{partner.rejectionReason}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </section>
-        </div>
-      ) : null}
+                  <div className="info_row">
+                    <dt>CAC number</dt>
+                    <dd>{partner.cacRegistrationNumber}</dd>
+                  </div>
+                  <div className="info_row">
+                    <dt>Phone</dt>
+                    <dd>{partner.phone}</dd>
+                  </div>
+                  <div className="info_row">
+                    <dt>Applied</dt>
+                    <dd>{formatAdminDateTime(partner.createdAt)}</dd>
+                  </div>
+                  {partner.approvedAt ? (
+                    <div className="info_row">
+                      <dt>Approved</dt>
+                      <dd>{formatAdminDateTime(partner.approvedAt)}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+              </section>
 
-      {activeTab === 'transactions' ? (
-        <AdminTransactionsListPanel
-          partnerId={partner.id}
-          showUser={false}
-          enabled={activeTab === 'transactions'}
-          listTitle="Partner transactions"
-          searchPlaceholder="Search reference, order ID, provider…"
-          detailReturnContext={transactionsTabReturn}
-          onPaginationTotalChange={onTransactionsCountChange}
-          onActionComplete={onRefresh}
-        />
-      ) : null}
+              <section className="detail_panel">
+                <h2>Account &amp; notifications</h2>
+                <dl className="info_list">
+                  <div className="info_row">
+                    <dt>Email verified</dt>
+                    <dd>{partner.emailVerified ? 'Yes' : 'No'}</dd>
+                  </div>
+                  <div className="info_row">
+                    <dt>Disco outage alerts</dt>
+                    <dd>{partner.notifyDiscoOutages ? 'Enabled' : 'Disabled'}</dd>
+                  </div>
+                  <div className="info_row">
+                    <dt>Low balance alerts</dt>
+                    <dd>{partner.notifyLowBalance !== false ? 'Enabled' : 'Disabled'}</dd>
+                  </div>
+                  <div className="info_row">
+                    <dt>News updates</dt>
+                    <dd>{partner.notifyNewsUpdates !== false ? 'Enabled' : 'Disabled'}</dd>
+                  </div>
+                  {partner.refundsBlocked ? (
+                    <>
+                      <div className="info_row">
+                        <dt>Refunds blocked since</dt>
+                        <dd>
+                          {partner.refundsBlockedAt
+                            ? formatAdminDateTime(partner.refundsBlockedAt)
+                            : '—'}
+                        </dd>
+                      </div>
+                      <div className="info_row">
+                        <dt>Block reason</dt>
+                        <dd>{partner.refundsBlockedReason || 'Pending admin review'}</dd>
+                      </div>
+                    </>
+                  ) : null}
+                  {partner.rejectionReason ? (
+                    <div className="info_row">
+                      <dt>Rejection reason</dt>
+                      <dd>{partner.rejectionReason}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+              </section>
+            </div>
+          </div>
+        ) : null}
 
-      {activeTab === 'api' ? (
-        <PartnerApiKeysAdminPanel
-          partnerId={partner.id}
-          apiKeys={partner.apiKeys}
-          canManage={canManage}
-          onUpdated={onRefresh}
-        />
-      ) : null}
+        {activeTab === 'transactions' ? (
+          <div className="tab_panel user_txn_tab_panel">
+            <p className="tab_hint">
+              Live partner purchase history with search, filters, flagged review, and requery actions.
+            </p>
+            <AdminTransactionsListPanel
+              partnerId={partner.id}
+              showUser={false}
+              enabled
+              listTitle="Partner transactions"
+              searchPlaceholder="Search reference, order ID, provider…"
+              className="user_txn_tab_panel"
+              detailReturnContext={transactionsTabReturn}
+              onPaginationTotalChange={onTransactionsCountChange}
+              onActionComplete={onRefresh}
+            />
+          </div>
+        ) : null}
 
-      {activeTab === 'wallet-credit' && canCreditWallet ? (
-        <div className="space-y-4">
-          <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={onRefresh} />
-          <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={onRefresh} />
-        </div>
-      ) : null}
+        {activeTab === 'api' ? (
+          <div className="tab_panel">
+            <PartnerApiKeysAdminPanel
+              partnerId={partner.id}
+              apiKeys={partner.apiKeys}
+              canManage={canManage}
+              onUpdated={onRefresh}
+            />
+          </div>
+        ) : null}
+
+        {activeTab === 'wallet-credit' && canCreditWallet ? (
+          <div className="tab_panel partner_wallet_credit_tab">
+            <PartnerDepositRequestsPanel partnerId={partner.id} onUpdated={onRefresh} />
+            <ManualPartnerWalletCreditPanel partnerId={partner.id} onCreditComplete={onRefresh} />
+          </div>
+        ) : null}
+      </div>
 
       <PartnerQuickActionModal
         open={Boolean(pendingAction)}
