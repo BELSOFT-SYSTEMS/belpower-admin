@@ -14,13 +14,11 @@ import {
   canAccess,
   clearAdminSession,
   getAdminProfile,
-  getStoredAdmin,
   getStoredToken,
   redirectToSignIn,
 } from '@/lib/adminAuth';
 import { subscribeAdminDemoMode } from '@/lib/adminDemoMode';
 import { getAdminDisplayName, getAdminInitials } from '@/utils/adminDisplay';
-import { isPublicAdminRoute } from '@/utils/adminPublicRoutes';
 
 type AdminAuthContextValue = {
   admin: AdminProfile | null;
@@ -65,12 +63,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     const bootstrap = async () => {
-      const cached = getStoredAdmin();
-      if (cached) setAdmin(cached);
-
       const token = getStoredToken();
-      const onPublicRoute =
-        typeof window !== 'undefined' && isPublicAdminRoute(window.location.pathname);
 
       if (!token) {
         if (!cancelled) {
@@ -80,11 +73,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Never block sign-in / setup / reset-password while validating an existing session.
-      if (onPublicRoute && !cancelled) {
-        setIsLoading(false);
-      }
-
       try {
         const profile = await getAdminProfile();
         if (!cancelled) setAdmin(profile);
@@ -92,7 +80,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         clearAdminSession();
         if (!cancelled) setAdmin(null);
       } finally {
-        if (!cancelled && !onPublicRoute) {
+        if (!cancelled) {
           setIsLoading(false);
         }
       }

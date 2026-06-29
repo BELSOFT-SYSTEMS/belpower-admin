@@ -20,6 +20,7 @@ import {
   saveLoginResult,
   SetupRequiredError,
 } from '@/lib/adminAuth';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 
 const adminLoginSchema = z.object({
   email: z.string().email('Invalid email address').min(1, 'Email is required'),
@@ -31,6 +32,7 @@ type SignInStep = 'credentials' | 'otp';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { setAdmin } = useAdminAuth();
   const searchParams = useSearchParams() || new URLSearchParams();
   const [step, setStep] = useState<SignInStep>('credentials');
   const [showPassword, setShowPassword] = useState(false);
@@ -77,7 +79,8 @@ export default function AdminLoginPage() {
         return;
       }
 
-      saveLoginResult({ token: result.token, user: result.profile }, { remember: rememberMe });
+      const profile = saveLoginResult({ token: result.token, user: result.profile }, { remember: rememberMe });
+      setAdmin(profile);
       toast.success('Login successful');
       window.location.href = redirectTo;
     } catch (error) {
@@ -99,7 +102,8 @@ export default function AdminLoginPage() {
   };
 
   const handleOtpVerify = async (otp: string) => {
-    await adminVerifyOtp(pendingEmail, otp, { remember: pendingRememberMe });
+    const profile = await adminVerifyOtp(pendingEmail, otp, { remember: pendingRememberMe });
+    setAdmin(profile);
     toast.success('Login successful');
     window.location.href = redirectTo;
   };
