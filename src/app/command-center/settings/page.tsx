@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { ExternalLink } from 'lucide-react';
 import { FaCheckCircle, FaInfoCircle, FaTimes } from 'react-icons/fa';
 import '@/styles/adminSettings.css';
 import '@/styles/adminShared.css';
@@ -121,6 +122,24 @@ function getBannerForToggle(id: MaintenanceToggleKey, enabled: boolean): BannerS
 const MAINTENANCE_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section !== 'dva');
 const DVA_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section === 'dva');
 const SETTINGS_TOAST_AUTO_DISMISS_MS = 6000;
+const PARTNER_API_DOCS_URL = 'https://partners.belpower.ng/docs';
+
+function SettingsPageHeader() {
+  return (
+    <div className="settings_page_header">
+      <h1>Settings</h1>
+      <a
+        href={PARTNER_API_DOCS_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="settings_docs_link"
+      >
+        BelPower API docs
+        <ExternalLink className="settings_docs_link_icon" aria-hidden />
+      </a>
+    </div>
+  );
+}
 
 function renderToggleList(
   toggles: MaintenanceToggle[],
@@ -207,7 +226,7 @@ export default function SettingsPage() {
   if (!canManage) {
     return (
       <div className="settings_page">
-        <h1>Settings</h1>
+        <SettingsPageHeader />
         <p className="page_subtitle">You do not have permission to manage maintenance settings.</p>
       </div>
     );
@@ -244,7 +263,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <h1>Settings</h1>
+      <SettingsPageHeader />
       <p className="page_subtitle">
         Maintenance controls for the consumer app. Each toggle updates live immediately and
         sends in-app, push, and email notifications to all users except deleted accounts (including
