@@ -13,6 +13,7 @@ import type {
   PartnersListData,
   PartnersListParams,
 } from '@/types/adminPartners';
+import { normalizePartnerDetail } from '@/lib/normalizePartnerDetail';
 
 type ApiEnvelope<T> = {
   success?: boolean;
@@ -116,7 +117,10 @@ export async function getPartnersList(
 }
 
 export async function getPartnerDetail(partnerId: string): Promise<PartnerDetail> {
-  return partnerRequest<PartnerDetail>(`/${encodeURIComponent(partnerId)}`);
+  const data = await partnerRequest<Record<string, unknown>>(
+    `/${encodeURIComponent(partnerId)}`
+  );
+  return normalizePartnerDetail(data);
 }
 
 export async function approvePartner(payload: PartnerActionPayload): Promise<unknown> {
@@ -136,11 +140,12 @@ export async function rejectPartner(payload: PartnerActionPayload): Promise<unkn
 }
 
 export async function reopenPartnerForReview(payload: PartnerActionPayload): Promise<PartnerDetail> {
-  return partnerRequest<PartnerDetail>('/reopen-review', {
+  const data = await partnerRequest<Record<string, unknown>>('/reopen-review', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+  return normalizePartnerDetail(data);
 }
 
 export async function blockPartner(payload: PartnerActionPayload): Promise<unknown> {
@@ -171,11 +176,15 @@ export async function unblockPartnerRefunds(
   partnerId: string,
   note?: string
 ): Promise<PartnerDetail> {
-  return partnerRequest<PartnerDetail>(`/${encodeURIComponent(partnerId)}/refunds/unblock`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ note: note?.trim() || undefined }),
-  });
+  const data = await partnerRequest<Record<string, unknown>>(
+    `/${encodeURIComponent(partnerId)}/refunds/unblock`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note: note?.trim() || undefined }),
+    }
+  );
+  return normalizePartnerDetail(data);
 }
 
 export async function getPartnerTransactions(
