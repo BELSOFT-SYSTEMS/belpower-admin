@@ -14,6 +14,7 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaKey,
+  FaExchangeAlt,
 } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -257,6 +258,12 @@ function PartnerDetailContent({
       label: 'Wallet balance',
       value: formatPrice(partner.walletBalance),
       border: 'border-blue-200',
+    },
+    {
+      icon: <FaExchangeAlt className="text-indigo-500 text-2xl" />,
+      label: 'Transaction total',
+      value: formatPrice(partner.transactionTotal ?? 0),
+      border: 'border-indigo-200',
     },
     {
       icon: <FaHandshake className="text-green-500 text-2xl" />,

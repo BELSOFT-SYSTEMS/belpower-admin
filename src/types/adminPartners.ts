@@ -69,6 +69,7 @@ export type PartnerDetail = PartnerListItem & {
   approvedAt?: string | null;
   rejectedAt?: string | null;
   rejectionReason?: string | null;
+  transactionTotal?: number;
   apiKeys: PartnerApiKeySummary[];
   quickActions: PartnersQuickActions;
 };
