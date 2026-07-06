@@ -647,7 +647,13 @@ export default function TransactionDetailPage() {
 
         {activeTab === 'payment' && (
           <div className="tab_panel">
-            <TransactionPaymentReferences transaction={transaction} payment={detail.payment} />
+            <TransactionPaymentReferences
+              transaction={transaction}
+              payment={detail.payment}
+              isPartnerTransaction={
+                detail.user.customerType === 'partner' || Boolean(detail.partnerId)
+              }
+            />
           </div>
         )}
 

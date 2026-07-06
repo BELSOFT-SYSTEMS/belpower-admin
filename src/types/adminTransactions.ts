@@ -174,6 +174,8 @@ export type TransactionPaymentInfo = {
   gatewayReference?: string | null;
   walletDebitReference?: string | null;
   providerReference?: string | null;
+  walletBalanceBefore?: number | null;
+  walletBalanceAfter?: number | null;
 };
 
 export type TransactionCustomerType = 'user' | 'partner' | 'guest' | 'anonymous';

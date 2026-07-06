@@ -102,6 +102,8 @@ function normalizePayment(
     gatewayReference: pickString(source, 'gatewayReference', 'gateway_reference'),
     walletDebitReference: pickString(source, 'walletDebitReference', 'wallet_debit_reference'),
     providerReference: pickString(source, 'providerReference', 'provider_reference'),
+    walletBalanceBefore: pickNumber(source, 'walletBalanceBefore', 'wallet_balance_before'),
+    walletBalanceAfter: pickNumber(source, 'walletBalanceAfter', 'wallet_balance_after'),
   };
 }
 

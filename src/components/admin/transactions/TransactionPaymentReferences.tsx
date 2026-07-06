@@ -17,11 +17,19 @@ import {
 type Props = {
   transaction: AdminTransaction;
   payment?: TransactionPaymentInfo;
+  isPartnerTransaction?: boolean;
 };
 
-export function TransactionPaymentReferences({ transaction, payment }: Props) {
+export function TransactionPaymentReferences({
+  transaction,
+  payment,
+  isPartnerTransaction = false,
+}: Props) {
   const scheduled = isScheduledTransaction(transaction) && transaction.scheduled_info;
   const paymentMethod = payment?.method ?? transaction.payment_method;
+  const showWalletBalances =
+    isPartnerTransaction &&
+    (payment?.walletBalanceBefore != null || payment?.walletBalanceAfter != null);
 
   return (
     <div className="payment_ref_tab">
@@ -77,6 +85,30 @@ export function TransactionPaymentReferences({ transaction, payment }: Props) {
             />
           </div>
         </section>
+
+        {showWalletBalances ? (
+          <section className="payment_ref_panel">
+            <h4 className="payment_ref_panel_title">Partner wallet balance</h4>
+            <div className="payment_ref_scheduled_grid">
+              <div className="payment_ref_field">
+                <span className="payment_ref_field_label">Balance before</span>
+                <span className="payment_ref_field_value">
+                  {payment?.walletBalanceBefore != null
+                    ? formatPrice(payment.walletBalanceBefore)
+                    : '—'}
+                </span>
+              </div>
+              <div className="payment_ref_field">
+                <span className="payment_ref_field_label">Balance after</span>
+                <span className="payment_ref_field_value">
+                  {payment?.walletBalanceAfter != null
+                    ? formatPrice(payment.walletBalanceAfter)
+                    : '—'}
+                </span>
+              </div>
+            </div>
+          </section>
+        ) : null}
       </div>
 
       <section className="payment_ref_panel payment_ref_dates_panel">
