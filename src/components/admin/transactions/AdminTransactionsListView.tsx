@@ -52,6 +52,7 @@ type AdminTransactionsListViewProps = {
   onBlock: (tx: AdminTransaction) => void;
   onUnblock: (tx: AdminTransaction) => void;
   onClearReview?: (tx: AdminTransaction) => void;
+  clearReviewLabel?: string;
   bulkSelect?: {
     selectionMode: boolean;
     selectedCount: number;
@@ -100,6 +101,7 @@ export function AdminTransactionsListView({
   onBlock,
   onUnblock,
   onClearReview,
+  clearReviewLabel,
   bulkSelect,
 }: AdminTransactionsListViewProps) {
   const totalPages = pagination?.totalPages ?? pagination?.total_pages ?? 1;
@@ -187,6 +189,7 @@ export function AdminTransactionsListView({
                     onBlock={onBlock}
                     onUnblock={onUnblock}
                     onClearReview={onClearReview}
+                    clearReviewLabel={clearReviewLabel}
                   />
                 );
               })

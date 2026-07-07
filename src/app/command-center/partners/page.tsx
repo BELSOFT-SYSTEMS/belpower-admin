@@ -117,7 +117,7 @@ export default function PartnersPage() {
         toast.success(`${getPartnerDisplayName(partner)} deactivated`);
       } else if (type === 'refundsUnblock') {
         await unblockPartnerRefunds(partner.id, payload.note);
-        toast.success(`Refunds restored for ${getPartnerDisplayName(partner)}`);
+        toast.success(`Flag cleared for ${getPartnerDisplayName(partner)}`);
       }
 
       setPendingAction(null);
@@ -360,13 +360,13 @@ export default function PartnersPage() {
                           {quickActions.refundsUnblock && partner.refundsBlocked && (
                             <button
                               type="button"
-                              className="user_quick_action action_suspend"
+                              className="user_quick_action action_activate"
                               title={getPartnerQuickActionDisabledTitle('refundsUnblock', partner)}
-                              aria-label="Unblock refunds"
+                              aria-label="Clear flag"
                               disabled={rowBusy || !actions.canUnblockRefunds}
                               onClick={() => openAction('refundsUnblock', partner)}
                             >
-                              <FaUnlock />
+                              <FaCheckCircle />
                             </button>
                           )}
                           {quickActions.block && (

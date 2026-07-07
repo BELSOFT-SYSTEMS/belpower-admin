@@ -46,6 +46,7 @@ type AdminTransactionRowProps = {
   onBlock?: (transaction: AdminTransaction) => void;
   onUnblock?: (transaction: AdminTransaction) => void;
   onClearReview?: (transaction: AdminTransaction) => void;
+  clearReviewLabel?: string;
 };
 
 export function AdminTransactionRow({
@@ -64,6 +65,7 @@ export function AdminTransactionRow({
   onBlock,
   onUnblock,
   onClearReview,
+  clearReviewLabel = 'Clear review',
 }: AdminTransactionRowProps) {
   const scheduled = isScheduledTransaction(tx);
   const isRefund = Boolean(tx.is_refund || tx.type === 'refund');
@@ -267,9 +269,11 @@ export function AdminTransactionRow({
                 title={
                   disableDetailLinks
                     ? 'Unavailable in demo mode'
-                    : getTransactionQuickActionTitle('clearReview', tx)
+                    : canClearReview
+                      ? `${clearReviewLabel} — mark review complete`
+                      : getTransactionQuickActionTitle('clearReview', tx)
                 }
-                aria-label="Clear review"
+                aria-label={clearReviewLabel}
                 disabled={disableDetailLinks || rowBusy || !canClearReview}
                 onClick={() => {
                   if (rowBusy || !canClearReview) return;

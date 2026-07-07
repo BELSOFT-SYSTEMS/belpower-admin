@@ -8,7 +8,6 @@ import {
   FaUserCheck,
   FaUserSlash,
   FaExclamationTriangle,
-  FaUnlock,
   FaWallet,
   FaClock,
   FaCheckCircle,
@@ -140,7 +139,7 @@ export default function PartnerDetailPage() {
         toast.success('Partner deactivated');
       } else if (pendingAction === 'refundsUnblock') {
         await unblockPartnerRefunds(partner.id, payload.note);
-        toast.success('Partner refunds unblocked');
+        toast.success('Partner flag cleared');
       }
 
       setPendingAction(null);
@@ -344,10 +343,10 @@ function PartnerDetailContent({
           <FaClock /> Reopen for review
         </button>
       ) : null}
-      {quickActions.refundsUnblock ? (
+      {quickActions.refundsUnblock && partner.refundsBlocked ? (
         <button
           type="button"
-          className="security_action_btn action_refunds_unblock"
+          className="security_action_btn action_activate"
           title={getPartnerQuickActionDisabledTitle('refundsUnblock', partner)}
           disabled={isSubmitting || !actions.canUnblockRefunds}
           aria-disabled={isSubmitting || !actions.canUnblockRefunds}
@@ -356,7 +355,7 @@ function PartnerDetailContent({
             onOpenAction('refundsUnblock');
           }}
         >
-          <FaUnlock /> Unblock refunds
+          <FaCheckCircle /> Clear flag
         </button>
       ) : null}
       {quickActions.block ? (

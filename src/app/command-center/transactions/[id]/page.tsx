@@ -317,6 +317,8 @@ export default function TransactionDetailPage() {
   );
   const requeryReason = detail.requery.reason?.trim();
   const refundHint = detail.refund.reason?.trim();
+  const clearReviewLabel =
+    detail.partnerId || detail.user.customerType === 'partner' ? 'Clear flag' : 'Clear review';
 
   return (
     <div className="receipt_page_wrap transaction_details_page">
@@ -446,7 +448,7 @@ export default function TransactionDetailPage() {
                   )}
                   onClick={handleClearReview}
                 >
-                  <FaCheckCircle /> Clear review
+                  <FaCheckCircle /> {clearReviewLabel}
                 </button>
               )}
               {showRequery && (

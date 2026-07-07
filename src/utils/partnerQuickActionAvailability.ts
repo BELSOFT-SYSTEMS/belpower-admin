@@ -62,7 +62,7 @@ export function getPartnerQuickActionDisabledTitle(
     return 'Only active partners can be deactivated';
   }
   if (action === 'refundsUnblock' && !availability.canUnblockRefunds) {
-    return 'Partner refunds are not blocked';
+    return 'Partner flag is not set';
   }
 
   return '';

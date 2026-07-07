@@ -85,10 +85,10 @@ const ACTION_COPY: Record<
     notePlaceholder: 'Add a note for the audit log',
   },
   refundsUnblock: {
-    title: 'Unblock wallet refunds',
+    title: 'Clear partner flag',
     message:
-      'Failed partner purchases can be refunded again after this hold is cleared. Ops will be notified.',
-    confirmLabel: 'Unblock refunds',
+      'This clears the audit hold on the partner account. Use this when review is complete and no refund action is needed.',
+    confirmLabel: 'Clear flag',
     danger: false,
     noteLabel: 'Review note (optional)',
     notePlaceholder: 'Add a note for the audit log',

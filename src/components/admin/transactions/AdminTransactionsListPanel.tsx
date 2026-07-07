@@ -116,6 +116,7 @@ export function AdminTransactionsListPanel({
       onBlock={handleBlock}
       onUnblock={handleUnblock}
       onClearReview={handleClearReview}
+      clearReviewLabel={partnerId ? 'Clear flag' : undefined}
     />
   );
 }
