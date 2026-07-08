@@ -13,6 +13,7 @@ import {
   rejectPartnerDepositRequest,
   type PartnerDepositRequestAdminItem,
 } from '@/lib/adminPartnerWalletCredit';
+import { PartnerDepositRejectModal } from '@/components/admin/partners/walletCredit/PartnerDepositRejectModal';
 import { formatRecordAdminDateTime } from '@/utils/formatAdminDate';
 import '@/styles/adminUserPurchases.css';
 import '@/styles/adminPartners.css';
@@ -41,6 +42,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [proofLoadingId, setProofLoadingId] = useState<string | null>(null);
   const [proofErrors, setProofErrors] = useState<Record<string, string>>({});
+  const [rejectTarget, setRejectTarget] = useState<PartnerDepositRequestAdminItem | null>(null);
   const [proofPreview, setProofPreview] = useState<{
     open: boolean;
     imageUrl: string;
@@ -86,13 +88,14 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
     }
   };
 
-  const handleReject = async (item: PartnerDepositRequestAdminItem) => {
-    setBusyId(item.id);
+  const handleRejectConfirm = async (reason: string) => {
+    if (!rejectTarget) return;
+
+    setBusyId(rejectTarget.id);
     try {
-      await rejectPartnerDepositRequest(item.id, {
-        reason: 'Deposit could not be verified',
-      });
+      await rejectPartnerDepositRequest(rejectTarget.id, { reason });
       toast.success('Deposit request rejected');
+      setRejectTarget(null);
       await load();
       onUpdated?.();
     } catch (error) {
@@ -244,7 +247,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                     type="button"
                     className="partner_wallet_credit_btn partner_wallet_credit_btn_danger"
                     disabled={isBusy}
-                    onClick={() => void handleReject(item)}
+                    onClick={() => setRejectTarget(item)}
                   >
                     Reject
                   </button>
@@ -254,6 +257,19 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
           })}
         </ul>
       )}
+
+      <PartnerDepositRejectModal
+        open={Boolean(rejectTarget)}
+        partnerName={rejectTarget?.partner?.businessName || 'Partner'}
+        amount={rejectTarget?.amount || 0}
+        isSubmitting={Boolean(rejectTarget && busyId === rejectTarget.id)}
+        onClose={() => {
+          if (busyId) return;
+          setRejectTarget(null);
+        }}
+        onConfirm={(reason) => void handleRejectConfirm(reason)}
+      />
+
       {proofPreview.open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-3xl rounded-xl bg-white p-4">
