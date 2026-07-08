@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Clock3, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/utils/FormatPrice';
 import {
   approvePartnerDepositRequest,
+  fetchPartnerDepositProof,
   fetchPartnerDepositRequests,
   rejectPartnerDepositRequest,
   type PartnerDepositRequestAdminItem,
@@ -22,7 +24,11 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
   const [items, setItems] = useState<PartnerDepositRequestAdminItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [bankReferences, setBankReferences] = useState<Record<string, string>>({});
+  const [proofPreview, setProofPreview] = useState<{
+    open: boolean;
+    imageUrl: string;
+    title: string;
+  }>({ open: false, imageUrl: '', title: '' });
 
   const load = async () => {
     setIsLoading(true);
@@ -43,16 +49,9 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
   }, [partnerId]);
 
   const handleApprove = async (item: PartnerDepositRequestAdminItem) => {
-    const bankReference = (bankReferences[item.id] || item.bankReference || '').trim();
-    if (!bankReference) {
-      toast.error('Bank reference is required to approve');
-      return;
-    }
-
     setBusyId(item.id);
     try {
       await approvePartnerDepositRequest(item.id, {
-        bankReference,
         adminNote: 'Approved partner bank transfer deposit',
       });
       toast.success(
@@ -82,6 +81,19 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
       toast.error(error instanceof Error ? error.message : 'Failed to reject deposit');
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const handleViewProof = async (item: PartnerDepositRequestAdminItem) => {
+    try {
+      const proof = await fetchPartnerDepositProof(item.id);
+      setProofPreview({
+        open: true,
+        imageUrl: proof.proofOfPayment.imageUrl,
+        title: item.partner?.businessName || 'Partner deposit proof',
+      });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to load proof of payment');
     }
   };
 
@@ -154,17 +166,15 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                   </p>
                 ) : null}
 
-                <div className="admin_purchase_field_group partner_deposit_request_field">
-                  <label htmlFor={`bank-ref-${item.id}`}>Bank reference</label>
-                  <input
-                    id={`bank-ref-${item.id}`}
-                    defaultValue={item.bankReference || ''}
-                    onChange={(e) =>
-                      setBankReferences((prev) => ({ ...prev, [item.id]: e.target.value }))
-                    }
+                <div className="partner_deposit_request_actions">
+                  <button
+                    type="button"
+                    className="partner_wallet_credit_btn"
+                    onClick={() => void handleViewProof(item)}
                     disabled={busyId === item.id}
-                    placeholder="Enter verified transaction reference"
-                  />
+                  >
+                    View proof
+                  </button>
                 </div>
 
                 <div className="partner_deposit_request_actions">
@@ -190,6 +200,31 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
           })}
         </ul>
       )}
+      {proofPreview.open ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-3xl rounded-xl bg-white p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-sm font-semibold text-gray-900">{proofPreview.title}</h4>
+              <button
+                type="button"
+                className="partner_wallet_credit_btn"
+                onClick={() => setProofPreview({ open: false, imageUrl: '', title: '' })}
+              >
+                Close
+              </button>
+            </div>
+            <div className="relative h-[70vh] w-full">
+              <Image
+                src={proofPreview.imageUrl}
+                alt="Proof of payment"
+                fill
+                className="rounded-lg object-contain"
+                unoptimized
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

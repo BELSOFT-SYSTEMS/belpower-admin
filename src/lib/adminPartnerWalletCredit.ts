@@ -46,6 +46,13 @@ export type PartnerDepositRequestAdminItem = {
   platformDepositFee?: number;
   feeWaived?: boolean;
   bankReference: string | null;
+  proofOfPayment?: {
+    assetId: string | null;
+    imageUrl: string;
+    mimeType: string | null;
+    fileSize: number | null;
+    originalName: string | null;
+  } | null;
   status: string;
   adminNote: string | null;
   createdAt: string;
@@ -136,4 +143,21 @@ export async function rejectPartnerDepositRequest(
     body: JSON.stringify(payload),
   });
   return parseResponse(res, 'Failed to reject partner deposit');
+}
+
+export async function fetchPartnerDepositProof(depositRequestId: string): Promise<{
+  depositRequestId: string;
+  proofOfPayment: {
+    assetId: string | null;
+    imageUrl: string;
+    mimeType: string | null;
+    fileSize: number | null;
+    originalName: string | null;
+  };
+}> {
+  const res = await fetch(`${ADMIN_API_BASE}/partner-deposits/deposits/${depositRequestId}/proof`, {
+    headers: adminHeaders(),
+    cache: 'no-store',
+  });
+  return parseResponse(res, 'Failed to load deposit proof');
 }
