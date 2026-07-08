@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 
@@ -55,7 +56,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sora.variable} h-full antialiased`}>
       <body className={`${sora.className} min-h-full flex flex-col`}>
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          {children}
+          <Toaster richColors position="top-right" closeButton />
+        </LanguageProvider>
       </body>
     </html>
   );
