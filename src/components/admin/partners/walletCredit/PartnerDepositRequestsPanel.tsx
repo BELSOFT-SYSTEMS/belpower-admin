@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Clock3, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/utils/FormatPrice';
+import { AuthApiError } from '@/lib/adminAuth';
 import {
   approvePartnerDepositRequest,
   fetchPartnerDepositProof,
@@ -14,16 +15,32 @@ import {
 } from '@/lib/adminPartnerWalletCredit';
 import { formatRecordAdminDateTime } from '@/utils/formatAdminDate';
 import '@/styles/adminUserPurchases.css';
+import '@/styles/adminPartners.css';
 
 type Props = {
   partnerId?: string;
   onUpdated?: () => void;
 };
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof AuthApiError) {
+    if (error.code === 'PROOF_OF_PAYMENT_NOT_FOUND') {
+      return 'No proof of payment was uploaded for this deposit request.';
+    }
+    return error.message || fallback;
+  }
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return fallback;
+}
+
 export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
   const [items, setItems] = useState<PartnerDepositRequestAdminItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [proofLoadingId, setProofLoadingId] = useState<string | null>(null);
+  const [proofErrors, setProofErrors] = useState<Record<string, string>>({});
   const [proofPreview, setProofPreview] = useState<{
     open: boolean;
     imageUrl: string;
@@ -37,8 +54,9 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
       setItems(
         partnerId ? data.items.filter((item) => item.partnerId === partnerId) : data.items
       );
+      setProofErrors({});
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to load deposit requests');
+      toast.error(getErrorMessage(error, 'Failed to load deposit requests'));
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +80,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
       await load();
       onUpdated?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to approve deposit');
+      toast.error(getErrorMessage(error, 'Failed to approve deposit'));
     } finally {
       setBusyId(null);
     }
@@ -78,22 +96,54 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
       await load();
       onUpdated?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to reject deposit');
+      toast.error(getErrorMessage(error, 'Failed to reject deposit'));
     } finally {
       setBusyId(null);
     }
   };
 
   const handleViewProof = async (item: PartnerDepositRequestAdminItem) => {
+    if (item.proofOfPayment?.imageUrl) {
+      setProofErrors((prev) => {
+        const next = { ...prev };
+        delete next[item.id];
+        return next;
+      });
+      setProofPreview({
+        open: true,
+        imageUrl: item.proofOfPayment.imageUrl,
+        title: item.partner?.businessName || 'Partner deposit proof',
+      });
+      return;
+    }
+
+    setProofLoadingId(item.id);
+    setProofErrors((prev) => {
+      const next = { ...prev };
+      delete next[item.id];
+      return next;
+    });
+
     try {
       const proof = await fetchPartnerDepositProof(item.id);
+      if (!proof.proofOfPayment?.imageUrl) {
+        const message = 'No proof of payment was uploaded for this deposit request.';
+        setProofErrors((prev) => ({ ...prev, [item.id]: message }));
+        toast.error(message);
+        return;
+      }
+
       setProofPreview({
         open: true,
         imageUrl: proof.proofOfPayment.imageUrl,
         title: item.partner?.businessName || 'Partner deposit proof',
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to load proof of payment');
+      const message = getErrorMessage(error, 'Failed to load proof of payment');
+      setProofErrors((prev) => ({ ...prev, [item.id]: message }));
+      toast.error(message);
+    } finally {
+      setProofLoadingId(null);
     }
   };
 
@@ -129,6 +179,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
           {items.map((item) => {
             const creditAmount = item.expectedWalletCredit ?? Math.max(0, item.amount - 50);
             const submittedAt = formatRecordAdminDateTime(item, 'createdAt', 'created_at');
+            const isBusy = busyId === item.id || proofLoadingId === item.id;
 
             return (
               <li key={item.id} className="partner_deposit_request_card">
@@ -166,22 +217,25 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                   </p>
                 ) : null}
 
-                <div className="partner_deposit_request_actions">
-                  <button
-                    type="button"
-                    className="partner_wallet_credit_btn"
-                    onClick={() => void handleViewProof(item)}
-                    disabled={busyId === item.id}
-                  >
-                    View proof
-                  </button>
-                </div>
+                {proofErrors[item.id] ? (
+                  <p className="partner_deposit_proof_error" role="alert">
+                    {proofErrors[item.id]}
+                  </p>
+                ) : null}
 
                 <div className="partner_deposit_request_actions">
                   <button
                     type="button"
+                    className="partner_wallet_credit_btn partner_wallet_credit_btn_info"
+                    disabled={isBusy}
+                    onClick={() => void handleViewProof(item)}
+                  >
+                    {proofLoadingId === item.id ? 'Loading proof…' : 'View proof'}
+                  </button>
+                  <button
+                    type="button"
                     className="partner_wallet_credit_btn partner_wallet_credit_btn_primary"
-                    disabled={busyId === item.id}
+                    disabled={isBusy}
                     onClick={() => void handleApprove(item)}
                   >
                     Approve &amp; credit wallet
@@ -189,7 +243,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                   <button
                     type="button"
                     className="partner_wallet_credit_btn partner_wallet_credit_btn_danger"
-                    disabled={busyId === item.id}
+                    disabled={isBusy}
                     onClick={() => void handleReject(item)}
                   >
                     Reject
@@ -207,7 +261,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
               <h4 className="text-sm font-semibold text-gray-900">{proofPreview.title}</h4>
               <button
                 type="button"
-                className="partner_wallet_credit_btn"
+                className="partner_wallet_credit_btn partner_wallet_credit_btn_info"
                 onClick={() => setProofPreview({ open: false, imageUrl: '', title: '' })}
               >
                 Close
