@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { formatPrice } from '@/utils/FormatPrice';
+import '@/styles/adminShared.css';
 
 type Props = {
   open: boolean;
