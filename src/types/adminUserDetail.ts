@@ -24,6 +24,7 @@ export type UserTransactionType =
   | 'airtime'
   | 'data'
   | 'cable'
+  | 'betting'
   | 'deposit'
   | 'refund'
   | 'cashback';

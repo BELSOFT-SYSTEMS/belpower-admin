@@ -20,7 +20,7 @@ export type AdminTransaction = {
   reference: string;
   user_id: string;
   user_name: string;
-  type: 'electricity' | 'airtime' | 'data' | 'cable' | 'deposit' | 'refund' | 'cashback';
+  type: 'electricity' | 'airtime' | 'data' | 'cable' | 'betting' | 'deposit' | 'refund' | 'cashback';
   service: string;
   provider: string;
   amount: number;
