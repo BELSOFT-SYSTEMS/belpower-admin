@@ -3,6 +3,7 @@ export type WalletBalanceStat = {
   currency: 'NGN';
   canView: boolean;
   lastUpdated?: string | null;
+  commissionBalance?: number | null;
 };
 
 export type WalletCountStat = {
@@ -19,6 +20,7 @@ export type WalletProfitStat = {
 export type WalletOverviewStats = {
   totalUserBalance: WalletBalanceStat;
   buyPowerBalance: WalletBalanceStat;
+  switaBalance: WalletBalanceStat;
   profit: WalletProfitStat;
   fundingCount: WalletCountStat;
   debitCount: WalletCountStat;

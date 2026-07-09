@@ -40,7 +40,7 @@
 
 @media (min-width: 1280px) {
   .wallet_page .stats_section {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 

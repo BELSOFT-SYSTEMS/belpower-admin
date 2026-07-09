@@ -20,7 +20,7 @@ import type {
 } from '@/types/adminUsers';
 import type { WalletOverviewStats } from '@/types/adminWallet';
 import { canViewTransactionMoneyStats } from '@/utils/adminTransactionStatsAccess';
-import { canViewWalletMoneyStats } from '@/utils/adminWalletAccess';
+import { canViewProviderWalletBalance, canViewWalletMoneyStats } from '@/utils/adminWalletAccess';
 
 function hoursAgo(hours: number): string {
   return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
@@ -680,6 +680,7 @@ export function getMockTransactionsList(
 
 export function getMockWalletOverview(admin: AdminProfile | null): WalletOverviewStats {
   const canViewMoney = getAdminDemoMode() || canViewWalletMoneyStats(admin);
+  const canViewProviderFloats = getAdminDemoMode() || canViewProviderWalletBalance(admin);
 
   return {
     totalUserBalance: {
@@ -688,9 +689,16 @@ export function getMockWalletOverview(admin: AdminProfile | null): WalletOvervie
       canView: canViewMoney,
     },
     buyPowerBalance: {
-      amount: canViewMoney ? 48_750_000 : null,
+      amount: canViewProviderFloats ? 48_750_000 : null,
       currency: 'NGN',
-      canView: canViewMoney,
+      canView: canViewProviderFloats,
+      lastUpdated: new Date().toISOString(),
+    },
+    switaBalance: {
+      amount: canViewProviderFloats ? 16_020_987.87 : null,
+      commissionBalance: canViewProviderFloats ? 250_000 : null,
+      currency: 'NGN',
+      canView: canViewProviderFloats,
       lastUpdated: new Date().toISOString(),
     },
     profit: {

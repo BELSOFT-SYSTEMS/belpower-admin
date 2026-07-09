@@ -9,6 +9,7 @@ export type TransactionIconInput = {
   provider?: string;
   service?: string;
   cashback_source_type?: string | null;
+  imageUrl?: string | null;
 };
 
 export function getTransactionIcon(transaction: TransactionIconInput): string {
@@ -50,6 +51,14 @@ export function getTransactionIcon(transaction: TransactionIconInput): string {
 
   if (type === 'electricity') {
     return getDiscoLogoPath(transaction.provider || '');
+  }
+
+  if (type === 'betting') {
+    const imageUrl = transaction.imageUrl;
+    if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
+      return imageUrl;
+    }
+    return '/bet-fallback.png';
   }
 
   const typeMap: Record<string, string> = {
@@ -100,6 +109,7 @@ export function getProviderLogo(provider: string, type: string): string {
 
 export function getTransactionIconFallback(type: string): string {
   if (type === 'deposit' || type === 'refund' || type === 'cashback') return '/wallet.png';
+  if (type === 'betting') return '/bet-fallback.png';
   if (type === 'electricity') return '/electricity.png';
   if (['airtime', 'data'].includes(type)) return `/${type}.png`;
   return '/electricity.png';

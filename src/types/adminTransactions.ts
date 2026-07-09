@@ -5,6 +5,7 @@ export type TransactionType =
   | 'airtime'
   | 'data'
   | 'cable'
+  | 'betting'
   | 'deposit'
   | 'refund'
   | 'cashback';

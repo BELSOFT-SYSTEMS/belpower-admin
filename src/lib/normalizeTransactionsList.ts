@@ -14,6 +14,7 @@ const TRANSACTION_TYPES: TransactionType[] = [
   'airtime',
   'data',
   'cable',
+  'betting',
   'deposit',
   'refund',
   'cashback',

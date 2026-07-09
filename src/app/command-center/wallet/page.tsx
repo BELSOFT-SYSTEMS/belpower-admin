@@ -13,7 +13,7 @@ import { resolveCriticalSeverity } from '@/utils/adminCriticalSeverity';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminWallet } from '@/hooks/useAdminWallet';
 import { useAdminTransactionsListActions } from '@/hooks/useAdminTransactionsListActions';
-import { canViewWalletMoneyStats, canViewWalletPage } from '@/utils/adminWalletAccess';
+import { canViewWalletMoneyStats, canViewProviderWalletBalance, canViewWalletPage } from '@/utils/adminWalletAccess';
 import type { WalletActivityFilter } from '@/types/adminWallet';
 import { buildWalletReturn } from '@/utils/adminReturnNavigation';
 
@@ -40,6 +40,7 @@ export default function WalletPage() {
   const { admin } = useAdminAuth();
   const canAccessPage = canViewWalletPage(admin);
   const canViewMoney = canViewWalletMoneyStats(admin);
+  const canViewProviderFloats = canViewProviderWalletBalance(admin);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<WalletCategoryFilter>(FILTER_ALL);
@@ -76,6 +77,7 @@ export default function WalletPage() {
 
   const totalUserBalance = stats?.totalUserBalance;
   const buyPowerBalance = stats?.buyPowerBalance;
+  const switaBalance = stats?.switaBalance;
 
   const totalBalanceDisplay = formatBalanceValue(
     totalUserBalance?.amount ?? null,
@@ -83,7 +85,11 @@ export default function WalletPage() {
   );
   const buyPowerDisplay = formatBalanceValue(
     buyPowerBalance?.amount ?? null,
-    Boolean(buyPowerBalance?.canView && canViewMoney)
+    Boolean(buyPowerBalance?.canView && canViewProviderFloats)
+  );
+  const switaDisplay = formatBalanceValue(
+    switaBalance?.amount ?? null,
+    Boolean(switaBalance?.canView && canViewProviderFloats)
   );
   const profitDisplay = formatBalanceValue(
     stats?.profit?.amount ?? null,
@@ -125,15 +131,18 @@ export default function WalletPage() {
     );
 
     if (canViewMoney) {
+      cards.push({
+        key: 'profit',
+        icon: <FaChartLine className="text-emerald-500 text-xl" />,
+        label: 'Profit',
+        value: profitDisplay.value,
+        sub: 'Service charges (NGN)',
+        border: 'border-emerald-200',
+      });
+    }
+
+    if (canViewProviderFloats) {
       cards.push(
-        {
-          key: 'profit',
-          icon: <FaChartLine className="text-emerald-500 text-xl" />,
-          label: 'Profit',
-          value: profitDisplay.value,
-          sub: 'Service charges (NGN)',
-          border: 'border-emerald-200',
-        },
         {
           key: 'buyPower',
           icon: <FaWallet className="text-purple-500 text-xl" />,
@@ -144,14 +153,29 @@ export default function WalletPage() {
             ? `Updated ${new Date(buyPowerBalance.lastUpdated).toLocaleString()}`
             : 'Platform float',
           border: 'border-purple-200',
+        },
+        {
+          key: 'swita',
+          icon: <FaWallet className="text-indigo-500 text-xl" />,
+          label: 'Swita wallet balance',
+          value: switaDisplay.value,
+          valueClassName: switaDisplay.isNegative ? 'wallet_balance_negative' : undefined,
+          sub:
+            switaBalance?.canView && canViewProviderFloats
+              ? switaBalance?.lastUpdated
+                ? `Commission ${formatPrice(switaBalance.commissionBalance ?? 0)} · Updated ${new Date(switaBalance.lastUpdated).toLocaleString()}`
+                : 'Betting float'
+              : 'Betting float',
+          border: 'border-indigo-200',
         }
       );
     }
 
     return cards;
-  }, [stats, canViewMoney, totalBalanceDisplay, buyPowerDisplay, profitDisplay, buyPowerBalance]);
+  }, [stats, canViewMoney, canViewProviderFloats, totalBalanceDisplay, buyPowerDisplay, switaDisplay, profitDisplay, buyPowerBalance, switaBalance]);
 
-  const statsCardCount = canViewMoney ? 5 : 2;
+  const statsCardCount =
+    (canViewMoney ? 2 : 0) + 2 + (canViewProviderFloats ? 2 : 0);
 
   if (!canAccessPage) {
     return (

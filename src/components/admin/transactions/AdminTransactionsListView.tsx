@@ -70,6 +70,7 @@ const DEFAULT_CATEGORY_FILTER_OPTIONS: TransactionFilterOption[] = [
   { value: 'airtime', label: 'Airtime' },
   { value: 'data', label: 'Data' },
   { value: 'cable', label: 'Cable' },
+  { value: 'betting', label: 'Betting' },
   { value: 'deposit', label: 'Wallet funding' },
 ];
 

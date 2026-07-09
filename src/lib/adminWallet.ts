@@ -48,6 +48,7 @@ async function handleAdminResponse<T>(
 function normalizeWalletOverviewStats(raw: Record<string, unknown> | undefined): WalletOverviewStats {
   const total = (raw?.totalUserBalance as Record<string, unknown> | undefined) ?? {};
   const buyPower = (raw?.buyPowerBalance as Record<string, unknown> | undefined) ?? {};
+  const swita = (raw?.switaBalance as Record<string, unknown> | undefined) ?? {};
   const profit = (raw?.profit as Record<string, unknown> | undefined) ?? {};
   const funding = (raw?.fundingCount as Record<string, unknown> | undefined) ?? {};
   const debit = (raw?.debitCount as Record<string, unknown> | undefined) ?? {};
@@ -68,6 +69,23 @@ function normalizeWalletOverviewStats(raw: Record<string, unknown> | undefined):
           ? buyPower.lastUpdated
           : typeof buyPower.last_updated === 'string'
             ? buyPower.last_updated
+            : null,
+    },
+    switaBalance: {
+      amount: swita.amount == null ? null : Number(swita.amount),
+      commissionBalance:
+        swita.commissionBalance == null
+          ? swita.commission_balance == null
+            ? null
+            : Number(swita.commission_balance)
+          : Number(swita.commissionBalance),
+      currency: 'NGN',
+      canView: Boolean(swita.canView),
+      lastUpdated:
+        typeof swita.lastUpdated === 'string'
+          ? swita.lastUpdated
+          : typeof swita.last_updated === 'string'
+            ? swita.last_updated
             : null,
     },
     profit: {
