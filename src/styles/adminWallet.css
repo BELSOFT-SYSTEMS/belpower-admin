@@ -34,13 +34,7 @@
 
 @media (min-width: 1024px) {
   .wallet_page .stats_section {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .wallet_page .stats_section {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 

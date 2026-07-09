@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { FaWallet, FaArrowUp, FaArrowDown, FaChartLine } from 'react-icons/fa';
+import { FaWallet, FaArrowUp, FaArrowDown, FaChartLine, FaCoins } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import '@/styles/adminWallet.css';
 import '@/styles/adminShared.css';
@@ -91,6 +91,10 @@ export default function WalletPage() {
     switaBalance?.amount ?? null,
     Boolean(switaBalance?.canView && canViewProviderFloats)
   );
+  const switaCommissionDisplay = formatBalanceValue(
+    switaBalance?.commissionBalance ?? null,
+    Boolean(switaBalance?.canView && canViewProviderFloats)
+  );
   const profitDisplay = formatBalanceValue(
     stats?.profit?.amount ?? null,
     Boolean(stats?.profit?.canView && canViewMoney)
@@ -160,22 +164,38 @@ export default function WalletPage() {
           label: 'Swita wallet balance',
           value: switaDisplay.value,
           valueClassName: switaDisplay.isNegative ? 'wallet_balance_negative' : undefined,
-          sub:
-            switaBalance?.canView && canViewProviderFloats
-              ? switaBalance?.lastUpdated
-                ? `Commission ${formatPrice(switaBalance.commissionBalance ?? 0)} · Updated ${new Date(switaBalance.lastUpdated).toLocaleString()}`
-                : 'Betting float'
-              : 'Betting float',
+          sub: switaBalance?.lastUpdated
+            ? `Updated ${new Date(switaBalance.lastUpdated).toLocaleString()}`
+            : 'Betting float',
           border: 'border-indigo-200',
+        },
+        {
+          key: 'switaCommission',
+          icon: <FaCoins className="text-indigo-400 text-xl" />,
+          label: 'Swita commission',
+          value: switaCommissionDisplay.value,
+          sub: 'Earned commission balance',
+          border: 'border-indigo-100',
         }
       );
     }
 
     return cards;
-  }, [stats, canViewMoney, canViewProviderFloats, totalBalanceDisplay, buyPowerDisplay, switaDisplay, profitDisplay, buyPowerBalance, switaBalance]);
+  }, [
+    stats,
+    canViewMoney,
+    canViewProviderFloats,
+    totalBalanceDisplay,
+    buyPowerDisplay,
+    switaDisplay,
+    switaCommissionDisplay,
+    profitDisplay,
+    buyPowerBalance,
+    switaBalance,
+  ]);
 
   const statsCardCount =
-    (canViewMoney ? 2 : 0) + 2 + (canViewProviderFloats ? 2 : 0);
+    (canViewMoney ? 2 : 0) + 2 + (canViewProviderFloats ? 3 : 0);
 
   if (!canAccessPage) {
     return (
