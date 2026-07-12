@@ -27,6 +27,7 @@ const DEMO_MAINTENANCE_STATE: MaintenanceState = {
     data: true,
     electricity: true,
     cable: true,
+    betting: true,
   },
 };
 

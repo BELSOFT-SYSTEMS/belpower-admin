@@ -1,0 +1,75 @@
+.admin_schedules_page .admin_schedule_row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--admin-border, #e5e7eb);
+}
+
+.admin_schedules_page .admin_schedule_row:hover {
+  background: var(--admin-row-hover, rgba(0, 0, 0, 0.02));
+}
+
+.admin_schedules_page .admin_schedule_meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.admin_schedules_page .admin_schedule_meta strong,
+.admin_schedules_page .admin_schedule_meta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin_schedules_page .admin_schedule_user {
+  color: var(--admin-muted, #6b7280);
+  font-size: 0.875rem;
+}
+
+.admin_schedules_page .admin_schedule_pause_reason {
+  color: #b45309;
+  font-size: 0.8125rem;
+}
+
+.admin_schedule_detail_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.admin_schedule_detail_card {
+  background: var(--admin-card-bg, #fff);
+  border: 1px solid var(--admin-border, #e5e7eb);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.admin_schedule_detail_card h3 {
+  font-size: 0.875rem;
+  color: var(--admin-muted, #6b7280);
+  margin-bottom: 0.5rem;
+}
+
+.admin_schedule_history_table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin_schedule_history_table th,
+.admin_schedule_history_table td {
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--admin-border, #e5e7eb);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 960px) {
+  .admin_schedules_page .admin_schedule_row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

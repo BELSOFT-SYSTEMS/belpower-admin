@@ -3,6 +3,7 @@ export type MaintenanceServices = {
   data: boolean;
   electricity: boolean;
   cable: boolean;
+  betting: boolean;
 };
 
 export type MaintenanceState = {
@@ -32,4 +33,5 @@ export type MaintenanceToggleKey =
   | 'stop_airtime'
   | 'stop_data'
   | 'stop_electricity'
-  | 'stop_cable';
+  | 'stop_cable'
+  | 'stop_betting';

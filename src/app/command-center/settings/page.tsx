@@ -73,6 +73,11 @@ const MAINTENANCE_TOGGLES: MaintenanceToggle[] = [
     label: 'Stop cable',
     description: 'Disable cable TV subscription purchases only.',
   },
+  {
+    id: 'stop_betting',
+    label: 'Stop betting',
+    description: 'Disable betting wallet top-ups only.',
+  },
 ];
 
 const BANNER_ON: Record<MaintenanceToggleKey, string> = {
@@ -87,6 +92,7 @@ const BANNER_ON: Record<MaintenanceToggleKey, string> = {
   stop_data: 'Data purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_electricity: 'Electricity purchases have been stopped for maintenance. All non-deleted users were notified.',
   stop_cable: 'Cable purchases have been stopped for maintenance. All non-deleted users were notified.',
+  stop_betting: 'Betting purchases have been stopped for maintenance. All non-deleted users were notified.',
 };
 
 const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
@@ -99,6 +105,7 @@ const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
   stop_data: 'Data purchases have been re-enabled. All non-deleted users were notified.',
   stop_electricity: 'Electricity purchases have been re-enabled. All non-deleted users were notified.',
   stop_cable: 'Cable purchases have been re-enabled. All non-deleted users were notified.',
+  stop_betting: 'Betting purchases have been re-enabled. All non-deleted users were notified.',
 };
 
 function getBannerForToggle(id: MaintenanceToggleKey, enabled: boolean): BannerState {
@@ -273,7 +280,7 @@ export default function SettingsPage() {
       <section className="settings_card">
         <div className="settings_card_header">
           <h2>Maintenance mode</h2>
-          <p>Seven independent switches. Turning one on or off notifies all eligible users by in-app, push, and email.</p>
+          <p>Eight independent switches. Turning one on or off notifies all eligible users by in-app, push, and email.</p>
         </div>
 
         {isLoading

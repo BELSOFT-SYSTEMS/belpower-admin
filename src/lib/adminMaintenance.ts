@@ -63,6 +63,7 @@ function normalizeMaintenanceState(raw: Record<string, unknown> | undefined): Ma
       data: Boolean(services.data),
       electricity: Boolean(services.electricity),
       cable: Boolean(services.cable),
+      betting: Boolean(services.betting),
     },
   };
 }
@@ -78,6 +79,7 @@ export function maintenanceStateToFlags(state: MaintenanceState): Record<Mainten
     stop_data: state.services.data,
     stop_electricity: state.services.electricity,
     stop_cable: state.services.cable,
+    stop_betting: state.services.betting,
   };
 }
 
@@ -104,6 +106,8 @@ export function buildMaintenancePatch(
       return { services: { electricity: enabled } };
     case 'stop_cable':
       return { services: { cable: enabled } };
+    case 'stop_betting':
+      return { services: { betting: enabled } };
     default:
       return {};
   }
