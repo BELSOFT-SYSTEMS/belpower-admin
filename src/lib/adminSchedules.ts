@@ -85,7 +85,7 @@ export function buildSchedulesListQuery(params: SchedulesListParams): URLSearchP
 export async function getSchedulesList(params: SchedulesListParams): Promise<SchedulesListData> {
   const query = buildSchedulesListQuery(params);
   const data = await scheduleRequest<{
-    schedules?: unknown[];
+    schedules?: Array<Record<string, unknown>>;
     pagination?: {
       total?: number;
       page?: number;
@@ -94,7 +94,9 @@ export async function getSchedulesList(params: SchedulesListParams): Promise<Sch
     };
   }>(`schedules?${query.toString()}`);
 
-  return normalizeSchedulesList(data);
+  return normalizeSchedulesList(
+    data as Parameters<typeof normalizeSchedulesList>[0]
+  );
 }
 
 export async function getScheduleDetail(scheduleId: string): Promise<AdminBillSchedule> {
