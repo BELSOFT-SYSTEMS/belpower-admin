@@ -312,7 +312,11 @@ export default function PartnersPage() {
 
                       <div className="admin_user_meta">
                         <div className="partner_list_meta_values">
-                          <span>{formatPrice(partner.walletBalance)}</span>
+                          <span title="Utility / Betting">
+                            U {formatPrice(partner.utilityWalletBalance ?? partner.walletBalance)}
+                            {' · '}
+                            B {formatPrice(partner.bettingWalletBalance ?? 0)}
+                          </span>
                           <span>{formatAdminDateTime(partner.createdAt)}</span>
                         </div>
 

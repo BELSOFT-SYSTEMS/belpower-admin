@@ -43,6 +43,8 @@ export type PartnerListItem = {
   status: PartnerStatus;
   emailVerified: boolean;
   walletBalance: number;
+  utilityWalletBalance?: number;
+  bettingWalletBalance?: number;
   canAccessDashboard: boolean;
   refundsBlocked?: boolean;
   refundsBlockedAt?: string | null;

@@ -45,6 +45,8 @@ export function normalizePartnerDetail(raw: RawRecord): PartnerDetail {
     status: pick(raw, 'status', 'status') as PartnerDetail['status'],
     emailVerified: pickBool(raw, 'emailVerified', 'email_verified'),
     walletBalance: pickNumber(raw, 'walletBalance', 'wallet_balance'),
+    utilityWalletBalance: pickNumber(raw, 'utilityWalletBalance', 'utility_wallet_balance'),
+    bettingWalletBalance: pickNumber(raw, 'bettingWalletBalance', 'betting_wallet_balance'),
     canAccessDashboard: pickBool(raw, 'canAccessDashboard', 'can_access_dashboard'),
     refundsBlocked: pickBool(raw, 'refundsBlocked', 'refunds_blocked'),
     refundsBlockedAt: pickString(raw, 'refundsBlockedAt', 'refunds_blocked_at'),

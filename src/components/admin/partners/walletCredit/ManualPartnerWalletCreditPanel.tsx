@@ -32,6 +32,7 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
   const [preflight, setPreflight] = useState<PartnerWalletCreditPreflight | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [amount, setAmount] = useState('');
+  const [walletType, setWalletType] = useState<'utility' | 'betting'>('utility');
   const [bankReference, setBankReference] = useState('');
   const [bankReceivedAt, setBankReceivedAt] = useState('');
   const [adminNote, setAdminNote] = useState('');
@@ -47,6 +48,8 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
       if (getAdminDemoMode()) {
         setPreflight({
           walletBalance: 0,
+          utilityBalance: 0,
+          bettingBalance: 0,
           partnerStatus: 'active',
           canCredit: true,
           blockReasons: [],
@@ -67,6 +70,7 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
 
   const resetForm = () => {
     setAmount('');
+    setWalletType('utility');
     setBankReference('');
     setBankReceivedAt('');
     setAdminNote('');
@@ -110,13 +114,14 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
         bankReceivedAt: bankReceivedAt || undefined,
         adminNote: adminNote.trim(),
         notifyPartner,
+        walletType,
       });
 
       setStatusOverlay({
         status: 'success',
         amount: result.amount,
         reference: result.reference,
-        message: `New wallet balance: ${formatPrice(result.walletBalance)}`,
+        message: `New ${walletType} wallet balance: ${formatPrice(result.walletBalance)}`,
       });
     } catch (err) {
       setStatusOverlay({
@@ -166,8 +171,8 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
             <span className="partner_wallet_credit_eyebrow">Manual credit</span>
             <h3 className="partner_wallet_credit_title">Manual partner wallet credit</h3>
             <p className="partner_wallet_credit_intro">
-              Credit the partner wallet after verifying a bank transfer outside the deposit request
-              flow. Bank reference and a verification note are required for audit.
+              Credit the Utility or Betting wallet after verifying a bank transfer outside the deposit
+              request flow. Bank reference and a verification note are required for audit.
             </p>
           </div>
         </header>
@@ -180,7 +185,27 @@ export function ManualPartnerWalletCreditPanel({ partnerId, onCreditComplete }: 
           </div>
         ) : null}
 
+        <div className="admin_purchase_field_group" style={{ marginBottom: 12 }}>
+          <p className="text-sm text-gray-600">
+            Utility: <strong>{formatPrice(preflight.utilityBalance ?? preflight.walletBalance)}</strong>
+            {' · '}
+            Betting: <strong>{formatPrice(preflight.bettingBalance ?? 0)}</strong>
+          </p>
+        </div>
+
         <form className="admin_wallet_credit_form" onSubmit={(e) => void handleSubmit(e)}>
+          <div className="admin_purchase_field_group">
+            <label htmlFor="partner-wallet-credit-type">Wallet to credit</label>
+            <select
+              id="partner-wallet-credit-type"
+              value={walletType}
+              onChange={(e) => setWalletType(e.target.value as 'utility' | 'betting')}
+              disabled={!preflight.canCredit || isBusy}
+            >
+              <option value="utility">Utility Wallet (airtime, data, electricity, cable)</option>
+              <option value="betting">Betting Wallet (Swita)</option>
+            </select>
+          </div>
           <div className="admin_purchase_field_group">
             <label htmlFor="partner-wallet-credit-amount">Amount to credit (₦)</label>
             <input

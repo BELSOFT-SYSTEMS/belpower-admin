@@ -254,9 +254,15 @@ function PartnerDetailContent({
   const detailStats = [
     {
       icon: <FaWallet className="text-blue-500 text-2xl" />,
-      label: 'Wallet balance',
-      value: formatPrice(partner.walletBalance),
+      label: 'Utility wallet',
+      value: formatPrice(partner.utilityWalletBalance ?? partner.walletBalance),
       border: 'border-blue-200',
+    },
+    {
+      icon: <FaWallet className="text-emerald-500 text-2xl" />,
+      label: 'Betting wallet',
+      value: formatPrice(partner.bettingWalletBalance ?? 0),
+      border: 'border-emerald-200',
     },
     {
       icon: <FaExchangeAlt className="text-indigo-500 text-2xl" />,
@@ -537,9 +543,15 @@ function PartnerDetailContent({
                   </span>
                 </div>
                 <div className="overview_field">
-                  <span className="overview_label">Wallet balance</span>
+                  <span className="overview_label">Utility wallet</span>
                   <span className="overview_value overview_value_emphasis">
-                    {formatPrice(partner.walletBalance)}
+                    {formatPrice(partner.utilityWalletBalance ?? partner.walletBalance)}
+                  </span>
+                </div>
+                <div className="overview_field">
+                  <span className="overview_label">Betting wallet</span>
+                  <span className="overview_value overview_value_emphasis">
+                    {formatPrice(partner.bettingWalletBalance ?? 0)}
                   </span>
                 </div>
                 <div className="overview_field">

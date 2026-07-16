@@ -10,6 +10,8 @@ type ApiEnvelope<T> = {
 
 export type PartnerWalletCreditPreflight = {
   walletBalance: number;
+  utilityBalance?: number;
+  bettingBalance?: number;
   partnerStatus: string;
   canCredit: boolean;
   blockReasons: string[];
@@ -21,6 +23,7 @@ export type ManualPartnerWalletCreditPayload = {
   bankReceivedAt?: string;
   adminNote: string;
   notifyPartner?: boolean;
+  walletType?: 'utility' | 'betting';
 };
 
 export type ManualPartnerWalletCreditResult = {
@@ -29,6 +32,7 @@ export type ManualPartnerWalletCreditResult = {
   amount: number;
   walletBalance: number;
   previousBalance: number;
+  walletType?: string;
 };
 
 export type PartnerDepositRequestAdminItem = {
@@ -42,6 +46,8 @@ export type PartnerDepositRequestAdminItem = {
     status: string;
   } | null;
   amount: number;
+  walletType?: 'utility' | 'betting' | string;
+  walletLabel?: string;
   expectedWalletCredit?: number;
   platformDepositFee?: number;
   feeWaived?: boolean;

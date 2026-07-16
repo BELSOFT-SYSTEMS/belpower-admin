@@ -75,7 +75,7 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
         adminNote: 'Approved partner bank transfer deposit',
       });
       toast.success(
-        `Deposit approved. Wallet credited ${formatPrice(
+        `Deposit approved. ${item.walletLabel || 'Wallet'} credited ${formatPrice(
           item.expectedWalletCredit ?? item.amount
         )}${item.feeWaived ? ' in full' : ''}`
       );
@@ -191,6 +191,11 @@ export function PartnerDepositRequestsPanel({ partnerId, onUpdated }: Props) {
                     <p className="partner_deposit_request_amount">{formatPrice(item.amount)}</p>
                     <p className="partner_deposit_request_partner">
                       {item.partner?.businessName || 'Partner'}
+                      {' · '}
+                      <span className="font-medium text-gray-700">
+                        {item.walletLabel ||
+                          (item.walletType === 'betting' ? 'Betting Wallet' : 'Utility Wallet')}
+                      </span>
                     </p>
                     <p className="partner_deposit_request_meta">{item.partner?.email}</p>
                   </div>
