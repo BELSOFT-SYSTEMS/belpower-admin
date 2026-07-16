@@ -99,7 +99,7 @@ export default function ScheduleDetailPage({
       <AdminCriticalAlert
         title="Access denied"
         message="You do not have permission to view this schedule."
-        severity="high"
+        severity="danger"
       />
     );
   }
@@ -117,7 +117,7 @@ export default function ScheduleDetailPage({
       <AdminCriticalAlert
         title="Schedule not found"
         message={error ?? 'This schedule could not be loaded.'}
-        severity="high"
+        severity="danger"
       />
     );
   }

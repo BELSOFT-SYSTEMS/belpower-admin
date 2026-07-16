@@ -65,7 +65,7 @@ export default function SchedulesPage() {
       <AdminCriticalAlert
         title="Access denied"
         message="You do not have permission to view scheduled purchases."
-        severity="high"
+        severity="danger"
       />
     );
   }
@@ -114,7 +114,7 @@ export default function SchedulesPage() {
         <AdminCriticalAlert
           title="Failed to load schedules"
           message={error}
-          severity="high"
+          severity="danger"
         />
       )}
 
