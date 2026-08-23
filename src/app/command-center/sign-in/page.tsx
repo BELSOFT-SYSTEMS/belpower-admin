@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
   const searchParams = useSearchParams() || new URLSearchParams();
   const [step, setStep] = useState<SignInStep>('credentials');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
   const [pendingPassword, setPendingPassword] = useState('');
