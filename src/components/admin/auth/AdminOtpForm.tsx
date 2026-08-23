@@ -4,6 +4,7 @@ import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { maskEmail } from '@/utils/maskEmail';
 import { AuthApiError } from '@/lib/adminAuth';
+import { digitsFromOtpInput } from '@/utils/otpInput';
 
 const OTP_LENGTH = 6;
 const RESEND_COOLDOWN_SEC = 60;
@@ -60,7 +61,28 @@ export function AdminOtpForm({ email, expiresAt, onVerify, onResend, onBack }: A
   }, [expiresAt]);
 
   const updateDigit = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, '').slice(-1);
+    const digitsOnly = value.replace(/\D/g, '');
+
+    if (!digitsOnly) {
+      setDigits((prev) => {
+        const next = [...prev];
+        next[index] = '';
+        return next;
+      });
+      setError(null);
+      return;
+    }
+
+    if (digitsOnly.length > 1) {
+      const next = digitsFromOtpInput(digitsOnly, OTP_LENGTH);
+      setDigits(next);
+      setError(null);
+      const focusIndex = Math.min(digitsOnly.length, OTP_LENGTH - 1);
+      inputRefs.current[focusIndex]?.focus();
+      return;
+    }
+
+    const digit = digitsOnly.slice(-1);
     setDigits((prev) => {
       const next = [...prev];
       next[index] = digit;
@@ -84,19 +106,9 @@ export function AdminOtpForm({ email, expiresAt, onVerify, onResend, onBack }: A
     }
   };
 
-  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>, index: number) => {
     event.preventDefault();
-    const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
-    if (!pasted) return;
-
-    const next = Array(OTP_LENGTH).fill('');
-    pasted.split('').forEach((char, i) => {
-      next[i] = char;
-    });
-    setDigits(next);
-    setError(null);
-    const focusIndex = Math.min(pasted.length, OTP_LENGTH - 1);
-    inputRefs.current[focusIndex]?.focus();
+    updateDigit(index, event.clipboardData.getData('text'));
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -160,13 +172,13 @@ export function AdminOtpForm({ email, expiresAt, onVerify, onResend, onBack }: A
             type="text"
             inputMode="numeric"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
-            maxLength={1}
+            maxLength={OTP_LENGTH}
             value={digit}
             aria-label={`OTP digit ${index + 1}`}
             className={`admin_otp_digit${digit ? ' admin_otp_digit_filled' : ''}`}
             onChange={(e) => updateDigit(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={handlePaste}
+            onPaste={(e) => handlePaste(e, index)}
             disabled={isVerifying}
           />
         ))}
