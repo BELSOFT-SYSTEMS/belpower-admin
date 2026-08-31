@@ -138,9 +138,9 @@ export default function WalletPage() {
       cards.push({
         key: 'profit',
         icon: <FaChartLine className="text-emerald-500 text-xl" />,
-        label: 'Profit',
+        label: 'Service charges',
         value: profitDisplay.value,
-        sub: 'Service charges (NGN)',
+        sub: 'All-time from completed purchases',
         border: 'border-emerald-200',
       });
     }
