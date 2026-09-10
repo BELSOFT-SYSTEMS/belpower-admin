@@ -36,6 +36,7 @@ type UseAdminTransactionsListOptions = {
   page: number;
   userId?: string;
   partnerId?: string;
+  businessId?: string;
   limit?: number;
   enabled?: boolean;
 };
@@ -47,6 +48,7 @@ export function useAdminTransactionsList({
   page,
   userId,
   partnerId,
+  businessId,
   limit = 20,
   enabled = true,
 }: UseAdminTransactionsListOptions) {
@@ -77,10 +79,11 @@ export function useAdminTransactionsList({
           : undefined,
       userId,
       partnerId,
+      businessId,
       sort: 'createdAt:desc' as const,
       includeStats: page === 1,
     }),
-    [page, limit, debouncedSearch, typeFilter, statusFilter, userId, partnerId]
+    [page, limit, debouncedSearch, typeFilter, statusFilter, userId, partnerId, businessId]
   );
 
   const refresh = useCallback(async () => {

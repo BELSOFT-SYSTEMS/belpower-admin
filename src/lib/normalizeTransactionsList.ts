@@ -25,6 +25,8 @@ const DEPOSIT_TYPE_ALIASES = new Set([
   'wallet_funding',
   'wallet_credit',
   'partner_wallet_funding',
+  'business_wallet_funding',
+  'business_wallet_allocate',
 ]);
 
 const TRANSACTION_STATUSES: TransactionStatus[] = [
@@ -96,6 +98,7 @@ export function normalizeApiTransactionListItem(raw: RawRecord): ApiTransactionL
     reference: String(pick(raw, 'reference', 'reference') ?? ''),
     userId: String(pick(raw, 'userId', 'user_id') ?? ''),
     partnerId: pickString(raw, 'partnerId', 'partner_id'),
+    businessId: pickString(raw, 'businessId', 'business_id'),
     customerType:
       (pickString(raw, 'customerType', 'customer_type') as ApiTransactionListItem['customerType']) ??
       undefined,

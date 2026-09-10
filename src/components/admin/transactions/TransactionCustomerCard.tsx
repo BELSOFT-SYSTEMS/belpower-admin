@@ -32,17 +32,23 @@ function profileHref(
     return returnContext ? withAdminReturn(href, returnContext) : href;
   }
 
+  if (customer.customerType === 'business' && (customer.businessId || customer.id)) {
+    const href = `/command-center/businesses/${customer.businessId || customer.id}`;
+    return returnContext ? withAdminReturn(href, returnContext) : href;
+  }
+
   return null;
 }
 
 function profileHint(customer: TransactionUserInfo) {
   if (customer.customerType === 'partner') return 'View partner profile →';
+  if (customer.customerType === 'business') return 'View business profile →';
   if (customer.customerType === 'user') return 'View user profile →';
   return null;
 }
 
 function avatarSeed(customer: TransactionUserInfo) {
-  return customer.partnerId || customer.id || customer.fullName || 'customer';
+  return customer.businessId || customer.partnerId || customer.id || customer.fullName || 'customer';
 }
 
 function hasPurchaseCustomerDetails(customer: TransactionUserInfo) {
@@ -54,7 +60,7 @@ function hasPurchaseCustomerDetails(customer: TransactionUserInfo) {
 }
 
 function customerFieldLabel(customer: TransactionUserInfo, field: 'email' | 'phone') {
-  if (customer.customerType === 'partner') {
+  if (customer.customerType === 'partner' || customer.customerType === 'business') {
     return field === 'email' ? 'Customer email' : 'Customer phone';
   }
   return field === 'email' ? 'Email' : 'Phone';
@@ -83,15 +89,19 @@ export function TransactionCustomerCard({
   const body = (
     <div className="txn_overview_user_body">
       <span className="txn_overview_user_name">{customer.fullName}</span>
-      {customer.customerType !== 'partner' || hasPurchaseCustomerDetails(customer) ? (
+      {(customer.customerType !== 'partner' && customer.customerType !== 'business') ||
+      hasPurchaseCustomerDetails(customer) ? (
         <div className="txn_customer_fields">
-          {customer.customerType === 'partner' && customer.purchaseCustomerName ? (
+          {(customer.customerType === 'partner' || customer.customerType === 'business') &&
+          customer.purchaseCustomerName ? (
             <div className="txn_customer_field">
               <span className="txn_customer_label">Customer name</span>
               <span className="txn_customer_value">{customer.purchaseCustomerName}</span>
             </div>
           ) : null}
-          {customer.customerType !== 'partner' || customer.email || customer.phone ? (
+          {(customer.customerType !== 'partner' && customer.customerType !== 'business') ||
+          customer.email ||
+          customer.phone ? (
             <>
               <div className="txn_customer_field">
                 <span className="txn_customer_label">{customerFieldLabel(customer, 'email')}</span>
@@ -110,6 +120,9 @@ export function TransactionCustomerCard({
       ) : null}
       {customer.customerType === 'partner' ? (
         <span className="pill pill_partner">Partner</span>
+      ) : null}
+      {customer.customerType === 'business' ? (
+        <span className="pill pill_business">Business</span>
       ) : null}
       {customer.customerType === 'guest' || customer.customerType === 'anonymous' ? (
         <span className="pill pill_guest">Guest</span>

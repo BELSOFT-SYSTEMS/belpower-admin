@@ -94,6 +94,7 @@ export type ApiTransactionListItem = {
   reference: string;
   userId: string;
   partnerId?: string | null;
+  businessId?: string | null;
   customerType?: TransactionCustomerType;
   customerEmail?: string | null;
   customerPhone?: string | null;
@@ -156,6 +157,7 @@ export type TransactionsListParams = {
   flagged?: boolean;
   userId?: string;
   partnerId?: string;
+  businessId?: string;
   paymentMethod?: string;
   walletActivity?: boolean;
   sort?: string;
@@ -179,7 +181,7 @@ export type TransactionPaymentInfo = {
   walletBalanceAfter?: number | null;
 };
 
-export type TransactionCustomerType = 'user' | 'partner' | 'guest' | 'anonymous';
+export type TransactionCustomerType = 'user' | 'partner' | 'business' | 'guest' | 'anonymous';
 
 export type TransactionUserInfo = {
   id: string;
@@ -189,6 +191,7 @@ export type TransactionUserInfo = {
   purchaseCustomerName?: string | null;
   customerType?: TransactionCustomerType;
   partnerId?: string | null;
+  businessId?: string | null;
   isInternalTestAccount?: boolean;
 };
 

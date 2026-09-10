@@ -64,6 +64,9 @@ export function buildTransactionsListQuery(params: TransactionsListParams): URLS
   if (params.partnerId?.trim()) {
     query.set('partnerId', params.partnerId.trim());
   }
+  if (params.businessId?.trim()) {
+    query.set('businessId', params.businessId.trim());
+  }
 
   if (params.paymentMethod?.trim()) {
     query.set('paymentMethod', params.paymentMethod.trim());
