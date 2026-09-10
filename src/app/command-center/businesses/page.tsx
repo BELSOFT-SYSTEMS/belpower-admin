@@ -15,10 +15,10 @@ import { formatPrice } from '@/utils/FormatPrice';
 import { getAvatarBackground, getInitialsFromDisplayName } from '@/utils/userAvatar';
 import { useAdminAnalytics } from '@/context/AdminAnalyticsContext';
 
-function statusClass(status: string) {
-  if (status === 'active') return 'status_active';
-  if (status === 'suspended') return 'status_blocked';
-  return 'status_inactive';
+function businessStatusPill(status: string) {
+  if (status === 'active') return 'pill pill_active';
+  if (status === 'suspended') return 'pill pill_suspended';
+  return 'pill pill_inactive';
 }
 
 export default function BusinessesPage() {
@@ -71,149 +71,181 @@ export default function BusinessesPage() {
     };
   }, [page, debouncedSearch, statusFilter, refreshKey]);
 
-  return (
-    <div className="admin_users_page">
-      <div className="admin_users_header">
-        <div>
-          <h1 className="admin_users_title">BelPower Business</h1>
-          <p className="admin_users_subtitle">Track registered businesses, wallets, and spend.</p>
-        </div>
-      </div>
+  const totalPages = pagination.totalPages || 1;
 
-      {stats ? (
-        <div className="admin_users_stats_grid">
-          <div className="admin_stat_card">
-            <FaBuilding className="admin_stat_icon" />
-            <div>
-              <p className="admin_stat_label">Total</p>
-              <p className="admin_stat_value">{stats.total}</p>
+  const statCards = stats
+    ? [
+        {
+          key: 'total',
+          icon: <FaBuilding className="text-indigo-500 text-xl" />,
+          label: 'Total businesses',
+          value: stats.total.toLocaleString(),
+          sub: 'Registered companies',
+          border: 'border-indigo-200',
+        },
+        {
+          key: 'active',
+          icon: <FaCheckCircle className="text-green-500 text-xl" />,
+          label: 'Active',
+          value: stats.active.toLocaleString(),
+          sub: 'Can fund and pay',
+          border: 'border-green-200',
+        },
+        {
+          key: 'suspended',
+          icon: <FaBan className="text-red-500 text-xl" />,
+          label: 'Suspended',
+          value: stats.suspended.toLocaleString(),
+          sub: 'Temporarily blocked',
+          border: 'border-red-200',
+        },
+        {
+          key: 'inactive',
+          icon: <FaMinusCircle className="text-gray-500 text-xl" />,
+          label: 'Inactive',
+          value: stats.inactive.toLocaleString(),
+          sub: 'Not currently active',
+          border: 'border-gray-200',
+        },
+      ]
+    : [];
+
+  return (
+    <div className="users_page partners_page">
+      <h1>BelPower Business</h1>
+
+      {statCards.length > 0 ? (
+        <section className="stats_section">
+          {statCards.map((stat) => (
+            <div key={stat.key} className={`${stat.border} stats_card`}>
+              <div className="stats_header">
+                <p>{stat.label}</p>
+                {stat.icon}
+              </div>
+              <div className="stats_bottom">
+                <h2>{stat.value}</h2>
+                <p>{stat.sub}</p>
+              </div>
             </div>
-          </div>
-          <div className="admin_stat_card">
-            <FaCheckCircle className="admin_stat_icon text-green-600" />
-            <div>
-              <p className="admin_stat_label">Active</p>
-              <p className="admin_stat_value">{stats.active}</p>
-            </div>
-          </div>
-          <div className="admin_stat_card">
-            <FaBan className="admin_stat_icon text-red-600" />
-            <div>
-              <p className="admin_stat_label">Suspended</p>
-              <p className="admin_stat_value">{stats.suspended}</p>
-            </div>
-          </div>
-          <div className="admin_stat_card">
-            <FaMinusCircle className="admin_stat_icon text-gray-500" />
-            <div>
-              <p className="admin_stat_label">Inactive</p>
-              <p className="admin_stat_value">{stats.inactive}</p>
-            </div>
-          </div>
-        </div>
+          ))}
+        </section>
       ) : null}
 
-      <div className="admin_users_toolbar">
-        <div className="admin_users_search">
-          <FaSearch className="admin_users_search_icon" />
-          <input
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search business name, code, email, phone…"
+      <section>
+        <div className="manage_header">
+          <h2>All businesses</h2>
+          <div className="search_container">
+            <input
+              type="text"
+              placeholder="Search business name, code, email, phone…"
+              value={searchTerm}
+              maxLength={128}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+            <FaSearch />
+          </div>
+        </div>
+
+        <div className="partners_list_filters">
+          <AdminDropdown
+            variant="filter"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            aria-label="Filter by status"
+            options={[
+              { value: '__all__', label: 'All statuses' },
+              { value: 'active', label: 'Active' },
+              { value: 'suspended', label: 'Suspended' },
+              { value: 'inactive', label: 'Inactive' },
+            ]}
           />
         </div>
-        <AdminDropdown
-          value={statusFilter}
-          onChange={setStatusFilter}
-          options={[
-            { value: '__all__', label: 'All statuses' },
-            { value: 'active', label: 'Active' },
-            { value: 'suspended', label: 'Suspended' },
-            { value: 'inactive', label: 'Inactive' },
-          ]}
-        />
-      </div>
 
-      {error ? <p className="admin_users_error">{error}</p> : null}
-
-      <div className="admin_users_table_wrap">
         {isLoading ? (
-          <div className="admin_users_loading">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading businesses…</span>
+          <div className="users_page_loading">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <p>Loading businesses…</p>
           </div>
-        ) : businesses.length === 0 ? (
-          <p className="admin_users_empty">No businesses found.</p>
+        ) : error ? (
+          <div className="users_page_error">
+            <p>{error}</p>
+          </div>
         ) : (
-          <table className="admin_users_table">
-            <thead>
-              <tr>
-                <th>Business</th>
-                <th>Status</th>
-                <th>Users</th>
-                <th>Branches</th>
-                <th>Company wallet</th>
-                <th>Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {businesses.map((business) => (
-                <tr key={business.id}>
-                  <td>
+          <>
+            <div className="admin_txn_list">
+              {businesses.length > 0 ? (
+                businesses.map((business) => (
+                  <div key={business.id} className="admin_user_row">
                     <Link
                       href={`/command-center/businesses/${business.id}`}
-                      className="admin_users_user_link"
+                      className="admin_user_row_link"
                     >
-                      <span
-                        className="admin_users_avatar"
-                        style={{
-                          backgroundColor: getAvatarBackground(business.id),
-                          color: '#fff',
-                        }}
+                      <div
+                        className="admin_user_avatar_initials"
+                        aria-hidden
+                        style={{ backgroundColor: getAvatarBackground(business.id) }}
                       >
                         {getInitialsFromDisplayName(business.businessName)}
-                      </span>
-                      <span>
-                        <span className="admin_users_name">{business.businessName}</span>
-                        <span className="admin_users_email">
+                      </div>
+                      <div className="admin_user_info">
+                        <div className="admin_user_name">
+                          {business.businessName}
+                          <span className={businessStatusPill(business.status)}>
+                            {business.status}
+                          </span>
+                        </div>
+                        <div className="admin_user_email">
                           {business.businessId} · {business.email}
-                        </span>
-                      </span>
+                        </div>
+                      </div>
                     </Link>
-                  </td>
-                  <td>
-                    <span className={`status_pill ${statusClass(business.status)}`}>
-                      {business.status}
-                    </span>
-                  </td>
-                  <td>{business.userCount}</td>
-                  <td>{business.branchCount}</td>
-                  <td>{formatPrice(business.companyBalance)}</td>
-                  <td>{business.createdAt ? formatAdminDateTime(business.createdAt) : '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
 
-      {pagination.totalPages > 1 ? (
-        <div className="admin_users_pagination">
-          <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            Previous
-          </button>
-          <span>
-            Page {pagination.page} of {pagination.totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={page >= pagination.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
+                    <div className="admin_user_meta">
+                      <div className="partner_list_meta_values">
+                        <span>
+                          {business.userCount} users · {business.branchCount} branches
+                        </span>
+                        <span>{formatPrice(business.companyBalance)}</span>
+                        <span>
+                          {business.createdAt ? formatAdminDateTime(business.createdAt) : '—'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="empty_fallback">No businesses found for the current filters.</p>
+              )}
+            </div>
+
+            <div className="users_pagination_bar">
+              <p className="users_pagination_meta">
+                Page {pagination.page} of {totalPages} · {pagination.total.toLocaleString()}{' '}
+                businesses
+              </p>
+              <div className="pagination_section">
+                <button
+                  type="button"
+                  className="pagination_btn"
+                  disabled={page <= 1}
+                  onClick={() => setPage((current) => Math.max(current - 1, 1))}
+                >
+                  Previous
+                </button>
+                <span className="current btn_active">{page}</span>
+                <button
+                  type="button"
+                  className="pagination_btn"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((current) => current + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </section>
     </div>
   );
 }
