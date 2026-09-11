@@ -9,6 +9,7 @@ import type {
   BusinessDetail,
   BusinessesListData,
   BusinessesListParams,
+  BusinessActionPayload,
 } from '@/types/adminBusinesses';
 
 type ApiEnvelope<T> = {
@@ -90,4 +91,28 @@ export function getBusinessesList(params: BusinessesListParams = {}) {
 
 export function getBusinessDetail(businessId: string) {
   return businessRequest<BusinessDetail>(`/${encodeURIComponent(businessId)}`);
+}
+
+export async function blockBusiness(payload: BusinessActionPayload): Promise<unknown> {
+  return businessRequest('/block', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function unblockBusiness(businessId: string): Promise<unknown> {
+  return businessRequest('/unblock', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ businessId }),
+  });
+}
+
+export async function deactivateBusiness(payload: BusinessActionPayload): Promise<unknown> {
+  return businessRequest('/deactivate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }

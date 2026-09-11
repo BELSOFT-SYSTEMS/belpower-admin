@@ -1,9 +1,18 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { FaUsers, FaWallet, FaBuilding, FaExchangeAlt } from 'react-icons/fa';
+import {
+  FaUsers,
+  FaWallet,
+  FaBuilding,
+  FaExchangeAlt,
+  FaBan,
+  FaUserCheck,
+  FaUserSlash,
+} from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import '@/styles/adminUserDetails.css';
 import '@/styles/adminTransactions.css';
 import '@/styles/adminPartners.css';
@@ -12,11 +21,25 @@ import { AdminTabs } from '@/components/admin/ui/AdminTabs';
 import { AdminBackButton } from '@/components/admin/ui/AdminBackButton';
 import { AdminCopyableValue } from '@/components/admin/ui/AdminCopyableValue';
 import { AdminTransactionsListPanel } from '@/components/admin/transactions/AdminTransactionsListPanel';
-import { getBusinessDetail } from '@/lib/adminBusinesses';
+import {
+  BusinessQuickActionModal,
+  type BusinessQuickActionType,
+} from '@/components/admin/businesses/BusinessQuickActionModal';
+import {
+  blockBusiness,
+  deactivateBusiness,
+  getBusinessDetail,
+  unblockBusiness,
+} from '@/lib/adminBusinesses';
 import type { BusinessDetail } from '@/types/adminBusinesses';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 import { formatAdminDateTime } from '@/utils/formatAdminDate';
 import { formatPrice } from '@/utils/FormatPrice';
 import { getAvatarBackground, getInitialsFromDisplayName } from '@/utils/userAvatar';
+import {
+  getBusinessQuickActionAvailability,
+  getBusinessQuickActionDisabledTitle,
+} from '@/utils/businessQuickActionAvailability';
 
 type TabId = 'overview' | 'transactions';
 
@@ -26,14 +49,31 @@ function businessStatusPill(status: string) {
   return 'pill pill_inactive';
 }
 
+function canManageBusinesses(admin: { allAccess?: boolean; role?: string } | null): boolean {
+  if (!admin) return false;
+  return Boolean(
+    admin.allAccess || admin.role === 'super_admin' || admin.role === 'admin'
+  );
+}
+
 export default function BusinessDetailPage() {
   const params = useParams();
   const businessId = String(params?.businessId || '');
+  const { admin } = useAdminAuth();
+  const canManage = canManageBusinesses(admin);
+
   const [tab, setTab] = useState<TabId>('overview');
   const [business, setBusiness] = useState<BusinessDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [transactionsTabCount, setTransactionsTabCount] = useState(0);
+  const [pendingAction, setPendingAction] = useState<BusinessQuickActionType | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const refresh = useCallback(async () => {
+    const data = await getBusinessDetail(businessId);
+    setBusiness(data);
+  }, [businessId]);
 
   useEffect(() => {
     if (!businessId) return;
@@ -58,6 +98,31 @@ export default function BusinessDetailPage() {
     };
   }, [businessId]);
 
+  const handleConfirmAction = async (payload: { reason?: string }) => {
+    if (!business || !pendingAction) return;
+
+    setIsSubmitting(true);
+    try {
+      if (pendingAction === 'block') {
+        await blockBusiness({ businessId: business.id, reason: payload.reason });
+        toast.success('Business blocked');
+      } else if (pendingAction === 'unblock') {
+        await unblockBusiness(business.id);
+        toast.success('Business unblocked');
+      } else if (pendingAction === 'deactivate') {
+        await deactivateBusiness({ businessId: business.id, reason: payload.reason });
+        toast.success('Business deactivated');
+      }
+
+      setPendingAction(null);
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Action failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const tabs = useMemo(
     () => [
       { id: 'overview' as const, label: 'Overview' },
@@ -67,7 +132,7 @@ export default function BusinessDetailPage() {
         badge: transactionsTabCount > 0 ? transactionsTabCount : undefined,
       },
     ],
-    [transactionsTabCount],
+    [transactionsTabCount]
   );
 
   if (isLoading) {
@@ -98,6 +163,8 @@ export default function BusinessDetailPage() {
       </div>
     );
   }
+
+  const actions = getBusinessQuickActionAvailability(business);
 
   const detailStats = [
     {
@@ -220,9 +287,7 @@ export default function BusinessDetailPage() {
                 </div>
                 <div className="overview_field">
                   <span className="overview_label">Wallet status</span>
-                  <span className="overview_value">
-                    {business.companyWallet?.status || '—'}
-                  </span>
+                  <span className="overview_value">{business.companyWallet?.status || '—'}</span>
                 </div>
                 <div className="overview_field">
                   <span className="overview_label">Completed debit volume</span>
@@ -277,6 +342,53 @@ export default function BusinessDetailPage() {
                 </div>
               )}
             </section>
+
+            {canManage ? (
+              <section className="detail_panel security_section security_actions_section">
+                <h3 className="security_section_title">Admin review</h3>
+                <div className="security_admin_actions">
+                  <button
+                    type="button"
+                    className="security_action_btn action_block"
+                    title={getBusinessQuickActionDisabledTitle('block', business)}
+                    disabled={isSubmitting || !actions.canBlock}
+                    aria-disabled={isSubmitting || !actions.canBlock}
+                    onClick={() => {
+                      if (isSubmitting || !actions.canBlock) return;
+                      setPendingAction('block');
+                    }}
+                  >
+                    <FaBan /> Block business
+                  </button>
+                  <button
+                    type="button"
+                    className="security_action_btn action_activate"
+                    title={getBusinessQuickActionDisabledTitle('unblock', business)}
+                    disabled={isSubmitting || !actions.canUnblock}
+                    aria-disabled={isSubmitting || !actions.canUnblock}
+                    onClick={() => {
+                      if (isSubmitting || !actions.canUnblock) return;
+                      setPendingAction('unblock');
+                    }}
+                  >
+                    <FaUserCheck /> Unblock business
+                  </button>
+                  <button
+                    type="button"
+                    className="security_action_btn action_suspend"
+                    title={getBusinessQuickActionDisabledTitle('deactivate', business)}
+                    disabled={isSubmitting || !actions.canDeactivate}
+                    aria-disabled={isSubmitting || !actions.canDeactivate}
+                    onClick={() => {
+                      if (isSubmitting || !actions.canDeactivate) return;
+                      setPendingAction('deactivate');
+                    }}
+                  >
+                    <FaUserSlash /> Deactivate business
+                  </button>
+                </div>
+              </section>
+            ) : null}
           </div>
         ) : (
           <div className="tab_panel">
@@ -290,6 +402,15 @@ export default function BusinessDetailPage() {
           </div>
         )}
       </div>
+
+      <BusinessQuickActionModal
+        open={Boolean(pendingAction)}
+        action={pendingAction}
+        businessName={business.businessName}
+        isSubmitting={isSubmitting}
+        onClose={() => setPendingAction(null)}
+        onConfirm={(payload) => void handleConfirmAction(payload)}
+      />
     </div>
   );
 }

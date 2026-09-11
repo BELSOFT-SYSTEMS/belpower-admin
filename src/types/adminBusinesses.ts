@@ -101,3 +101,8 @@ export type BusinessDetail = {
     branchCount: number;
   };
 };
+
+export type BusinessActionPayload = {
+  businessId: string;
+  reason?: string;
+};
