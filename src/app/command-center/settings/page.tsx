@@ -14,7 +14,7 @@ type MaintenanceToggle = {
   id: MaintenanceToggleKey;
   label: string;
   description: string;
-  section?: 'maintenance' | 'dva';
+  section?: 'maintenance' | 'payment';
 };
 
 type BannerState = {
@@ -36,22 +36,31 @@ const MAINTENANCE_TOGGLES: MaintenanceToggle[] = [
   },
   {
     id: 'stop_wallet_funding',
-    label: 'Stop wallet funding',
-    description: 'Disable wallet top-ups and deposits.',
+    label: 'Stop all wallet top-up',
+    description:
+      'Disables every wallet funding method (card, Paystack DVA, and BuyPower DVA).',
+    section: 'payment',
+  },
+  {
+    id: 'stop_paystack_card',
+    label: 'Disable Paystack card',
+    description:
+      'Blocks Paystack card for wallet top-up and electricity/cable purchases. Bank transfer and wallet balance stay available.',
+    section: 'payment',
   },
   {
     id: 'stop_paystack_dva',
     label: 'Disable Paystack DVA',
     description:
       'Blocks Paystack DVA wallet funding and electricity/cable purchases. Card and wallet payments stay available.',
-    section: 'dva',
+    section: 'payment',
   },
   {
     id: 'stop_buypower_dva',
     label: 'Disable BuyPower DVA',
     description:
       'Blocks BuyPower DVA wallet top-up and electricity/cable purchases. Card and wallet payments stay available.',
-    section: 'dva',
+    section: 'payment',
   },
   {
     id: 'stop_airtime',
@@ -83,7 +92,10 @@ const MAINTENANCE_TOGGLES: MaintenanceToggle[] = [
 const BANNER_ON: Record<MaintenanceToggleKey, string> = {
   stop_login: 'User login has been stopped for maintenance. All non-deleted users were notified.',
   stop_all_purchases: 'All purchases have been stopped for maintenance. All non-deleted users were notified.',
-  stop_wallet_funding: 'Wallet funding has been stopped for maintenance. All non-deleted users were notified.',
+  stop_wallet_funding:
+    'All wallet top-up methods have been disabled. All non-deleted users were notified.',
+  stop_paystack_card:
+    'Paystack card has been disabled for wallet top-up and electricity/cable purchases. All non-deleted users were notified.',
   stop_paystack_dva:
     'Paystack DVA has been disabled. Wallet funding and electricity/cable via Paystack DVA are unavailable. All non-deleted users were notified.',
   stop_buypower_dva:
@@ -98,7 +110,9 @@ const BANNER_ON: Record<MaintenanceToggleKey, string> = {
 const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
   stop_login: 'User login has been re-enabled. All non-deleted users were notified.',
   stop_all_purchases: 'All purchases have been re-enabled. All non-deleted users were notified.',
-  stop_wallet_funding: 'Wallet funding has been re-enabled. All non-deleted users were notified.',
+  stop_wallet_funding: 'Wallet top-up has been re-enabled for all methods. All non-deleted users were notified.',
+  stop_paystack_card:
+    'Paystack card has been re-enabled for wallet top-up and electricity/cable purchases. All non-deleted users were notified.',
   stop_paystack_dva: 'Paystack DVA has been re-enabled for wallet funding and utility purchases. All non-deleted users were notified.',
   stop_buypower_dva: 'BuyPower DVA has been re-enabled for wallet top-up and utility purchases. All non-deleted users were notified.',
   stop_airtime: 'Airtime purchases have been re-enabled. All non-deleted users were notified.',
@@ -109,25 +123,31 @@ const BANNER_OFF: Record<MaintenanceToggleKey, string> = {
 };
 
 function getBannerForToggle(id: MaintenanceToggleKey, enabled: boolean): BannerState {
-  const isDvaToggle = id === 'stop_paystack_dva' || id === 'stop_buypower_dva';
+  const isPaymentMethodToggle =
+    id === 'stop_paystack_dva' ||
+    id === 'stop_buypower_dva' ||
+    id === 'stop_paystack_card' ||
+    id === 'stop_wallet_funding';
 
   if (enabled) {
     return {
       variant: 'success',
-      title: isDvaToggle ? 'DVA provider disabled' : 'Maintenance enabled',
+      title: isPaymentMethodToggle ? 'Payment method disabled' : 'Maintenance enabled',
       message: BANNER_ON[id],
     };
   }
 
   return {
     variant: 'info',
-    title: isDvaToggle ? 'DVA provider enabled' : 'Service restored',
+    title: isPaymentMethodToggle ? 'Payment method enabled' : 'Service restored',
     message: BANNER_OFF[id],
   };
 }
 
-const MAINTENANCE_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section !== 'dva');
-const DVA_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section === 'dva');
+const MAINTENANCE_SECTION_TOGGLES = MAINTENANCE_TOGGLES.filter(
+  (toggle) => toggle.section !== 'payment'
+);
+const PAYMENT_METHOD_TOGGLES = MAINTENANCE_TOGGLES.filter((toggle) => toggle.section === 'payment');
 const SETTINGS_TOAST_AUTO_DISMISS_MS = 6000;
 const PARTNER_API_DOCS_URL = 'https://partners.belpower.ng/docs';
 
@@ -280,7 +300,7 @@ export default function SettingsPage() {
       <section className="settings_card">
         <div className="settings_card_header">
           <h2>Maintenance mode</h2>
-          <p>Eight independent switches. Turning one on or off notifies all eligible users by in-app, push, and email.</p>
+          <p>Service-wide switches. Turning one on or off notifies all eligible users by in-app, push, and email.</p>
         </div>
 
         {isLoading
@@ -290,15 +310,16 @@ export default function SettingsPage() {
 
       <section className="settings_card">
         <div className="settings_card_header">
-          <h2>DVA provider controls</h2>
+          <h2>Payment method controls</h2>
           <p>
-            Disable Paystack or BuyPower DVA independently for wallet funding and electricity/cable.
+            Disable wallet top-up entirely, or turn off Paystack card and DVA providers independently
+            for wallet funding and electricity/cable.
           </p>
         </div>
 
         {isLoading
-          ? <p className="page_subtitle">Loading DVA settings…</p>
-          : renderToggleList(DVA_SECTION_TOGGLES, flags, updatingKey, handleToggle)}
+          ? <p className="page_subtitle">Loading payment settings…</p>
+          : renderToggleList(PAYMENT_METHOD_TOGGLES, flags, updatingKey, handleToggle)}
       </section>
     </div>
   );

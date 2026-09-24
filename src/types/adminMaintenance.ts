@@ -12,6 +12,7 @@ export type MaintenanceState = {
   walletFunding: boolean;
   paystackDva: boolean;
   buyPowerDva: boolean;
+  paystackCard: boolean;
   services: MaintenanceServices;
 };
 
@@ -21,6 +22,7 @@ export type MaintenancePatch = {
   walletFunding?: boolean;
   paystackDva?: boolean;
   buyPowerDva?: boolean;
+  paystackCard?: boolean;
   services?: Partial<MaintenanceServices>;
 };
 
@@ -28,6 +30,7 @@ export type MaintenanceToggleKey =
   | 'stop_login'
   | 'stop_all_purchases'
   | 'stop_wallet_funding'
+  | 'stop_paystack_card'
   | 'stop_paystack_dva'
   | 'stop_buypower_dva'
   | 'stop_airtime'
