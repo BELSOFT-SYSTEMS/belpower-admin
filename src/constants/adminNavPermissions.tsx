@@ -14,6 +14,7 @@ import {
   FaHandshake,
   FaCalendarAlt,
   FaBuilding,
+  FaBolt,
 } from 'react-icons/fa';
 
 export type AdminNavItem = {
@@ -65,6 +66,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     name: 'Check Meter',
     href: '/command-center/check-meter',
     icon: <FaTachometerAlt className="w-5 h-5" />,
+    permission: 'meters.verify',
+  },
+  {
+    name: 'Meter Requests',
+    href: '/command-center/meter-requests',
+    icon: <FaBolt className="w-5 h-5" />,
     permission: 'meters.verify',
   },
   {
