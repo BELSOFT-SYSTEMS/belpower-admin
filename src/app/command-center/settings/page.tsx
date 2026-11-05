@@ -313,7 +313,8 @@ export default function SettingsPage() {
           <h2>Payment method controls</h2>
           <p>
             Disable wallet top-up entirely, or turn off Paystack card and DVA providers independently
-            for wallet funding and electricity/cable.
+            for wallet funding and electricity/cable. Paystack card and Paystack DVA also auto-disable
+            every Friday at 00:00 WAT and auto-enable every Monday at 00:00 WAT.
           </p>
         </div>
 
