@@ -20,6 +20,7 @@ const DEMO_MAINTENANCE_STATE: MaintenanceState = {
   userLogin: true,
   userPurchase: true,
   walletFunding: true,
+  paystackCard: true,
   paystackDva: true,
   buyPowerDva: true,
   services: {
