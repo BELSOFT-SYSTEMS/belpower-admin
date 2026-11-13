@@ -87,7 +87,7 @@ export function useAdminAnalyticsReports({
       const allTimeCount = report.kpis.buyPowerCommissions?.allTimeCount ?? 0;
       const incompleteVsScreenshots =
         (allTime > 0 && allTime < 84000) || (allTimeCount > 0 && allTimeCount < 370);
-      const resyncKey = 'bp-ledger-full-resync-v2';
+      const resyncKey = 'bp-ledger-full-resync-v3';
       let alreadyResynced = false;
       try {
         alreadyResynced = sessionStorage.getItem(resyncKey) === '1';
