@@ -90,6 +90,11 @@ function DeltaChip({ deltaPct }: { deltaPct?: number | null }) {
   );
 }
 
+function formatTooltipNaira(value: unknown): string {
+  const n = typeof value === 'number' ? value : Number(value);
+  return formatPrice(Number.isFinite(n) ? n : 0);
+}
+
 function AnalyticsReportsPageInner() {
   const { admin } = useAdminAuth();
   const canAccess = canAccessAnalyticsReports(admin);
@@ -333,7 +338,7 @@ function AnalyticsReportsPageInner() {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="month" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip formatter={(v: number) => formatPrice(v)} />
+          <Tooltip formatter={formatTooltipNaira} />
           <Line type="monotone" dataKey="value" name="Fee GMV" stroke={PRIMARY} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
@@ -344,7 +349,7 @@ function AnalyticsReportsPageInner() {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="month" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip formatter={(v: number) => formatPrice(v)} />
+          <Tooltip formatter={formatTooltipNaira} />
           <Line type="monotone" dataKey="value" name="Combined profit" stroke={GREEN} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
@@ -366,7 +371,7 @@ function AnalyticsReportsPageInner() {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="month" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip formatter={(v: number) => formatPrice(v)} />
+          <Tooltip formatter={formatTooltipNaira} />
           <Legend />
           <Bar dataKey="sc" name="SC" fill={GREEN} radius={[4, 4, 0, 0]} />
           <Bar dataKey="commission" name="BP commission" fill={PRIMARY} radius={[4, 4, 0, 0]} />
@@ -392,7 +397,7 @@ function AnalyticsReportsPageInner() {
               <Cell key={i} fill={i === 0 ? GREEN : PRIMARY} />
             ))}
           </Pie>
-          <Tooltip formatter={(v: number) => formatPrice(v)} />
+          <Tooltip formatter={formatTooltipNaira} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
