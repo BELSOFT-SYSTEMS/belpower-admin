@@ -14,7 +14,8 @@ export const ANALYTICS_METRIC_GLOSSARY = {
   activeBuyers:
     'Distinct BelPower users in the current Analytics scope with ≥1 completed purchase in the period.',
   feeTxs: 'Count of completed purchases that included a service charge.',
-  paymentFor: 'Product category of the purchase (electricity, cable, airtime, data, etc.).',
+  paymentFor:
+    'Share of completed purchases by product category (from Transaction.payment_for): Electricity, Airtime, Data, Cable TV, Betting, plus ops rows like Adjustment or Refund correction. Counts are for the selected date range and Analytics scope.',
   vend: 'A successful or attempted BuyPower fulfillment debit against wallet float.',
   reversal: 'BuyPower wallet credit that undoes a failed/reversed vend.',
   completedPurchases:

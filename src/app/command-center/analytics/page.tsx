@@ -53,7 +53,62 @@ import {
 
 const PRIMARY = '#0064FF';
 const GREEN = '#16a34a';
-const PIE_COLORS = ['#0064FF', '#16a34a', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444'];
+
+/** Human labels for Transaction.payment_for (DB stores snake_case). */
+const PAYMENT_FOR_LABELS: Record<string, string> = {
+  electricity: 'Electricity',
+  airtime: 'Airtime',
+  data: 'Data',
+  cable: 'Cable TV',
+  betting: 'Betting',
+  adjustment: 'Adjustment',
+  refund: 'Refund',
+  refund_correction: 'Refund correction',
+  wallet_funding: 'Wallet funding',
+  cashback: 'Cashback',
+  deposit: 'Deposit',
+  unknown: 'Unknown',
+};
+
+/** Stable, high-contrast colors per product (avoid similar blues/reds next to each other). */
+const PAYMENT_FOR_COLORS: Record<string, string> = {
+  electricity: '#0064FF',
+  airtime: '#16a34a',
+  data: '#0d9488',
+  cable: '#7c3aed',
+  betting: '#ea580c',
+  adjustment: '#64748b',
+  refund: '#e11d48',
+  refund_correction: '#ca8a04',
+  wallet_funding: '#2563eb',
+  cashback: '#db2777',
+  deposit: '#4f46e5',
+  unknown: '#94a3b8',
+};
+
+const PIE_FALLBACK_COLORS = [
+  '#0064FF',
+  '#16a34a',
+  '#ea580c',
+  '#7c3aed',
+  '#0d9488',
+  '#e11d48',
+  '#ca8a04',
+  '#64748b',
+];
+
+function humanizePaymentFor(raw: string): string {
+  const key = String(raw || 'unknown').toLowerCase().trim();
+  if (PAYMENT_FOR_LABELS[key]) return PAYMENT_FOR_LABELS[key];
+  return key
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function paymentForColor(raw: string, index: number): string {
+  const key = String(raw || 'unknown').toLowerCase().trim();
+  return PAYMENT_FOR_COLORS[key] || PIE_FALLBACK_COLORS[index % PIE_FALLBACK_COLORS.length];
+}
 
 function defaultStartDate() {
   const d = new Date();
@@ -147,15 +202,22 @@ function AnalyticsReportsPageInner() {
     [data]
   );
 
-  const paymentMixData = useMemo(
-    () =>
-      (data?.charts.paymentForMix || []).map((row) => ({
-        name: row.paymentFor,
+  const paymentMixData = useMemo(() => {
+    const rows = data?.charts.paymentForMix || [];
+    const total = rows.reduce((sum, row) => sum + (row.count || 0), 0) || 1;
+    return rows.map((row, index) => {
+      const key = row.paymentFor || 'unknown';
+      const pct = ((row.count || 0) / total) * 100;
+      return {
+        key,
+        name: humanizePaymentFor(key),
         value: row.count,
         gmv: row.gmv,
-      })),
-    [data]
-  );
+        fill: paymentForColor(key, index),
+        legendLabel: `${humanizePaymentFor(key)} · ${row.count.toLocaleString()} (${pct.toFixed(0)}%)`,
+      };
+    });
+  }, [data]);
 
   if (!canAccess) {
     return (
@@ -321,6 +383,17 @@ function AnalyticsReportsPageInner() {
     </div>
   );
 
+  const chartTitles: Record<string, string> = {
+    feeGmv: 'Fee-bearing GMV by month',
+    profit: 'Combined profit by month',
+    purchases: 'Purchases by month',
+    scCommission: 'SC vs BuyPower commission',
+    volume: 'Transaction volume',
+    profitMix: 'Profit mix',
+    paymentMix: 'Purchase mix by product',
+    userGrowth: 'User growth',
+  };
+
   const chartBodies: Record<string, ReactNode> = {
     feeGmv: (
       <ResponsiveContainer width="100%" height="100%">
@@ -382,26 +455,61 @@ function AnalyticsReportsPageInner() {
     profitMix: (
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie data={profitMixData} dataKey="value" nameKey="name" outerRadius={80} label>
+          <Pie
+            data={profitMixData}
+            dataKey="value"
+            nameKey="name"
+            outerRadius={64}
+            label={false}
+          >
             {profitMixData.map((_, i) => (
               <Cell key={i} fill={i === 0 ? GREEN : PRIMARY} />
             ))}
           </Pie>
           <Tooltip formatter={formatTooltipNaira} />
-          <Legend />
+          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 11 }} />
         </PieChart>
       </ResponsiveContainer>
     ),
     paymentMix: (
       <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie data={paymentMixData} dataKey="value" nameKey="name" outerRadius={80} label>
-            {paymentMixData.map((_, i) => (
-              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+        <PieChart margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+          {/* Labels live in the legend only — slice labels overlap on small mixes */}
+          <Pie
+            data={paymentMixData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="42%"
+            outerRadius={58}
+            innerRadius={28}
+            paddingAngle={2}
+            label={false}
+          >
+            {paymentMixData.map((row) => (
+              <Cell key={row.key} fill={row.fill} stroke="#fff" strokeWidth={1} />
             ))}
           </Pie>
-          <Tooltip />
-          <Legend />
+          <Tooltip
+            formatter={(value, _name, item) => {
+              const count = typeof value === 'number' ? value : Number(value);
+              const gmv = Number(item?.payload?.gmv || 0);
+              return [
+                `${Number.isFinite(count) ? count.toLocaleString() : 0} txs · ${formatPrice(gmv)}`,
+                item?.payload?.name || 'Product',
+              ];
+            }}
+          />
+          <Legend
+            verticalAlign="bottom"
+            align="center"
+            iconType="circle"
+            wrapperStyle={{ fontSize: 11, paddingTop: 4 }}
+            formatter={(_value, entry) => {
+              const payload = entry?.payload as { legendLabel?: string } | undefined;
+              return payload?.legendLabel || String(_value);
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     ),
@@ -620,7 +728,12 @@ function AnalyticsReportsPageInner() {
           {renderChart('scCommission', 'SC vs BuyPower commission', 'sc', chartBodies.scCommission)}
           {renderChart('volume', 'Transaction volume', undefined, chartBodies.volume)}
           {renderChart('profitMix', 'Profit mix', 'profitMargin', chartBodies.profitMix)}
-          {renderChart('paymentMix', 'payment_for mix', 'paymentFor', chartBodies.paymentMix)}
+          {renderChart(
+            'paymentMix',
+            'Purchase mix by product',
+            'paymentFor',
+            chartBodies.paymentMix
+          )}
           {renderChart('userGrowth', 'User growth', 'userGrowth', chartBodies.userGrowth)}
         </div>
       )}
@@ -709,12 +822,14 @@ function AnalyticsReportsPageInner() {
         <div className="analytics_modal_backdrop" onClick={() => setExpandedChart(null)}>
           <div className="analytics_modal" onClick={(e) => e.stopPropagation()}>
             <div className="chart_card_header">
-              <h3>{expandedChart}</h3>
+              <h3>{chartTitles[expandedChart] || expandedChart}</h3>
               <button type="button" className="analytics_btn" onClick={() => setExpandedChart(null)}>
                 Close
               </button>
             </div>
-            <div style={{ width: '100%', height: 420 }}>{chartBodies[expandedChart]}</div>
+            <div style={{ width: '100%', height: expandedChart === 'paymentMix' ? 480 : 420 }}>
+              {chartBodies[expandedChart]}
+            </div>
           </div>
         </div>
       ) : null}
