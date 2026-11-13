@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useAdminAuth } from '@/context/AdminAuthContext';
-import { isSuperAdminActor } from '@/utils/adminInternalTestAccess';
+import { canManageInternalTestVisibility } from '@/utils/adminInternalTestAccess';
 import {
   ADMIN_ANALYTICS_PREFERENCE_EVENT,
   getExcludeInternalTestPreference,
@@ -29,7 +29,7 @@ const AdminAnalyticsContext = createContext<AdminAnalyticsContextValue | null>(n
 
 export function AdminAnalyticsProvider({ children }: { children: ReactNode }) {
   const { admin } = useAdminAuth();
-  const canToggle = isSuperAdminActor(admin);
+  const canToggle = canManageInternalTestVisibility(admin);
   const [excludeInternalTest, setExcludeInternalTestState] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 

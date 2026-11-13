@@ -8,6 +8,8 @@ import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useAdminShell } from '@/context/AdminShellContext';
 import { ADMIN_NAV_ITEMS } from '@/constants/adminNavPermissions';
 import { canAccessAdminManagement } from '@/utils/adminManagementAccess';
+import { isSuperAdminActor } from '@/utils/adminInternalTestAccess';
+import { canAccessAnalyticsReports } from '@/utils/adminAnalyticsAccess';
 import '@/styles/adminShell.css';
 
 function SidebarNav({
@@ -21,6 +23,12 @@ function SidebarNav({
   const { canAccess, admin } = useAdminAuth();
 
   const navigation = ADMIN_NAV_ITEMS.filter((item) => {
+    if (item.analyticsAccess) {
+      return canAccessAnalyticsReports(admin);
+    }
+    if (item.superAdminOnly) {
+      return isSuperAdminActor(admin);
+    }
     if (item.href === '/command-center/admins') {
       return canAccessAdminManagement(admin);
     }

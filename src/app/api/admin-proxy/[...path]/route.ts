@@ -80,14 +80,36 @@ async function proxyRequest(
       ...init,
       cache: 'no-store',
     });
-    const body = await res.text();
 
+    const contentType = res.headers.get('Content-Type') ?? 'application/json';
+    const isBinary =
+      contentType.includes('application/pdf') ||
+      contentType.includes('application/octet-stream') ||
+      contentType.includes('text/csv') ||
+      contentType.includes('spreadsheet') ||
+      contentType.includes('application/vnd.');
+
+    const responseHeaders: Record<string, string> = {
+      'Content-Type': contentType,
+      'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+    };
+    const disposition = res.headers.get('Content-Disposition');
+    if (disposition) {
+      responseHeaders['Content-Disposition'] = disposition;
+    }
+
+    if (isBinary) {
+      const body = await res.arrayBuffer();
+      return new NextResponse(body, {
+        status: res.status,
+        headers: responseHeaders,
+      });
+    }
+
+    const body = await res.text();
     return new NextResponse(body, {
       status: res.status,
-      headers: {
-        'Content-Type': res.headers.get('Content-Type') ?? 'application/json',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-      },
+      headers: responseHeaders,
     });
   } catch (error) {
     console.error('Admin API proxy error:', { targetUrl, error });

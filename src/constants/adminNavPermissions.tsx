@@ -15,6 +15,7 @@ import {
   FaCalendarAlt,
   FaBuilding,
   FaBolt,
+  FaChartPie,
 } from 'react-icons/fa';
 
 export type AdminNavItem = {
@@ -23,6 +24,10 @@ export type AdminNavItem = {
   icon: ReactNode;
   /** Omit to show for any authenticated admin */
   permission?: string;
+  /** When true, only Super Admin actors see this item */
+  superAdminOnly?: boolean;
+  /** When true, Super Admin + Finance see this item */
+  analyticsAccess?: boolean;
 };
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
@@ -79,6 +84,12 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     href: '/command-center/wallet',
     icon: <FaWallet className="w-5 h-5" />,
     permission: 'transactions.list',
+  },
+  {
+    name: 'Analytics & Reports',
+    href: '/command-center/analytics',
+    icon: <FaChartPie className="w-5 h-5" />,
+    analyticsAccess: true,
   },
   {
     name: 'Service Availability',

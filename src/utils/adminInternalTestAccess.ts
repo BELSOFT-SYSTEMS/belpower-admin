@@ -10,13 +10,22 @@ export function isSuperAdminActor(admin: AdminProfile | null | undefined): boole
   return Boolean(admin?.allAccess || admin?.role === 'super_admin');
 }
 
-/** Prefer API filters; fall back to super-admin role when the API omits the flag. */
+/** Who may toggle / include internal test accounts (matches backend canViewInternalTestUsers). */
+export function canManageInternalTestVisibility(
+  admin: AdminProfile | null | undefined
+): boolean {
+  if (!admin) return false;
+  if (admin.allAccess || admin.role === 'super_admin') return true;
+  return admin.role === 'finance';
+}
+
+/** Prefer API filters; fall back to Super Admin / Finance when the API omits the flag. */
 export function resolveCanViewInternalTest(
   filters: InternalTestVisibilityFilters,
   admin: AdminProfile | null | undefined
 ): boolean {
   if (filters && typeof filters.excludeInternalTest === 'boolean') {
-    return !filters.excludeInternalTest && isSuperAdminActor(admin);
+    return !filters.excludeInternalTest && canManageInternalTestVisibility(admin);
   }
   if (filters && typeof filters.canViewInternalTestTransactions === 'boolean') {
     return filters.canViewInternalTestTransactions;
@@ -24,7 +33,7 @@ export function resolveCanViewInternalTest(
   if (filters && typeof filters.canViewInternalTestUsers === 'boolean') {
     return filters.canViewInternalTestUsers;
   }
-  return isSuperAdminActor(admin);
+  return canManageInternalTestVisibility(admin);
 }
 
 export function filterInternalTestTransactions<T extends { isInternalTestAccount?: boolean }>(
