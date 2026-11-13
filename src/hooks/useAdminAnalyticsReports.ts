@@ -82,15 +82,35 @@ export function useAdminAnalyticsReports({
     (async () => {
       const report = await load();
       if (cancelled || !report || getAdminDemoMode()) return;
+      // Full-history sync when empty, or one-shot resync if below known screenshot total (~₦84.6k / 377)
+      const allTime = report.kpis.buyPowerCommissions?.allTime ?? 0;
+      const allTimeCount = report.kpis.buyPowerCommissions?.allTimeCount ?? 0;
+      const incompleteVsScreenshots =
+        (allTime > 0 && allTime < 84000) || (allTimeCount > 0 && allTimeCount < 370);
+      const resyncKey = 'bp-ledger-full-resync-v2';
+      let alreadyResynced = false;
+      try {
+        alreadyResynced = sessionStorage.getItem(resyncKey) === '1';
+      } catch {
+        alreadyResynced = false;
+      }
       const needsFullSync =
         report.ledger?.ensure?.needsFullSync === true ||
-        ((report.ledger?.rowCount ?? 0) === 0 &&
-          (report.kpis.buyPowerCommissions?.allTime ?? 0) === 0);
+        (report.ledger?.rowCount ?? 0) === 0 ||
+        allTime === 0 ||
+        (incompleteVsScreenshots && !alreadyResynced);
       if (needsFullSync) {
         setIsSyncing(true);
         setError(null);
         try {
-          await syncBuyPowerLedger({ allTime: true });
+          if (incompleteVsScreenshots) {
+            try {
+              sessionStorage.setItem(resyncKey, '1');
+            } catch {
+              /* ignore */
+            }
+          }
+          await syncBuyPowerLedger({ allTime: true, forceFull: true });
           if (!cancelled) await load({ silent: true });
         } catch (err) {
           if (!cancelled) {

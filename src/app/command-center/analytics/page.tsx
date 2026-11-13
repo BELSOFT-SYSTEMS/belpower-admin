@@ -201,15 +201,23 @@ function AnalyticsReportsPageInner() {
     },
     {
       key: 'commission',
-      label: 'BuyPower commissions',
+      label: 'BuyPower commission balance',
       metricKey: 'bpCommission' as const,
-      value: k ? formatPrice(k.buyPowerCommissions.value) : '—',
-      delta: k?.buyPowerCommissions.deltaPct,
+      value: k
+        ? formatPrice(
+            k.buyPowerCommissions.balance ?? k.buyPowerCommissions.value ?? 0
+          )
+        : '—',
+      delta: null,
       icon: <FaCoins className="text-purple-500 text-xl" />,
       border: 'border-purple-200',
       sub: k
-        ? `All-time ${formatPrice(k.buyPowerCommissions.allTime ?? 0)}`
-        : 'Synced ledger',
+        ? `All-time earned ${formatPrice(k.buyPowerCommissions.allTime ?? 0)}${
+            k.buyPowerCommissions.allTimeCount
+              ? ` · ${k.buyPowerCommissions.allTimeCount.toLocaleString()} credits`
+              : ''
+          }`
+        : 'Live balance · synced all-time earned',
     },
     {
       key: 'combined',
@@ -219,7 +227,9 @@ function AnalyticsReportsPageInner() {
       delta: k?.combinedProfit.deltaPct,
       icon: <FaChartLine className="text-green-500 text-xl" />,
       border: 'border-green-200',
-      sub: 'SC + BuyPower commission',
+      sub: k
+        ? `SC + period BP commission ${formatPrice(k.buyPowerCommissions.period ?? 0)}`
+        : 'SC + period BuyPower commission',
     },
     {
       key: 'margin',
@@ -242,9 +252,17 @@ function AnalyticsReportsPageInner() {
       delta: null,
       icon: <FaWallet className="text-blue-600 text-xl" />,
       border: 'border-blue-200',
-      sub: k?.buyPowerWalletBalance.lastUpdated
-        ? `Updated ${new Date(k.buyPowerWalletBalance.lastUpdated).toLocaleString()}`
-        : 'Live float',
+      sub: (() => {
+        const atStart = k?.buyPowerWalletBalance.atStartDate;
+        if (atStart && atStart.amount != null) {
+          const startLabel = atStart.startDate || appliedRange.startDate;
+          return `At start ${startLabel}: ${formatPrice(atStart.amount)}`;
+        }
+        if (k?.buyPowerWalletBalance.lastUpdated) {
+          return `Live · updated ${new Date(k.buyPowerWalletBalance.lastUpdated).toLocaleString()}`;
+        }
+        return 'Live float';
+      })(),
       balanceCard: true,
     },
     {

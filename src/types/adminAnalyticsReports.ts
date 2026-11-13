@@ -13,6 +13,12 @@ export type AnalyticsDeltaMetric = {
   count?: number;
   allTime?: number;
   allTimeCount?: number;
+  /** Live unspent commission balance (BuyPower card main). */
+  balance?: number;
+  /** Period earned commissions (feeds combined profit). */
+  period?: number;
+  periodCount?: number;
+  periodDeltaPct?: number | null;
 };
 
 export type BuyPowerBalanceKpi = {
@@ -28,6 +34,13 @@ export type BuyPowerBalanceKpi = {
     healthyMin: number;
     warningMin: number;
   };
+  /** Wallet float inferred at the selected start date from ledger balance_before/after. */
+  atStartDate?: {
+    amount: number;
+    asOf?: string | Date | null;
+    source?: string;
+    startDate?: string;
+  } | null;
 };
 
 export type TransferTopupKpi = {

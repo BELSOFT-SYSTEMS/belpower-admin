@@ -4,13 +4,13 @@ export const ANALYTICS_METRIC_GLOSSARY = {
     'GMV only on purchases that charged BelPower’s service fee (respects current Analytics scope checkboxes).',
   sc: 'Service Charge — BelPower’s ₦100 fee collected on eligible purchases; this is BelPower-side profit, not BuyPower commission.',
   bpCommission:
-    'Commission credited by BuyPower on successful vends (walletTransactions type=commission). Period + all-time totals come from the synced BuyPower ledger — use “Refresh BuyPower ledger” once if all-time shows ₦0.',
+    'Main figure is the live BuyPower commission balance (usually ₦0 — credits fold into wallet float). Subtitle is all-time earned commission credits from synced walletTransactions (type=commission). Date range does not change this card; period commissions still feed Combined profit / charts.',
   combinedProfit:
-    'Service charges (SC) + BuyPower commissions for the selected period. Matches the offline float/profit PDF once the BuyPower ledger is synced.',
+    'Service charges (SC) + BuyPower commissions earned in the selected date range. Matches the offline float/profit PDF once the BuyPower ledger is fully synced.',
   profitMargin:
-    'Combined profit ÷ fee-bearing GMV for the period (same basis as the float/profit PDF “on fee-bearing collections”). If BuyPower commission is still ₦0, margin collapses to SC-only (~0.5%).',
+    'Combined profit ÷ fee-bearing GMV for the period (same basis as the float/profit PDF “on fee-bearing collections”).',
   buyPowerWalletBalance:
-    'Live float remaining in the BuyPower B2B wallet used to vend. Green ≥ ₦1,000,000, amber under ₦1M (≥ ₦500,000), red under ₦500,000.',
+    'Main figure is live BuyPower wallet float (GET /wallet/balance). Subtitle is float at the selected start date, inferred from the nearest synced ledger row’s balance_before/after. Green ≥ ₦1,000,000, amber under ₦1M (≥ ₦500,000), red under ₦500,000.',
   activeBuyers:
     'Distinct BelPower users in the current Analytics scope with ≥1 completed purchase in the period.',
   feeTxs: 'Count of completed purchases that included a service charge.',
