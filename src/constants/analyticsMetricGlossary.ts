@@ -4,13 +4,13 @@ export const ANALYTICS_METRIC_GLOSSARY = {
     'GMV only on purchases that charged BelPower’s service fee (respects current Analytics scope checkboxes).',
   sc: 'Service Charge — BelPower’s ₦100 fee collected on eligible purchases; this is BelPower-side profit, not BuyPower commission.',
   bpCommission:
-    'Commission credited by BuyPower on successful vends (from BuyPower walletTransactions type commission).',
-  combinedProfit: 'Service charges (SC) + BuyPower commissions for the period.',
-  profitMargin: 'Combined profit ÷ fee-bearing GMV for the period.',
+    'Commission credited by BuyPower on successful vends (walletTransactions type=commission). Period + all-time totals come from the synced BuyPower ledger — use “Refresh BuyPower ledger” once if all-time shows ₦0.',
+  combinedProfit:
+    'Service charges (SC) + BuyPower commissions for the selected period. Matches the offline float/profit PDF once the BuyPower ledger is synced.',
+  profitMargin:
+    'Combined profit ÷ fee-bearing GMV for the period (same basis as the float/profit PDF “on fee-bearing collections”). If BuyPower commission is still ₦0, margin collapses to SC-only (~0.5%).',
   buyPowerWalletBalance:
     'Live float remaining in the BuyPower B2B wallet used to vend. Green ≥ ₦1,000,000, amber under ₦1M (≥ ₦500,000), red under ₦500,000.',
-  transferTopup:
-    'Money funded into the BuyPower wallet (top-ups). Shown only if present in synced ledger history.',
   activeBuyers:
     'Distinct BelPower users in the current Analytics scope with ≥1 completed purchase in the period.',
   feeTxs: 'Count of completed purchases that included a service charge.',
@@ -19,7 +19,6 @@ export const ANALYTICS_METRIC_GLOSSARY = {
   reversal: 'BuyPower wallet credit that undoes a failed/reversed vend.',
   completedPurchases:
     'Completed purchase debits in the selected period under the current Analytics scope.',
-  totalUsers: 'BelPower users in scope (respects deleted-user and internal-test scope controls).',
   newUsers: 'Users who registered within the selected period (respects current scope).',
   userGrowth: 'New user registrations by month, with running cumulative total.',
   includeDeletedUsers:

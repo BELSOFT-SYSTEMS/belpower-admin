@@ -35,29 +35,28 @@ export function useAdminAnalyticsReports({
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(
-    async (opts?: { silent?: boolean }) => {
-      if (!enabled) return;
+    async (opts?: { silent?: boolean }): Promise<AnalyticsReport | null> => {
+      if (!enabled) return null;
       if (!opts?.silent) setIsLoading(true);
       setError(null);
       try {
         if (getAdminDemoMode()) {
-          setData(getMockAnalyticsReport(scope));
-          return;
+          const mock = getMockAnalyticsReport(scope);
+          setData(mock);
+          return mock;
         }
         const report = await getAnalyticsReport({ startDate, endDate, scope });
         setData(report);
+        return report;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load analytics');
+        return null;
       } finally {
         if (!opts?.silent) setIsLoading(false);
       }
     },
     [enabled, startDate, endDate, scope]
   );
-
-  useEffect(() => {
-    void load();
-  }, [load, refreshKey]);
 
   const refreshLedger = useCallback(async () => {
     if (getAdminDemoMode()) {
@@ -67,14 +66,45 @@ export function useAdminAnalyticsReports({
     setIsSyncing(true);
     setError(null);
     try {
-      await syncBuyPowerLedger({ start: startDate, end: endDate });
+      // Full-history sync so all-time BuyPower commission KPIs populate
+      await syncBuyPowerLedger({ allTime: true });
       await load({ silent: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ledger sync failed');
     } finally {
       setIsSyncing(false);
     }
-  }, [startDate, endDate, load, scope]);
+  }, [load, scope]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
+    (async () => {
+      const report = await load();
+      if (cancelled || !report || getAdminDemoMode()) return;
+      const needsFullSync =
+        report.ledger?.ensure?.needsFullSync === true ||
+        ((report.ledger?.rowCount ?? 0) === 0 &&
+          (report.kpis.buyPowerCommissions?.allTime ?? 0) === 0);
+      if (needsFullSync) {
+        setIsSyncing(true);
+        setError(null);
+        try {
+          await syncBuyPowerLedger({ allTime: true });
+          if (!cancelled) await load({ silent: true });
+        } catch (err) {
+          if (!cancelled) {
+            setError(err instanceof Error ? err.message : 'Ledger sync failed');
+          }
+        } finally {
+          if (!cancelled) setIsSyncing(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [load, refreshKey, enabled]);
 
   const exportReport = useCallback(
     async (format: 'pdf' | 'csv') => {

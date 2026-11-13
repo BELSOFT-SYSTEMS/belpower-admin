@@ -97,6 +97,8 @@ export async function getAnalyticsReport(
 export async function syncBuyPowerLedger(params?: {
   start?: string;
   end?: string;
+  allTime?: boolean;
+  forceFull?: boolean;
 }): Promise<Record<string, unknown>> {
   const res = await fetch(`${ADMIN_API_BASE}/reports/analytics/buypower-ledger/sync`, {
     method: 'POST',
@@ -104,7 +106,7 @@ export async function syncBuyPowerLedger(params?: {
       ...adminHeaders(),
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(params || {}),
+    body: JSON.stringify(params || { allTime: true }),
   });
   const body = await handleAdminResponse<Record<string, unknown>>(
     res,

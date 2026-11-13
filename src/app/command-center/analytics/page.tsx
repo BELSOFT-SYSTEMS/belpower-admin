@@ -248,24 +248,6 @@ function AnalyticsReportsPageInner() {
       balanceCard: true,
     },
     {
-      key: 'topup',
-      label: 'TRANSFER_TOPUP',
-      metricKey: 'transferTopup' as const,
-      value:
-        k?.transferTopup?.available === false
-          ? 'Unavailable'
-          : k
-            ? formatPrice(k.transferTopup.total || 0)
-            : '—',
-      delta: null,
-      icon: <FaWallet className="text-amber-500 text-xl" />,
-      border: 'border-amber-200',
-      sub:
-        k?.transferTopup?.available === false
-          ? 'Not in BuyPower history API'
-          : 'Period wallet top-ups',
-    },
-    {
       key: 'refunded',
       label: 'Refunded originals',
       metricKey: 'refundedOriginals' as const,
@@ -278,16 +260,6 @@ function AnalyticsReportsPageInner() {
       sub: k?.refundedOriginals
         ? `${k.refundedOriginals.count.toLocaleString()} txs · later refunded to wallet`
         : 'Purchase debits later refunded',
-    },
-    {
-      key: 'users',
-      label: 'Total users',
-      metricKey: 'totalUsers' as const,
-      value: k ? k.totalUsers.value.toLocaleString() : '—',
-      delta: null,
-      icon: <FaUsers className="text-violet-500 text-xl" />,
-      border: 'border-violet-200',
-      sub: scope.includeDeletedUsers ? 'Includes deleted accounts' : 'Non-deleted accounts',
     },
     {
       key: 'newUsers',
@@ -472,7 +444,7 @@ function AnalyticsReportsPageInner() {
             onClick={() => void refreshLedger()}
           >
             {isSyncing ? <Loader2 className="inline h-4 w-4 animate-spin" /> : <FaSync className="inline" />}{' '}
-            Refresh BuyPower ledger
+            {isSyncing ? 'Syncing BuyPower commissions…' : 'Sync BuyPower commissions (all-time)'}
           </button>
           <button
             type="button"
@@ -554,6 +526,24 @@ function AnalyticsReportsPageInner() {
       {error ? (
         <div className="admin_alert_danger" style={{ marginBottom: '1rem' }}>
           <p>{error}</p>
+        </div>
+      ) : null}
+
+      {isSyncing ? (
+        <div
+          style={{
+            marginBottom: '1rem',
+            padding: '0.75rem 1rem',
+            borderRadius: 8,
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            color: '#1e40af',
+          }}
+        >
+          <p style={{ margin: 0 }}>
+            Syncing BuyPower wallet history for all-time commissions. Combined profit and margin
+            will update when this finishes (first sync can take a few minutes).
+          </p>
         </div>
       ) : null}
 

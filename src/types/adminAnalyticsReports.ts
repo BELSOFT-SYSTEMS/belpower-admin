@@ -110,6 +110,13 @@ export type AnalyticsReport = {
     lastOccurredAt: string | null;
     topupsAvailable: boolean;
     topupTypes: string[];
+    ensure?: {
+      skipped?: boolean;
+      reason?: string;
+      needsFullSync?: boolean;
+      error?: string;
+      mode?: string;
+    };
   };
   generatedAt: string;
 };
